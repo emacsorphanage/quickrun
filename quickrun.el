@@ -103,6 +103,7 @@ was called."
     ("perl" . ((:command . "perl")))
     ("ruby" . ((:command . "ruby")))
     ("python" . ((:command . "python")))
+    ("php" . ((:command . "php")))
     ("lisp" . ((:command . "clisp")))
     ("scheme/gosh" . ((:command . "gosh")))
 
@@ -142,6 +143,7 @@ was called."
     ('perl-mode "perl") ('cperl-mode "perl")
     ('ruby-mode "ruby")
     ('python-mode "python")
+    ('php-mode    "php")
     ('lisp-mode "lisp")
     ('scheme-mode "scheme")
     ('javascript-mode "javascript") ('js-mode "javascript") ('js2-mode "javascript")
@@ -161,6 +163,7 @@ was called."
     ("pl"   . "perl")
     ("rb"   . "ruby")
     ("py"   . "python")
+    ("php"  . "php")
     ("lisp" . "lisp") (".lsp" . "lisp")
     ("scm"  . "scheme")
     ("js"   . "javascript")
