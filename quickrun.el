@@ -104,6 +104,9 @@ was called."
     ("ruby" . ((:command . "ruby")))
     ("python" . ((:command . "python")))
     ("php" . ((:command . "php")))
+
+    ("emacs" . ((:command . "emacs")
+                (:exec    . "%c -Q --script %s")))
     ("lisp" . ((:command . "clisp")))
     ("scheme/gosh" . ((:command . "gosh")))
 
@@ -144,6 +147,7 @@ was called."
     ('ruby-mode "ruby")
     ('python-mode "python")
     ('php-mode    "php")
+    ('emacs-lisp-mode "emacs")
     ('lisp-mode "lisp")
     ('scheme-mode "scheme")
     ('javascript-mode "javascript") ('js-mode "javascript") ('js2-mode "javascript")
@@ -164,7 +168,8 @@ was called."
     ("rb"   . "ruby")
     ("py"   . "python")
     ("php"  . "php")
-    ("lisp" . "lisp") (".lsp" . "lisp")
+    ("el"   . "emacs") ("elisp" . "emacs")
+    ("lisp" . "lisp") ("lsp" . "lisp")
     ("scm"  . "scheme")
     ("js"   . "javascript")
     ("clj"  . "clojure")
@@ -218,12 +223,13 @@ was called."
          (process-name (format "quickrun-process-%s" (buffer-name)))
          (cmd-list (split-string cmd))
          (program (car cmd-list))
-         (args (mapconcat #'identity (cdr cmd-list) " ")))
+         (args (cdr cmd-list))
+         (run-func (apply-partially 'start-process process-name buf program)))
     (with-current-buffer buf
       (erase-buffer)
       (goto-char (point-min)))
     (setf quickrun/last-process-name process-name
-          quickrun/process (start-process process-name buf program args))
+          quickrun/process (apply run-func args))
     (run-at-time quickrun/timeout nil #'quickrun/kill-process)
     quickrun/process))
 
