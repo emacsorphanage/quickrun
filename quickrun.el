@@ -231,7 +231,7 @@ was called."
     (let ((compile-func (apply-partially 'call-process program nil buf t)))
       (when (not (= (apply compile-func args) 0))
         (pop-to-buffer buf)
-        (throw 'compile-error nil)))))
+        (throw 'compile-error t)))))
 
 ;;
 ;; Execute
@@ -391,10 +391,18 @@ was called."
 ;;
 ;; main
 ;;
-(defvar quickrun/remove-files nil)
-
 (defun quickrun ()
   (interactive)
+  (quickrun-common))
+
+(defun quickrun-with-arg (arg)
+  (interactive
+   (list (read-string "quickrun argument> ")))
+  (quickrun-common arg))
+
+(defvar quickrun/remove-files nil)
+
+(defun quickrun-common (&optional arg)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type))
          (lang-key (or (gethash lang quickrun/lang-key) lang))
@@ -403,17 +411,19 @@ was called."
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
-    (let ((cmd-info-hash (quickrun/fill-templates lang-key src)))
-      (catch 'compile-error
-        (if (gethash :compile cmd-info-hash)
-            (quickrun/compile-and-link (gethash :compile cmd-info-hash)
-                                       (gethash :link    cmd-info-hash)))
-        (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
-          (setf quickrun/remove-files
-                (if (string= lang "java")
-                    (gethash :remove cmd-info-hash)
-                  (cons src (gethash :remove cmd-info-hash))))
-          (set-process-sentinel quickrun/process #'quickrun/sentinel))))))
+    (let ((cmd-info-hash (quickrun/fill-templates lang-key src arg)))
+      (unless (catch 'compile-error
+                (if (gethash :compile cmd-info-hash)
+                    (quickrun/compile-and-link (gethash :compile cmd-info-hash)
+                                               (gethash :link    cmd-info-hash)))
+                (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
+                  (setf quickrun/remove-files
+                        (if (string= orig-src src)
+                            (gethash :remove cmd-info-hash)
+                          (cons src (gethash :remove cmd-info-hash))))
+                  (set-process-sentinel quickrun/process #'quickrun/sentinel)))
+        (if (not (string= orig-src src))
+            (delete-file src))))))
 
 (defvar quickrun/epilogue (lambda () (message "finish")))
 
