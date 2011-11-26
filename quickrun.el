@@ -412,7 +412,7 @@ was called."
         (setf src orig-src)
       (copy-file orig-src src))
     (let ((cmd-info-hash (quickrun/fill-templates lang-key src arg)))
-      (unless (catch 'compile-error
+      (if (catch 'compile-error
                 (if (gethash :compile cmd-info-hash)
                     (quickrun/compile-and-link (gethash :compile cmd-info-hash)
                                                (gethash :link    cmd-info-hash)))
