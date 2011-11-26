@@ -231,7 +231,7 @@ was called."
     (let ((compile-func (apply-partially 'call-process program nil buf t)))
       (when (not (= (apply compile-func args) 0))
         (pop-to-buffer buf)
-        (throw 'compile-error t)))))
+        (throw 'compile 'compile-error)))))
 
 ;;
 ;; Execute
@@ -411,19 +411,25 @@ was called."
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
-    (let ((cmd-info-hash (quickrun/fill-templates lang-key src arg)))
-      (if (catch 'compile-error
-                (if (gethash :compile cmd-info-hash)
-                    (quickrun/compile-and-link (gethash :compile cmd-info-hash)
-                                               (gethash :link    cmd-info-hash)))
-                (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
-                  (setf quickrun/remove-files
-                        (if (string= orig-src src)
-                            (gethash :remove cmd-info-hash)
-                          (cons src (gethash :remove cmd-info-hash))))
-                  (set-process-sentinel quickrun/process #'quickrun/sentinel)))
-        (if (not (string= orig-src src))
-            (delete-file src))))))
+    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src arg))
+           (compile-cmd   (gethash :compile cmd-info-hash))
+           (link-cmd      (gethash :link    cmd-info-hash))
+           (exec-cmd      (gethash :exec    cmd-info-hash))
+           (compile-state
+            (catch 'compile
+              (if compile-cmd
+                  (quickrun/compile-and-link compile-cmd link-cmd)))))
+      (cond ((eq compile-state 'compile-error)
+             (if (not (string= orig-src src))
+                 (delete-file src)))
+            (t
+             (let ((process (quickrun/run exec-cmd))
+                   (remove-files (gethash :remove cmd-info-hash)))
+               (setf quickrun/remove-files
+                     (if (string= orig-src src)
+                         remove-files
+                       (cons src remove-files)))
+               (set-process-sentinel quickrun/process #'quickrun/sentinel)))))))
 
 (defvar quickrun/epilogue (lambda () (message "finish")))
 
