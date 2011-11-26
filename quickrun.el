@@ -42,8 +42,6 @@
 (defvar quickrun/last-process-name nil)
 (make-variable-buffer-local 'quickrun/last-process-name)
 
-(defvar quickrun/temp-file nil)
-
 (defvar quickrun/buffer-name "*quickrun*")
 
 ;;
@@ -66,38 +64,38 @@ was called."
 
 (defvar quickrun/language-alist
   '(("c/gcc" . ((:command . "gcc")
-                (:compile . "%c %o -o %N %s")
-                (:exec    . "%N %a")
-                (:remove . ("%N"))))
+                (:compile . "%c %o -o %n %s")
+                (:exec    . "%n %a")
+                (:remove . ("%n"))))
 
     ("c/clang" . ((:command . "gcc")
-                  (:compile . "%c %o -o %N %s")
-                  (:exec    . "%N %a")
-                  (:remove  . ("%N"))))
+                  (:compile . "%c %o -o %n %s")
+                  (:exec    . "%n %a")
+                  (:remove  . ("%n"))))
 
     ("c/cl" . ((:command . "cl")
-               (:compile . "%c %o %s /nologo /Fo%N.obj /Fe%N.exe")
-               (:exec    . "%N %a")
-               (:remove  . "%N.obj %N.exe")))
+               (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
+               (:exec    . "%n %a")
+               (:remove  . "%n.obj %n.exe")))
 
     ("c++/g++" . ((:command . "g++")
-                  (:compile . "%c %o -o %N %s")
-                  (:exec    . "%N %a")
-                  (:remove . ("%N"))))
+                  (:compile . "%c %o -o %n %s")
+                  (:exec    . "%n %a")
+                  (:remove . ("%n"))))
 
     ("c++/clang++" . ((:command . "g++")
-                      (:compile . "%c %o -o %N %s")
-                      (:exec    . "%N %a")
-                      (:remove  . ("%N"))))
+                      (:compile . "%c %o -o %n %s")
+                      (:exec    . "%n %a")
+                      (:remove  . ("%n"))))
 
     ("c++/cl" . ((:command . "cl")
-                 (:compile . "%c %o %s /nologo /Fo%N.obj /Fe%N.exe")
-                 (:exec    . "%N %a")
-                 (:remove  . "%N.obj %N.exe")))
+                 (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
+                 (:exec    . "%n %a")
+                 (:remove  . "%n.obj %n.exe")))
 
     ("java" . ((:command . "java")
                (:compile . "javac %o %s")
-               (:exec    . "%c %n %a")
+               (:exec    . "%c %j %a")
                (:remove  . ("%n.class"))))
 
     ("perl" . ((:command . "perl")))
@@ -128,6 +126,22 @@ was called."
     ("markdown/redcarpet"   . ((:command . "redcarpet")))
 
     ("haskell" . ((:command . "runghc")))
+
+    ("go/8g"  .  ((:command . "8g")
+                  (:compile . "%c %o -o %n.8 %s")
+                  (:link    . "8l -o %e %n.8")
+                  (:exec    . "%e %a")
+                  (:remove  . ("%e" "%n.8"))))
+    ("go/6g"  .  ((:command . "6g")
+                  (:compile . "%c %o -o %n.6 %s")
+                  (:link    . "6l -o %e %n.6")
+                  (:exec    . "%e %a")
+                  (:remove  . ("%e" "%n.6"))))
+    ("go/5g"  .  ((:command . "5g")
+                  (:compile . "%c %o -o %n.5 %s")
+                  (:link    . "5l -o %e %n.5")
+                  (:exec    . "%e %a")
+                  (:remove  . ("%e" "%n.5"))))
     ))
 
 ;;
@@ -201,7 +215,12 @@ was called."
 ;; Compile
 ;;
 
-(defun quickrun/compile (cmd)
+(defun quickrun/compile-and-link (compile link)
+  (dolist (cmd (list compile link))
+    (if cmd
+        (quickrun/command-synchronous cmd))))
+
+(defun quickrun/command-synchronous (cmd)
   (let* ((cmd-list (split-string cmd))
          (program  (car cmd-list))
          (args     (cdr cmd-list))
@@ -255,7 +274,7 @@ was called."
 ;;
 ;; Composing command
 ;;
-(defvar quickrun/template-place-holders '("%c" "%o" "%s" "%a" "%n" "%N" "%e"))
+(defvar quickrun/template-place-holders '("%c" "%o" "%s" "%a" "%n" "%e" "%j"))
 
 (defun quickrun/executable-suffix (command)
   (if (string= command "java")
@@ -271,10 +290,10 @@ was called."
   `(("%c" . ,command)
     ("%o" . ,command-option)
     ("%s" . ,source)
-    ("%n" . ,(file-name-sans-extension source))
-    ("%N" . ,(expand-file-name (file-name-sans-extension source)))
-    ("%e" . ,(concat (file-name-sans-extension source)
-                     (quickrun/executable-suffix command)))
+    ("%j" . ,(file-name-sans-extension source))
+    ("%n" . ,(expand-file-name (file-name-sans-extension source)))
+    ("%e" . ,(expand-file-name (concat (file-name-sans-extension source)
+                                       (quickrun/executable-suffix command))))
     ("%a" . ,argument)))
 
 (defun quickrun/get-lang-info-param (key lang-info)
@@ -287,6 +306,7 @@ was called."
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
          (compile-tmpl (quickrun/get-lang-info-param :compile lang-info))
+         (link-tmpl    (quickrun/get-lang-info-param :link    lang-info))
          (exec-tmpl    (or (quickrun/get-lang-info-param :exec lang-info)
                            quickrun/default-exec-tmpl))
          (remove-tmpl  (quickrun/get-lang-info-param :remove  lang-info))
@@ -303,6 +323,9 @@ was called."
     (if compile-tmpl
         (puthash :compile
                  (quickrun/fill-template compile-tmpl tmpl-arg) info))
+    (if link-tmpl
+        (puthash :link
+                 (quickrun/fill-template link-tmpl tmpl-arg) info))
     (if exec-tmpl
         (puthash :exec
                  (quickrun/fill-template exec-tmpl tmpl-arg) info))
@@ -318,7 +341,8 @@ was called."
         (str tmpl))
     (dolist (holder place-holders str)
       (let ((rep (cdr (assoc holder info)))
-            (case-fold-search nil))
+            (case-fold-search nil)
+            (case-replace nil))
         (setf str (replace-regexp-in-string holder rep str nil))))))
 
 ;;
@@ -347,7 +371,8 @@ was called."
         (scheme-candidates     '("gosh" "mzscheme"))
         (markdown-candidates   '("Markdown.pl" "krandown"
                                  "bluecloth" "redcarpet" "pandoc"))
-        (clojure-candidates    '("jark" "clj")))
+        (clojure-candidates    '("jark" "clj"))
+        (go-candidates         '("8g" "6g" "5g")))
    (progn
      (quickrun/set-lang-key "c" (if (quickrun/windows-p)
                                     (append "cl" c-candidates)
@@ -358,7 +383,8 @@ was called."
      (quickrun/set-lang-key "javascript" javascript-candidates)
      (quickrun/set-lang-key "scheme" scheme-candidates)
      (quickrun/set-lang-key "markdown" markdown-candidates)
-     (quickrun/set-lang-key "clojure" clojure-candidates))))
+     (quickrun/set-lang-key "clojure" clojure-candidates)
+     (quickrun/set-lang-key "go" go-candidates))))
 
 (quickrun/init-lang-key)
 
@@ -380,7 +406,8 @@ was called."
     (let ((cmd-info-hash (quickrun/fill-templates lang-key src)))
       (catch 'compile-error
         (if (gethash :compile cmd-info-hash)
-            (quickrun/compile (gethash :compile cmd-info-hash)))
+            (quickrun/compile-and-link (gethash :compile cmd-info-hash)
+                                       (gethash :link    cmd-info-hash)))
         (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
           (setf quickrun/remove-files
                 (if (string= lang "java")
@@ -400,6 +427,7 @@ was called."
           (if (file-exists-p file)
               (delete-file file)))
         (pop-to-buffer (process-buffer process))))
-     (t nil))))
+     (t nil))
+    (delete-process process)))
 
 (provide 'quickrun)
