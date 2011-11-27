@@ -39,9 +39,6 @@
 (defvar quickrun/process nil)
 (make-variable-buffer-local 'quickrun/process)
 
-(defvar quickrun/last-process-name nil)
-(make-variable-buffer-local 'quickrun/last-process-name)
-
 (defvar quickrun/buffer-name "*quickrun*")
 
 ;;
@@ -93,6 +90,11 @@ was called."
                  (:exec    . "%n %a")
                  (:remove  . "%n.obj %n.exe")))
 
+    ("d" . ((:command . "dmd")
+            (:compile . "%c %o %s")
+            (:exec    . "%n %a")
+            (:remove  . ("%n" "%n.o"))))
+
     ("java" . ((:command . "java")
                (:compile . "javac %o %s")
                (:exec    . "%c %j %a")
@@ -116,6 +118,8 @@ was called."
     ("javascript/cscript" . ((:command . "cscript")
                              (:exec . "%c //e:jscript %o %s %a")
                              (:cmdopt . "//Nologo")))
+
+    ("coffee" . ((:command . "coffee")))
 
     ("markdown/Markdown.pl" . ((:command . "Markdown.pl")))
     ("markdown/bluecloth"   . ((:command . "bluecloth")
@@ -142,6 +146,8 @@ was called."
                   (:link    . "5l -o %e %n.5")
                   (:exec    . "%e %a")
                   (:remove  . ("%e" "%n.5"))))
+
+    ("scala" . ((:command . "scala")))
     ))
 
 ;;
@@ -170,7 +176,10 @@ was called."
     ('go-mode "go")
     ('haskell-mode "haskell")
     ('java-mode "java")
+    ('d-mode "d")
     ('markdown-mode "markdown")
+    ('coffee-mode "coffee")
+    ('scala-mode "scala")
     ('shell-script-mode "shellscript")
     (t (error (format "cannot decide file type by mode[%s]" mode)))))
 
@@ -190,7 +199,10 @@ was called."
     ("erl"  . "erl")
     ("go"   . "go")
     ("hs"   . "haskell")
+    ("d"    . "d")
     ("java" . "java")
+    ("scala" . "scala")
+    ("coffee" . "coffee")
     ("md"   . "markdown") (".markdown" . "markdown")
     ("sh"   . "shellscript")))
 
@@ -236,6 +248,7 @@ was called."
 ;;
 ;; Execute
 ;;
+(defvar quickrun/timeout-timer nil)
 
 (defun quickrun/run (cmd)
   (let* ((buf (get-buffer-create quickrun/buffer-name))
@@ -247,9 +260,9 @@ was called."
     (with-current-buffer buf
       (erase-buffer)
       (goto-char (point-min)))
-    (setf quickrun/last-process-name process-name
-          quickrun/process (apply run-func args))
-    (run-at-time quickrun/timeout nil #'quickrun/kill-process)
+    (setf quickrun/process (apply run-func args))
+    (setf quickrun/timeout-timer
+          (run-at-time quickrun/timeout nil #'quickrun/kill-process))
     quickrun/process))
 
 (defun quickrun/sentinel (process state)
@@ -267,8 +280,9 @@ was called."
     (let ((buf (get-buffer-create quickrun/buffer-name)))
       (with-current-buffer buf
         (erase-buffer)
-        (insert (message "Time out %s(over %d second)"
-                         quickrun/last-process-name quickrun/timeout)))
+        (insert (message "Time out(running over %d second)"
+                         quickrun/timeout)))
+      (quickrun/remove-temp-files)
       (pop-to-buffer buf))))
 
 ;;
@@ -407,7 +421,7 @@ was called."
          (lang (quickrun/decide-file-type))
          (lang-key (or (gethash lang quickrun/lang-key) lang))
          (extension (quickrun/extension-from-lang lang))
-         (src (concat (make-temp-name "qr-") "." extension)))
+         (src (concat (make-temp-name "qr_") "." extension)))
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
@@ -431,19 +445,21 @@ was called."
                        (cons src remove-files)))
                (set-process-sentinel quickrun/process #'quickrun/sentinel)))))))
 
-(defvar quickrun/epilogue (lambda () (message "finish")))
+(defun quickrun/remove-temp-files ()
+  (dolist (file quickrun/remove-files)
+    (if (file-exists-p file)
+        (delete-file file))))
 
 (defun quickrun/sentinel (process state)
   (let ((status (process-status process)))
     (cond
      ((eq status 'exit)
       (progn
-        (funcall quickrun/epilogue)
-        (dolist (file quickrun/remove-files)
-          (if (file-exists-p file)
-              (delete-file file)))
+        (message "Finish [%s]" (process-command process))
+        (quickrun/remove-temp-files)
         (pop-to-buffer (process-buffer process))))
      (t nil))
-    (delete-process process)))
+    (delete-process process)
+    (cancel-timer quickrun/timeout-timer)))
 
 (provide 'quickrun)
