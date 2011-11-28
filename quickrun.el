@@ -408,7 +408,7 @@ was called."
 
 (defun quickrun-with-arg (arg)
   (interactive
-   (list (read-string "quickrun argument> ")))
+   (list (read-string "QuickRun Arg: ")))
   (quickrun-common arg))
 
 (defvar quickrun/remove-files nil)
