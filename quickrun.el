@@ -455,7 +455,9 @@ was called."
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
     (if (file-exists-p file)
-        (delete-file file))))
+        (cond
+         ((file-directory-p file) (delete-directory file t))
+         (t (delete-file file))))))
 
 (defun quickrun/sentinel (process state)
   (let ((status (process-status process)))
