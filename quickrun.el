@@ -110,6 +110,8 @@ was called."
     ("lisp" . ((:command . "clisp")))
     ("scheme/gosh" . ((:command . "gosh")))
 
+    ("clojure/clj-env-dir" . ((:command . "clj-env-dir")))
+
     ("javascript/node" . ((:command . "node")))
     ("javascript/d8" . ((:command . "d8")))
     ("javascript/js" . ((:command . "js")))
@@ -382,7 +384,7 @@ was called."
         (scheme-candidates     '("gosh" "mzscheme"))
         (markdown-candidates   '("Markdown.pl" "krandown"
                                  "bluecloth" "redcarpet" "pandoc"))
-        (clojure-candidates    '("jark" "clj"))
+        (clojure-candidates    '("jark" "clj-env-dir"))
         (go-candidates         '("8g" "6g" "5g")))
    (progn
      (quickrun/set-lang-key "c" (if (quickrun/windows-p)
