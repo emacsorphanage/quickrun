@@ -157,6 +157,8 @@ was called."
     ("scala" . ((:command . "scala")))
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")))
+
+    ("shellscript" . ((:command . "sh")))
     ))
 
 ;;
@@ -190,7 +192,7 @@ was called."
     ('coffee-mode "coffee")
     ('scala-mode "scala")
     ('sass-mode "sass")
-    ('shell-script-mode "shellscript")
+    ('sh-mode "shellscript")
     (t (error (format "cannot decide file type by mode[%s]" mode)))))
 
 (defvar quickrun/extension-alist
