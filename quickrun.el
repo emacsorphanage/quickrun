@@ -324,12 +324,11 @@ was called."
 
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
-         (remove-tmpl  (quickrun/get-lang-info-param :remove  lang-info))
-         (cmd          (quickrun/get-lang-info-param :command lang-info))
-         (cmd-opt      (or (quickrun/get-lang-info-param :cmdopt lang-info) ""))
-         (arg          (or argument
-                           (quickrun/get-lang-info-param :argument lang-info)
-                           ""))
+         (cmd       (quickrun/get-lang-info-param :command lang-info))
+         (cmd-opt   (or (quickrun/get-lang-info-param :cmdopt lang-info) ""))
+         (arg       (or argument
+                        (quickrun/get-lang-info-param :argument lang-info)
+                        ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
                                                :command-option cmd-opt
                                                :source src
@@ -341,11 +340,11 @@ was called."
                            (cdr (assoc key quickrun/default-tmpl-alist))))))
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
-    (if remove-tmpl
-        (let ((lst '()))
-          (dolist (tmpl remove-tmpl)
-            (push (quickrun/fill-template tmpl tmpl-arg) lst))
-          (puthash :remove lst info)))
+    (let ((remove-tmpl  (quickrun/get-lang-info-param :remove lang-info)))
+     (if remove-tmpl
+         (puthash :remove (mapcar (lambda (x)
+                                    (quickrun/fill-template x tmpl-arg))
+                                  remove-tmpl) info)))
     info))
 
 (defun quickrun/fill-template (tmpl info)
