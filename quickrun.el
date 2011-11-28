@@ -90,6 +90,11 @@ was called."
                  (:exec    . "%n %a")
                  (:remove  . "%n.obj %n.exe")))
 
+    ("objc" . ((:command . "gcc")
+               (:compile . "%c %o -o %n %s -lobjc")
+               (:exec    . "%n %a")
+               (:remove  . ("%n"))))
+
     ("d" . ((:command . "dmd")
             (:compile . "%c %o %s")
             (:exec    . "%n %a")
