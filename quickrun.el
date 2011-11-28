@@ -155,7 +155,7 @@ was called."
 ;;
 ;; decide file type
 ;;
-(defun* quickrun/decide-file-type (&optional (filename (buffer-file-name)))
+(defun* quickrun/decide-file-type (filename)
   (if (eq major-mode 'fundamental-mode)
       (quickrun/decide-file-type-by-extension filename)
     (quickrun/decide-file-type-by-mode major-mode)))
@@ -214,12 +214,12 @@ was called."
   (let* ((extension (file-name-extension filename))
          (file-type-pair (assoc extension quickrun/extension-alist)))
     (if file-type-pair
-        (cdr file-type-pair)
-      (error "cannot decide file type by extension"))))
+        (cdr file-type-pair))))
 
 (defun quickrun/extension-from-lang (lang)
-  (car (rassoc lang quickrun/extension-alist)))
-
+  (let ((extension (rassoc lang quickrun/extension-alist)))
+    (if extension
+        (car extension))))
 
 (defun quickrun/get-lang-info (lang)
   (let ((lang-info (assoc lang quickrun/language-alist)))
@@ -409,7 +409,12 @@ was called."
 (defun quickrun-with-arg (arg)
   (interactive
    (list (read-string "QuickRun Arg: ")))
-  (quickrun-common arg))
+  (quickrun-common :argument arg))
+
+(defun quickrun-lang (lang)
+  (interactive
+   (list (completing-read "QuickRun Lang: " quickrun/language-alist)))
+  (quickrun-common :language lang))
 
 (defvar quickrun/remove-files nil)
 
@@ -422,17 +427,18 @@ was called."
           (error "Command not found: %s" cmd))
       (error "Internal error: ':command' parameter not found in %s" lang))))
 
-(defun quickrun-common (&optional arg)
+(defun* quickrun-common (&key argument language)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
-         (lang (quickrun/decide-file-type))
-         (lang-key (or (gethash lang quickrun/lang-key) lang))
-         (extension (quickrun/extension-from-lang lang))
-         (src (concat (make-temp-name "qr_") "." extension)))
+         (lang (quickrun/decide-file-type orig-src))
+         (lang-key (or language (gethash lang quickrun/lang-key) lang))
+         (src (concat (make-temp-name "qr_")
+                      "." (or (and lang (quickrun/extension-from-lang lang))
+                              (file-name-extension orig-src)))))
     (quickrun/check-has-command lang-key)
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
-    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src arg))
+    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-cmd   (gethash :compile cmd-info-hash))
            (link-cmd      (gethash :link    cmd-info-hash))
            (exec-cmd      (gethash :exec    cmd-info-hash))
