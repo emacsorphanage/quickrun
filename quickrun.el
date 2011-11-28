@@ -319,14 +319,11 @@ was called."
     (if tmpl
         (cdr tmpl))))
 
-(defvar quickrun/default-exec-tmpl "%c %o %s %a")
+(defvar quickrun/default-tmpl-alist
+  '((:exec . "%c %o %s %a")))
 
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
-         (compile-tmpl (quickrun/get-lang-info-param :compile lang-info))
-         (link-tmpl    (quickrun/get-lang-info-param :link    lang-info))
-         (exec-tmpl    (or (quickrun/get-lang-info-param :exec lang-info)
-                           quickrun/default-exec-tmpl))
          (remove-tmpl  (quickrun/get-lang-info-param :remove  lang-info))
          (cmd          (quickrun/get-lang-info-param :command lang-info))
          (cmd-opt      (or (quickrun/get-lang-info-param :cmdopt lang-info) ""))
@@ -338,15 +335,12 @@ was called."
                                                :source src
                                                :argument arg))
          (info (make-hash-table)))
-    (if compile-tmpl
-        (puthash :compile
-                 (quickrun/fill-template compile-tmpl tmpl-arg) info))
-    (if link-tmpl
-        (puthash :link
-                 (quickrun/fill-template link-tmpl tmpl-arg) info))
-    (if exec-tmpl
-        (puthash :exec
-                 (quickrun/fill-template exec-tmpl tmpl-arg) info))
+    (dolist (key `(:compile :link :exec))
+      (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
+                      (and (assoc key quickrun/default-tmpl-alist)
+                           (cdr (assoc key quickrun/default-tmpl-alist))))))
+        (if tmpl
+            (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
     (if remove-tmpl
         (let ((lst '()))
           (dolist (tmpl remove-tmpl)
