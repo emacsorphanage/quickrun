@@ -148,6 +148,8 @@ was called."
                   (:remove  . ("%e" "%n.5"))))
 
     ("scala" . ((:command . "scala")))
+    ("sass" . ((:command . "sass")
+               (:exec    . "%c %o --no-cache %s")))
     ))
 
 ;;
@@ -180,6 +182,7 @@ was called."
     ('markdown-mode "markdown")
     ('coffee-mode "coffee")
     ('scala-mode "scala")
+    ('sass-mode "sass")
     ('shell-script-mode "shellscript")
     (t (error (format "cannot decide file type by mode[%s]" mode)))))
 
@@ -203,6 +206,7 @@ was called."
     ("java" . "java")
     ("scala" . "scala")
     ("coffee" . "coffee")
+    ("sass" . "sass")
     ("md"   . "markdown") (".markdown" . "markdown")
     ("sh"   . "shellscript")))
 
@@ -465,7 +469,7 @@ was called."
     (cond
      ((eq status 'exit)
       (progn
-        (message "Finish [%s]" (process-command process))
+        (message "Finish %s" (process-command process))
         (quickrun/remove-temp-files)
         (pop-to-buffer (process-buffer process))))
      (t nil))
