@@ -416,12 +416,22 @@ was called."
 
 (defvar quickrun/remove-files nil)
 
+(defun quickrun/check-has-command (lang)
+  (let* ((lang-info (quickrun/get-lang-info lang))
+         (cmd (cdr (assoc :command lang-info))))
+    (if cmd
+        (if (executable-find cmd)
+            cmd
+          (error "Command not found: %s" cmd))
+      (error "Internal error: ':command' parameter not found in %s" lang))))
+
 (defun quickrun-common (&optional arg)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type))
          (lang-key (or (gethash lang quickrun/lang-key) lang))
          (extension (quickrun/extension-from-lang lang))
          (src (concat (make-temp-name "qr_") "." extension)))
+    (quickrun/check-has-command lang-key)
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
