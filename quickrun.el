@@ -254,10 +254,9 @@ if you set your own language configuration.
                 (t extensions))))))
 
 (defun quickrun/get-lang-info (lang)
-  (let ((lang-info (assoc lang quickrun/language-alist)))
-    (if (null lang-info)
-        (error (format "not found [%s] language information" lang))
-      lang-info)))
+  (let ((pair (assoc lang quickrun/language-alist)))
+    (or (and pair (cdr pair))
+        (error "not found [%s] language information" lang))))
 
 ;;
 ;; Compile
@@ -370,6 +369,7 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/check-has-command (cmd)
   (unless (executable-find cmd)
+    (quickrun/remove-temp-files)
     (error "Command not found: %s" cmd)))
 
 (defun quickrun/fill-templates (lang src &optional argument)
@@ -484,6 +484,11 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun/temp-name (extension)
   (concat (make-temp-name "qr_") "." extension))
 
+(defun quickrun/add-remove-files (files)
+  (if (listp files)
+      (setq quickrun/remove-files (append files quickrun/remove-files))
+    (push files quickrun/remove-files)))
+
 (defun* quickrun-common (&key argument language)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
@@ -491,9 +496,10 @@ Place holders are beginning with '%' and replaced by:
          (extension (or (and lang (quickrun/extension-from-lang lang))
                         (file-name-extension orig-src)))
          (src (quickrun/temp-name extension)))
-    (if (string= lang-key "java")
-        (setq src orig-src)
-      (copy-file orig-src src))
+    (cond ((string= lang-key "java") (setq src orig-src))
+          (t
+           (copy-file orig-src src)
+           (quickrun/add-remove-files src)))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-state
             (let ((compile-cmd (gethash :compile cmd-info-hash))
@@ -506,11 +512,8 @@ Place holders are beginning with '%' and replaced by:
                (delete-file src)))
             (t
              (let* ((exec-cmd (gethash :exec cmd-info-hash))
-                    (remove-files (gethash :remove cmd-info-hash))
                     (process (quickrun/run exec-cmd)))
-               (setq quickrun/remove-files remove-files)
-               (unless (string= orig-src src)
-                 (push src quickrun/remove-files))
+               (quickrun/add-remove-files (gethash :remove cmd-info-hash))
                (set-process-sentinel process #'quickrun/sentinel)))))))
 
 (defun quickrun/remove-temp-files ()
