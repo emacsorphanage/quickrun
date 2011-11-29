@@ -157,6 +157,12 @@ was called."
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")))
 
+    ("erlang" . ((:command . "escript")))
+    ("ocaml" . ((:command . "ocamlc")
+                (:compile . "%c %o -o %n %s")
+                (:exec    . "%n %a")
+                (:remove  . ("%n" "%n.cmi" "%n.cmo"))))
+
     ("shellscript" . ((:command . (lambda () (symbol-name sh-shell)))))
     ("awk" . ((:command . "awk")
               (:exec    . "%c %o -f %s -a")))
@@ -197,6 +203,7 @@ if you set your own language configuration.
     ((javascript-mode js-mode js2-mode) . "javascript")
     (clojure-mode . "clojure")
     (erlang-mode . "erlang")
+    ((ocaml-mode tuareg-mode) . "ocaml")
     (go-mode . "go")
     (haskell-mode . "haskell")
     (java-mode . "java")
@@ -226,6 +233,7 @@ if you set your own language configuration.
     ("js"  . "javascript")
     ("clj" . "clojure")
     ("erl" . "erlang")
+    ("ml" . "ocaml")
     ("hs"  . "haskell")
     (("md" "markdown" "mdown" "mkdn")  . "markdown")
     (("sh" "bash" "zsh")  . "shellscript"))
