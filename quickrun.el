@@ -186,41 +186,31 @@ See explanation of quickrun/template-place-holders
 if you set your own language configuration.
 ")
 
-;;
-;; decide file type
-;;
-(defun quickrun/decide-file-type (filename)
-  (if (eq major-mode 'fundamental-mode)
-      (quickrun/decide-file-type-by-extension filename)
-    (quickrun/decide-file-type-by-mode major-mode)))
-
-(defun quickrun/decide-file-type-by-mode (mode)
-  (case mode
-    ('c-mode "c")
-    ('c++-mode "c++")
-    ('objc-mode "objc")
-    ('perl-mode "perl") ('cperl-mode "perl")
-    ('ruby-mode "ruby")
-    ('python-mode "python")
-    ('php-mode    "php")
-    ('emacs-lisp-mode "emacs")
-    ('lisp-mode "lisp")
-    ('scheme-mode "scheme")
-    ('javascript-mode "javascript") ('js-mode "javascript") ('js2-mode "javascript")
-    ('clojure-mode "clojure")
-    ('erlang-mode "erlang")
-    ('go-mode "go")
-    ('haskell-mode "haskell")
-    ('java-mode "java")
-    ('d-mode "d")
-    ('markdown-mode "markdown")
-    ('coffee-mode "coffee")
-    ('scala-mode "scala")
-    ('groove-mode "groovy")
-    ('sass-mode "sass")
-    ('sh-mode "shellscript")
-    ('awk-mode "awk")
-    (t (error (format "cannot decide file type by mode[%s]" mode)))))
+(defvar quickrun/major-mode-alist
+  '((c-mode "c")
+    (c++-mode "c++")
+    (objc-mode "objc")
+    ((perl-mode cperl-mode) "perl")
+    (ruby-mode "ruby")
+    (python-mode "python")
+    (php-mode    "php")
+    (emacs-lisp-mode "emacs")
+    (lisp-mode "lisp")
+    (scheme-mode "scheme")
+    ((javascript-mode js-mode js2-mode) "javascript")
+    (clojure-mode "clojure")
+    (erlang-mode "erlang")
+    (go-mode "go")
+    (haskell-mode "haskell")
+    (java-mode "java")
+    (d-mode "d")
+    (markdown-mode "markdown")
+    (coffee-mode "coffee")
+    (scala-mode "scala")
+    (groove-mode "groovy")
+    (sass-mode "sass")
+    (sh-mode "shellscript")
+    (awk-mode "awk")))
 
 (defconst quickrun/extension-same-as-lang
   '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy" "awk")
@@ -242,19 +232,21 @@ if you set your own language configuration.
     (("md" "markdown" "mdown" "mkdn")  . "markdown")
     (("sh" "bash" "zsh")  . "shellscript")))
 
-(defun quickrun/find-extension-alist (extension)
+(defun quickrun/decide-file-type (filename)
+  (let ((extension (file-name-extension filename)))
+    (cond ((not (eq major-mode 'fundamental-mode))
+           (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode))
+          ((member extension quickrun/extension-same-as-lang) extension)
+          (t (quickrun/find-lang-from-alist quickrun/extension-alist
+                                             extension)))))
+
+(defun quickrun/find-lang-from-alist (alist param)
   (loop for pair in quickrun/extension-alist
         for lang = (car pair)
         when (if (listp lang)
-                 (member extension lang)
-               (string= extension lang))
+                 (member param lang)
+               (string= param lang))
         return (cdr pair)))
-
-(defun quickrun/decide-file-type-by-extension (filename)
-  (let ((extension (file-name-extension filename)))
-    (if (member extension quickrun/extension-same-as-lang)
-        extension
-      (quickrun/find-extension-alist extension))))
 
 (defun quickrun/extension-from-lang (lang)
   (let ((pair (rassoc lang quickrun/extension-alist)))
@@ -496,7 +488,7 @@ Place holders are beginning with '%' and replaced by:
          (src (concat (make-temp-name "qr_")
                       "." (or (and lang (quickrun/extension-from-lang lang))
                               (file-name-extension orig-src)))))
-    (if (string= lang "java")
+    (if (string= lang-key "java")
         (setf src orig-src)
       (copy-file orig-src src))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
@@ -531,7 +523,6 @@ Place holders are beginning with '%' and replaced by:
     (cond
      ((eq status 'exit)
       (progn
-        (message "Finish %s" (process-command process))
         (quickrun/remove-temp-files)
         (pop-to-buffer (process-buffer process))))
      (t nil))
