@@ -355,14 +355,13 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/get-lang-info-param (key lang-info)
   (let ((pair (assoc key lang-info)))
-    (if pair
-        (let ((tmpl (cdr pair)))
-          (cond ((functionp tmpl)
-                 (let ((ret (funcall tmpl)))
-                   (if (stringp ret)
-                       ret
-                     (error "%s's param should return string type" key))))
-                (t tmpl))))))
+    (when pair
+      (let ((tmpl (cdr pair)))
+        (cond ((functionp tmpl)
+               (let ((ret (funcall tmpl)))
+                 (or (and (stringp ret) ret)
+                     (error "%s's param should return string" key))))
+              (t tmpl))))))
 
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
