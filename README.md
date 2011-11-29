@@ -15,15 +15,20 @@ Installation
 ------------
 
 You have installed auto-install
-> (install-elisp "https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el")
+<pre>
+  (install-elisp "https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el")
+</pre>
 
 You have not installed auto-install
-> $ cd load-path-dir
->
-> $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
+<pre>
+  $ cd load-path-dir
+  $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
+</pre>
 
 After Installation
-> (require 'quickrun)
+<pre>
+  (require 'quickrun)
+</pre>
 
 
 Basic Usage
