@@ -192,44 +192,51 @@ was called."
     ('markdown-mode "markdown")
     ('coffee-mode "coffee")
     ('scala-mode "scala")
+    ('groove-mode "groovy")
     ('sass-mode "sass")
     ('sh-mode "shellscript")
     (t (error (format "cannot decide file type by mode[%s]" mode)))))
 
+(defconst quickrun/extension-same-as-lang
+  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy")
+  "Extension of file is same as language key")
+
 (defvar quickrun/extension-alist
-  '(("c"    . "c")
-    ("cpp"  . "c++") ("C"  . "c++")
+  '((("cpp" "C") . "c++")
     ("m"    . "objc")
-    ("pl"   . "perl")
-    ("rb"   . "ruby")
-    ("py"   . "python")
-    ("php"  . "php")
-    ("el"   . "emacs") ("elisp" . "emacs")
-    ("lisp" . "lisp") ("lsp" . "lisp")
-    ("scm"  . "scheme")
-    ("js"   . "javascript")
-    ("clj"  . "clojure")
-    ("erl"  . "erl")
-    ("go"   . "go")
-    ("hs"   . "haskell")
-    ("d"    . "d")
-    ("java" . "java")
-    ("scala" . "scala")
-    ("coffee" . "coffee")
-    ("sass" . "sass")
-    ("md"   . "markdown") (".markdown" . "markdown")
-    ("sh"   . "shellscript")))
+    (("pl" "pm")   . "perl")
+    ("rb" . "ruby")
+    ("py" . "python")
+    (("el" "elisp") . "emacs")
+    (("lisp" "lsp") . "lisp")
+    ("scm" . "scheme")
+    ("js"  . "javascript")
+    ("clj" . "clojure")
+    ("erl" . "erlang")
+    ("hs"  . "haskell")
+    (("md" "markdown" "mdown" "mkdn")  . "markdown")
+    ("sh"  . "shellscript")))
+
+(defun quickrun/find-extension-alist (extension)
+  (loop for pair in quickrun/extension-alist
+        for lang = (car pair)
+        when (if (listp lang)
+                 (member extension lang)
+               (string= extension lang))
+        return (cdr pair)))
 
 (defun quickrun/decide-file-type-by-extension (filename)
-  (let* ((extension (file-name-extension filename))
-         (file-type-pair (assoc extension quickrun/extension-alist)))
-    (if file-type-pair
-        (cdr file-type-pair))))
+  (let ((extension (file-name-extension filename)))
+    (if (member extension quickrun/extension-same-as-lang)
+        extension
+      (quickrun/find-extension-alist extension))))
 
 (defun quickrun/extension-from-lang (lang)
-  (let ((extension (rassoc lang quickrun/extension-alist)))
-    (if extension
-        (car extension))))
+  (let ((pair (rassoc lang quickrun/extension-alist)))
+    (if pair
+        (let ((extensions (car pair)))
+          (cond ((listp extensions) (car extensions))
+                (t extensions))))))
 
 (defun quickrun/get-lang-info (lang)
   (let ((lang-info (assoc lang quickrun/language-alist)))
@@ -329,7 +336,7 @@ was called."
     (if tmpl
         (cdr tmpl))))
 
-(defvar quickrun/default-tmpl-alist
+(defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
 
 (defun quickrun/fill-templates (lang src &optional argument)
