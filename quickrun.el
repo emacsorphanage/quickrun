@@ -36,10 +36,6 @@
 (defvar quickrun/timeout-seconds 10
   "Timeout seconds for running too long process")
 
-(defvar quickrun/process nil
-  "Store process object for killing it when it run too long time")
-(make-variable-buffer-local 'quickrun/process)
-
 (defconst quickrun/buffer-name "*quickrun*")
 
 ;;
@@ -187,30 +183,30 @@ if you set your own language configuration.
 ")
 
 (defvar quickrun/major-mode-alist
-  '((c-mode "c")
-    (c++-mode "c++")
-    (objc-mode "objc")
-    ((perl-mode cperl-mode) "perl")
-    (ruby-mode "ruby")
-    (python-mode "python")
-    (php-mode    "php")
-    (emacs-lisp-mode "emacs")
-    (lisp-mode "lisp")
-    (scheme-mode "scheme")
-    ((javascript-mode js-mode js2-mode) "javascript")
-    (clojure-mode "clojure")
-    (erlang-mode "erlang")
-    (go-mode "go")
-    (haskell-mode "haskell")
-    (java-mode "java")
-    (d-mode "d")
-    (markdown-mode "markdown")
-    (coffee-mode "coffee")
-    (scala-mode "scala")
-    (groove-mode "groovy")
-    (sass-mode "sass")
-    (sh-mode "shellscript")
-    (awk-mode "awk")))
+  '((c-mode . "c")
+    (c++-mode . "c++")
+    (objc-mode . "objc")
+    ((perl-mode cperl-mode) . "perl")
+    (ruby-mode . "ruby")
+    (python-mode . "python")
+    (php-mode . "php")
+    (emacs-lisp-mode . "emacs")
+    (lisp-mode . "lisp")
+    (scheme-mode . "scheme")
+    ((javascript-mode js-mode js2-mode) . "javascript")
+    (clojure-mode . "clojure")
+    (erlang-mode . "erlang")
+    (go-mode . "go")
+    (haskell-mode . "haskell")
+    (java-mode . "java")
+    (d-mode . "d")
+    (markdown-mode . "markdown")
+    (coffee-mode . "coffee")
+    (scala-mode . "scala")
+    (groove-mode . "groovy")
+    (sass-mode . "sass")
+    (sh-mode . "shellscript")
+    (awk-mode . "awk")))
 
 (defconst quickrun/extension-same-as-lang
   '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy" "awk")
@@ -241,7 +237,7 @@ if you set your own language configuration.
                                              extension)))))
 
 (defun quickrun/find-lang-from-alist (alist param)
-  (loop for pair in quickrun/extension-alist
+  (loop for pair in alist
         for lang = (car pair)
         when (if (listp lang)
                  (member param lang)
@@ -300,29 +296,21 @@ if you set your own language configuration.
     (with-current-buffer buf
       (erase-buffer)
       (goto-char (point-min)))
-    (setf quickrun/process (apply run-func args))
-    (if quickrun/timeout-seconds
-        (setf quickrun/timeout-timer (run-at-time quickrun/timeout-seconds nil
-                                                  #'quickrun/kill-process)))
-    quickrun/process))
+    (lexical-let ((process (apply run-func args)))
+      (if quickrun/timeout-seconds
+          (setf quickrun/timeout-timer
+                (run-at-time quickrun/timeout-seconds nil
+                             #'quickrun/kill-process process)))
+      process)))
 
-(defun quickrun/sentinel (process state)
-  (let ((status (process-status process)))
-    (cond
-     ((eq status 'exit)
-      (progn
-        (funcall quickrun/epilogue)
-        (pop-to-buffer (process-buffer process))))
-     (t nil))))
-
-(defun quickrun/kill-process ()
-  (when (eq (process-status quickrun/process) 'run)
-    (kill-process quickrun/process)
+(defun quickrun/kill-process (process)
+  (when (eq (process-status process) 'run)
+    (kill-process process)
     (let ((buf (get-buffer-create quickrun/buffer-name)))
       (with-current-buffer buf
         (erase-buffer)
         (insert (message "Time out(running over %d second)"
-                         quickrun/timeout)))
+                         quickrun/timeout-seconds)))
       (quickrun/remove-temp-files)
       (pop-to-buffer buf))))
 
@@ -492,31 +480,28 @@ Place holders are beginning with '%' and replaced by:
         (setf src orig-src)
       (copy-file orig-src src))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
-           (compile-cmd   (gethash :compile cmd-info-hash))
-           (link-cmd      (gethash :link    cmd-info-hash))
-           (exec-cmd      (gethash :exec    cmd-info-hash))
            (compile-state
-            (catch 'compile
-              (if compile-cmd
-                  (quickrun/compile-and-link compile-cmd link-cmd)))))
+            (let ((cmpile-cmd (gethash :compile cmd-info-hash))
+                  (link-cmd   (gethash :link cmd-info-hash)))
+              (catch 'compile
+                (and compile-cmd
+                     (quickrun/compile-and-link compile-cmd link-cmd))))))
       (cond ((eq compile-state 'compile-error)
-             (if (not (string= orig-src src))
-                 (delete-file src)))
+             (and (not (string= orig-src src)) (delete-file src)))
             (t
-             (let ((process (quickrun/run exec-cmd))
-                   (remove-files (gethash :remove cmd-info-hash)))
-               (setf quickrun/remove-files
-                     (if (string= orig-src src)
-                         remove-files
-                       (cons src remove-files)))
-               (set-process-sentinel quickrun/process #'quickrun/sentinel)))))))
+             (let* ((exec-cmd (gethash :exec cmd-info-hash))
+                    (remove-files (gethash :remove cmd-info-hash))
+                    (process (quickrun/run exec-cmd)))
+               (setq quickrun/remove-files remove-files)
+               (unless (string= orig-src src)
+                 (push src quickrun/remove-files))
+               (set-process-sentinel process #'quickrun/sentinel)))))))
 
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
-    (if (file-exists-p file)
-        (cond
-         ((file-directory-p file) (delete-directory file t))
-         (t (delete-file file))))))
+    (cond
+     ((file-directory-p file) (delete-directory file t))
+     ((file-exists-p file) (delete-file file)))))
 
 (defun quickrun/sentinel (process state)
   (let ((status (process-status process)))
