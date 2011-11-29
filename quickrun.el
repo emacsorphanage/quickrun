@@ -428,7 +428,7 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/init-lang-key ()
   (let ((c-candidates          '("gcc" "clang"))
-        (c++-candidates        '("g++" "clang++"))
+        (c++-candidates        '("g++" "clang"))
         (javascript-candidates '("node" "d8" "js"
                                  "phantomjs" "jrunscript" "cscript"))
         (scheme-candidates     '("gosh"))
