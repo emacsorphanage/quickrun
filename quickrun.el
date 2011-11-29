@@ -159,7 +159,7 @@ was called."
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")))
 
-    ("shellscript" . ((:command . "sh")))
+    ("shellscript" . ((:command . (lambda () (symbol-name sh-shell)))))
     ))
 
 ;;
@@ -215,7 +215,7 @@ was called."
     ("erl" . "erlang")
     ("hs"  . "haskell")
     (("md" "markdown" "mdown" "mkdn")  . "markdown")
-    ("sh"  . "shellscript")))
+    (("sh" "bash" "zsh")  . "shellscript")))
 
 (defun quickrun/find-extension-alist (extension)
   (loop for pair in quickrun/extension-alist
@@ -332,16 +332,27 @@ was called."
     ("%a" . ,argument)))
 
 (defun quickrun/get-lang-info-param (key lang-info)
-  (let ((tmpl (assoc key lang-info)))
-    (if tmpl
-        (cdr tmpl))))
+  (let ((pair (assoc key lang-info)))
+    (if pair
+        (let ((tmpl (cdr pair)))
+          (cond ((functionp tmpl)
+                 (let ((ret (funcall tmpl)))
+                   (if (stringp ret)
+                       ret
+                     (error "%s's param should return string type" key))))
+                (t tmpl))))))
 
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
 
+(defun quickrun/check-has-command (cmd)
+  (unless (executable-find cmd)
+    (error "Command not found: %s" cmd)))
+
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
-         (cmd       (quickrun/get-lang-info-param :command lang-info))
+         (cmd       (or (quickrun/get-lang-info-param :command lang-info)
+                        (error "not specified command parameter")))
          (cmd-opt   (or (quickrun/get-lang-info-param :cmdopt lang-info) ""))
          (arg       (or argument
                         (quickrun/get-lang-info-param :argument lang-info)
@@ -351,6 +362,7 @@ was called."
                                                :source src
                                                :argument arg))
          (info (make-hash-table)))
+    (quickrun/check-has-command cmd)
     (dolist (key `(:compile :link :exec))
       (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
                       (and (assoc key quickrun/default-tmpl-alist)
@@ -435,15 +447,6 @@ was called."
 
 (defvar quickrun/remove-files nil)
 
-(defun quickrun/check-has-command (lang)
-  (let* ((lang-info (quickrun/get-lang-info lang))
-         (cmd (cdr (assoc :command lang-info))))
-    (if cmd
-        (if (executable-find cmd)
-            cmd
-          (error "Command not found: %s" cmd))
-      (error "Internal error: ':command' parameter not found in %s" lang))))
-
 (defun* quickrun-common (&key argument language)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
@@ -451,7 +454,6 @@ was called."
          (src (concat (make-temp-name "qr_")
                       "." (or (and lang (quickrun/extension-from-lang lang))
                               (file-name-extension orig-src)))))
-    (quickrun/check-has-command lang-key)
     (if (string= lang "java")
         (setf src orig-src)
       (copy-file orig-src src))
