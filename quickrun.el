@@ -167,7 +167,7 @@ was called."
 ;;
 ;; decide file type
 ;;
-(defun* quickrun/decide-file-type (filename)
+(defun quickrun/decide-file-type (filename)
   (if (eq major-mode 'fundamental-mode)
       (quickrun/decide-file-type-by-extension filename)
     (quickrun/decide-file-type-by-mode major-mode)))
