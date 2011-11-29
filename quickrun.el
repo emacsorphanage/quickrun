@@ -284,6 +284,7 @@ if you set your own language configuration.
 ;; Execute
 ;;
 (defvar quickrun/timeout-timer nil)
+(make-variable-buffer-local 'quickrun-timeout-timer)
 
 (defun quickrun/run (cmd)
   (let* ((buf (get-buffer-create quickrun/buffer-name))
@@ -298,7 +299,7 @@ if you set your own language configuration.
       (goto-char (point-min)))
     (lexical-let ((process (apply run-func args)))
       (if quickrun/timeout-seconds
-          (setf quickrun/timeout-timer
+          (setq quickrun/timeout-timer
                 (run-at-time quickrun/timeout-seconds nil
                              #'quickrun/kill-process process)))
       process)))
@@ -406,7 +407,7 @@ Place holders are beginning with '%' and replaced by:
       (let ((rep (cdr (assoc holder info)))
             (case-fold-search nil)
             (case-replace nil))
-        (setf str (replace-regexp-in-string holder rep str nil))))))
+        (setq str (replace-regexp-in-string holder rep str nil))))))
 
 ;;
 ;; initialize
@@ -470,25 +471,33 @@ Place holders are beginning with '%' and replaced by:
 
 (defvar quickrun/remove-files nil)
 
+(defun quickrun/get-lang-key (lang)
+  (or (gethash lang quickrun/lang-key) lang
+      (error "Can't found language setting")))
+
+(defun quickrun/temp-name (extension)
+  (concat (make-temp-name "qr_") "." extension))
+
 (defun* quickrun-common (&key argument language)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
-         (lang-key (or language (gethash lang quickrun/lang-key) lang))
-         (src (concat (make-temp-name "qr_")
-                      "." (or (and lang (quickrun/extension-from-lang lang))
-                              (file-name-extension orig-src)))))
+         (lang-key (or language (quickrun/get-lang-key lang)))
+         (extension (or (and lang (quickrun/extension-from-lang lang))
+                        (file-name-extension orig-src)))
+         (src (quickrun/temp-name extension)))
     (if (string= lang-key "java")
-        (setf src orig-src)
+        (setq src orig-src)
       (copy-file orig-src src))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-state
-            (let ((cmpile-cmd (gethash :compile cmd-info-hash))
-                  (link-cmd   (gethash :link cmd-info-hash)))
+            (let ((compile-cmd (gethash :compile cmd-info-hash))
+                  (link-cmd    (gethash :link    cmd-info-hash)))
               (catch 'compile
                 (and compile-cmd
                      (quickrun/compile-and-link compile-cmd link-cmd))))))
       (cond ((eq compile-state 'compile-error)
-             (and (not (string= orig-src src)) (delete-file src)))
+             (unless (string= orig-src src)
+               (delete-file src)))
             (t
              (let* ((exec-cmd (gethash :exec cmd-info-hash))
                     (remove-files (gethash :remove cmd-info-hash))
