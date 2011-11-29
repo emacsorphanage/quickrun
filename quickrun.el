@@ -33,13 +33,14 @@
 (eval-when-compile
   (require 'cl))
 
-(defvar quickrun/timeout 10
+(defvar quickrun/timeout-seconds 10
   "Timeout seconds for running too long process")
 
-(defvar quickrun/process nil)
+(defvar quickrun/process nil
+  "Store process object for killing it when it run too long time")
 (make-variable-buffer-local 'quickrun/process)
 
-(defvar quickrun/buffer-name "*quickrun*")
+(defconst quickrun/buffer-name "*quickrun*")
 
 ;;
 ;; Compat
@@ -162,7 +163,28 @@ was called."
     ("shellscript" . ((:command . (lambda () (symbol-name sh-shell)))))
     ("awk" . ((:command . "awk")
               (:exec    . "%c %o -f %s -a")))
-    ))
+    )
+"List of each programming languages information.
+Parameter form is (\"language\" . parameter-alist). parameter-alist has
+5 keys and those values , :command, :compile, :link, :exec, :remove.
+:command pair is mandatory, other pairs are optional. Associated value
+should be string or a function which returns a string object.
+
+Assosiated values are
+:command = Program name which is used compiled or executed source code.
+:compile = Compile command template
+:link    = Link command template
+:exec    = Exec command template. If you omit this parameter, quickrun
+           use default parameter \"%c %o %s %a\".
+:remove  = Remove files or directories templates.
+           Compiler or executor generates temporary files,
+           you should specified this parameter.
+           If value is List, quickrun removes each element.
+Every pair should be dot-pair.
+
+See explanation of quickrun/template-place-holders
+if you set your own language configuration.
+")
 
 ;;
 ;; decide file type
@@ -287,8 +309,9 @@ was called."
       (erase-buffer)
       (goto-char (point-min)))
     (setf quickrun/process (apply run-func args))
-    (setf quickrun/timeout-timer
-          (run-at-time quickrun/timeout nil #'quickrun/kill-process))
+    (if quickrun/timeout-seconds
+        (setf quickrun/timeout-timer (run-at-time quickrun/timeout-seconds nil
+                                                  #'quickrun/kill-process)))
     quickrun/process))
 
 (defun quickrun/sentinel (process state)
@@ -427,8 +450,8 @@ Place holders are beginning with '%' and replaced by:
         (c++-candidates        '("g++" "clang++"))
         (javascript-candidates '("node" "d8" "js"
                                  "phantomjs" "jrunscript" "cscript"))
-        (scheme-candidates     '("gosh" "mzscheme"))
-        (markdown-candidates   '("Markdown.pl" "krandown"
+        (scheme-candidates     '("gosh"))
+        (markdown-candidates   '("Markdown.pl" "kramdown"
                                  "bluecloth" "redcarpet" "pandoc"))
         (clojure-candidates    '("jark" "clj-env-dir"))
         (go-candidates         '("8g" "6g" "5g")))
