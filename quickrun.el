@@ -333,11 +333,9 @@ Place holders are beginning with '%' and replaced by:
 ")
 
 (defun quickrun/executable-suffix (command)
-  (if (string= command "java")
-      ".class"
-    (cond
-     ((quickrun/windows-p) ".exe")
-     (t ".out"))))
+  (cond ((string= command "java") ".class")
+        ((quickrun/windows-p) ".exe")
+        (t ".out")))
 
 (defun* quickrun/place-holder-info (&key command
                                          command-option
