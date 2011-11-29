@@ -102,7 +102,7 @@ was called."
 
     ("java" . ((:command . "java")
                (:compile . "javac %o %s")
-               (:exec    . "%c %j %a")
+               (:exec    . "%c %N %a")
                (:remove  . ("%n.class"))))
 
     ("perl" . ((:command . "perl")))
@@ -253,8 +253,9 @@ was called."
 
 (defun quickrun/compile-and-link (compile link)
   (dolist (cmd (list compile link))
-    (if cmd
-        (quickrun/command-synchronous cmd))))
+    (when cmd
+      (message "exec: %s" cmd)
+      (quickrun/command-synchronous cmd))))
 
 (defun quickrun/command-synchronous (cmd)
   (let* ((cmd-list (split-string cmd))
@@ -281,6 +282,7 @@ was called."
          (program (car cmd-list))
          (args (cdr cmd-list))
          (run-func (apply-partially 'start-process process-name buf program)))
+    (message "exec: %s" cmd)
     (with-current-buffer buf
       (erase-buffer)
       (goto-char (point-min)))
@@ -312,7 +314,19 @@ was called."
 ;;
 ;; Composing command
 ;;
-(defvar quickrun/template-place-holders '("%c" "%o" "%s" "%a" "%n" "%e" "%j"))
+(defconst quickrun/template-place-holders
+  '("%c" "%o" "%s" "%a" "%n" "%N" "%e" "%E")
+  "A list of place holders of each language parameter.
+Place holders are beginning with '%' and replaced by:
+%c: :command parameter
+%o: command options
+%s: source code
+%a: program argument
+%n: abosolute path of source code without extension
+%N: source code name without extension
+%e: abosolute path of source code with exeutable extension(.exe, .out, .class)
+%E: source code name with executable extension
+")
 
 (defun quickrun/executable-suffix (command)
   (if (string= command "java")
@@ -328,10 +342,12 @@ was called."
   `(("%c" . ,command)
     ("%o" . ,command-option)
     ("%s" . ,source)
-    ("%j" . ,(file-name-sans-extension source))
+    ("%N" . ,(file-name-sans-extension source))
     ("%n" . ,(expand-file-name (file-name-sans-extension source)))
     ("%e" . ,(expand-file-name (concat (file-name-sans-extension source)
                                        (quickrun/executable-suffix command))))
+    ("%E" . ,(concat (file-name-sans-extension source)
+                     (quickrun/executable-suffix command)))
     ("%a" . ,argument)))
 
 (defun quickrun/get-lang-info-param (key lang-info)
