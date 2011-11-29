@@ -62,7 +62,7 @@ was called."
                 (:exec    . "%n %a")
                 (:remove . ("%n"))))
 
-    ("c/clang" . ((:command . "gcc")
+    ("c/clang" . ((:command . "clang")
                   (:compile . "%c %o -o %n %s")
                   (:exec    . "%n %a")
                   (:remove  . ("%n"))))
@@ -77,10 +77,10 @@ was called."
                   (:exec    . "%n %a")
                   (:remove . ("%n"))))
 
-    ("c++/clang++" . ((:command . "g++")
-                      (:compile . "%c %o -o %n %s")
-                      (:exec    . "%n %a")
-                      (:remove  . ("%n"))))
+    ("c++/clang" . ((:command . "clang")
+                    (:compile . "%c %o -o %n %s")
+                    (:exec    . "%n %a")
+                    (:remove  . ("%n"))))
 
     ("c++/cl" . ((:command . "cl")
                  (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
