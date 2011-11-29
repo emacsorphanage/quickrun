@@ -60,7 +60,7 @@ Support Programming Languages
 * Scheme(require Gauche)
 * Common Lisp(require clisp)
 * Clojure(require jark or clj-env-dir)
-* Javascript(require node.js or v8 or js or jrunscript or script or script)
+* Javascript(require node.js or v8 or js or jrunscript or cscript)
 * Coffee Script
 * Markdown(require Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
 * Haskell(require runghc)

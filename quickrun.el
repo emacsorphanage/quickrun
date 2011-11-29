@@ -116,7 +116,7 @@ was called."
     ("clojure/clj-env-dir" . ((:command . "clj-env-dir")))
 
     ("javascript/node" . ((:command . "node")))
-    ("javascript/d8" . ((:command . "d8")))
+    ("javascript/v8" . ((:command . "v8")))
     ("javascript/js" . ((:command . "js")))
     ("javascript/jrunscript" . ((:command . "jrunscript")))
     ("javascript/phantomjs" . ((:command . "phantomjs")))
@@ -444,8 +444,8 @@ Place holders are beginning with '%' and replaced by:
   "Decide command for programing language which has multiple candidates"
   (let ((c-candidates          '("gcc" "clang"))
         (c++-candidates        '("g++" "clang"))
-        (javascript-candidates '("node" "d8" "js"
-                                 "phantomjs" "jrunscript" "cscript"))
+        (javascript-candidates '("node" "v8" "js"
+                                 "jrunscript" "cscript"))
         (scheme-candidates     '("gosh"))
         (markdown-candidates   '("Markdown.pl" "kramdown"
                                  "bluecloth" "redcarpet" "pandoc"))
