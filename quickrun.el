@@ -160,6 +160,8 @@ was called."
                (:exec    . "%c %o --no-cache %s")))
 
     ("shellscript" . ((:command . (lambda () (symbol-name sh-shell)))))
+    ("awk" . ((:command . "awk")
+              (:exec    . "%c %o -f %s -a")))
     ))
 
 ;;
@@ -195,10 +197,11 @@ was called."
     ('groove-mode "groovy")
     ('sass-mode "sass")
     ('sh-mode "shellscript")
+    ('awk-mode "awk")
     (t (error (format "cannot decide file type by mode[%s]" mode)))))
 
 (defconst quickrun/extension-same-as-lang
-  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy")
+  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy" "awk")
   "Extension of file is same as language key")
 
 (defvar quickrun/extension-alist
