@@ -506,13 +506,12 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/sentinel (process state)
   (let ((status (process-status process)))
-    (cond
-     ((eq status 'exit)
-      (progn
-        (quickrun/remove-temp-files)
-        (pop-to-buffer (process-buffer process))))
-     (t nil))
-    (delete-process process)
-    (cancel-timer quickrun/timeout-timer)))
+    (cond ((eq status 'exit)
+           (progn
+             (pop-to-buffer (process-buffer process))
+             (quickrun/remove-temp-files)
+             (delete-process process)
+             (cancel-timer quickrun/timeout-timer)))
+          (t nil))))
 
 (provide 'quickrun)
