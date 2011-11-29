@@ -112,6 +112,7 @@ was called."
     ("lisp" . ((:command . "clisp")))
     ("scheme/gosh" . ((:command . "gosh")))
 
+    ("clojure/jark"        . ((:command . "jark")))
     ("clojure/clj-env-dir" . ((:command . "clj-env-dir")))
 
     ("javascript/node" . ((:command . "node")))
@@ -128,7 +129,7 @@ was called."
     ("markdown/Markdown.pl" . ((:command . "Markdown.pl")))
     ("markdown/bluecloth"   . ((:command . "bluecloth")
                                (:cmdopt  . "-f")))
-    ("markdown/kranmdown"   . ((:command . "kranmdown")))
+    ("markdown/kramdown"    . ((:command . "kramdown")))
     ("markdown/pandoc"      . ((:command . "pandoc")
                                (:exec . "%c --from=markdown --to=html %o %s %a")))
     ("markdown/redcarpet"   . ((:command . "redcarpet")))
@@ -442,16 +443,15 @@ Place holders are beginning with '%' and replaced by:
                                  "bluecloth" "redcarpet" "pandoc"))
         (clojure-candidates    '("jark" "clj-env-dir"))
         (go-candidates         '("8g" "6g" "5g")))
-    (progn
-      (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
-                                  "cl" c-candidates))
-      (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
-                                    "cl" c++-candidates))
-      (quickrun/set-lang-key "javascript" javascript-candidates)
-      (quickrun/set-lang-key "scheme" scheme-candidates)
-      (quickrun/set-lang-key "markdown" markdown-candidates)
-      (quickrun/set-lang-key "clojure" clojure-candidates)
-      (quickrun/set-lang-key "go" go-candidates))))
+    (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
+                                "cl" c-candidates))
+    (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
+                                  "cl" c++-candidates))
+    (quickrun/set-lang-key "javascript" javascript-candidates)
+    (quickrun/set-lang-key "scheme" scheme-candidates)
+    (quickrun/set-lang-key "markdown" markdown-candidates)
+    (quickrun/set-lang-key "clojure" clojure-candidates)
+    (quickrun/set-lang-key "go" go-candidates)))
 
 (quickrun/init-lang-key)
 
@@ -525,11 +525,10 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun/sentinel (process state)
   (let ((status (process-status process)))
     (cond ((eq status 'exit)
-           (progn
-             (pop-to-buffer (process-buffer process))
-             (quickrun/remove-temp-files)
-             (delete-process process)
-             (cancel-timer quickrun/timeout-timer)))
+           (pop-to-buffer (process-buffer process))
+           (quickrun/remove-temp-files)
+           (delete-process process)
+           (cancel-timer quickrun/timeout-timer))
           (t nil))))
 
 (provide 'quickrun)
