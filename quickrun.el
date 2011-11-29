@@ -453,15 +453,18 @@ Place holders are beginning with '%' and replaced by:
 ;; main
 ;;
 (defun quickrun ()
+  "Run commands quickly for current buffer"
   (interactive)
   (quickrun-common))
 
 (defun quickrun-with-arg (arg)
+  "Run commands quickly for current buffer with arguments"
   (interactive
    (list (read-string "QuickRun Arg: ")))
   (quickrun-common :argument arg))
 
 (defun quickrun-lang (lang)
+  "Run specified commands quickly for current buffer"
   (interactive
    (list (completing-read "QuickRun Lang: " quickrun/language-alist)))
   (quickrun-common :language lang))
