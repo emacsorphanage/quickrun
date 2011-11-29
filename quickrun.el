@@ -424,7 +424,13 @@ Place holders are beginning with '%' and replaced by:
            (concat lang "/" (quickrun/find-executable candidates))
            quickrun/lang-key))
 
+(defun quickrun/add-command-if-windows (cmd lst)
+  (if (quickrun/windows-p)
+      (append cmd lst)
+    lst))
+
 (defun quickrun/init-lang-key ()
+  "Decide command for programing language which has multiple candidates"
   (let ((c-candidates          '("gcc" "clang"))
         (c++-candidates        '("g++" "clang"))
         (javascript-candidates '("node" "d8" "js"
@@ -435,12 +441,10 @@ Place holders are beginning with '%' and replaced by:
         (clojure-candidates    '("jark" "clj-env-dir"))
         (go-candidates         '("8g" "6g" "5g")))
    (progn
-     (quickrun/set-lang-key "c" (if (quickrun/windows-p)
-                                    (append "cl" c-candidates)
-                                  c-candidates))
-     (quickrun/set-lang-key "c++" (if (quickrun/windows-p)
-                                      (append "cl" c++-candidates)
-                                    c++-candidates))
+     (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
+                                 "cl" c-candidates))
+     (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
+                                   "cl" c++-candidates))
      (quickrun/set-lang-key "javascript" javascript-candidates)
      (quickrun/set-lang-key "scheme" scheme-candidates)
      (quickrun/set-lang-key "markdown" markdown-candidates)
