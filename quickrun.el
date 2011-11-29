@@ -154,6 +154,7 @@ was called."
                   (:exec    . "%e %a")
                   (:remove  . ("%e" "%n.5"))))
 
+    ("groovy" . ((:command . "groovy")))
     ("scala" . ((:command . "scala")))
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")))
