@@ -206,7 +206,8 @@ if you set your own language configuration.
     (groove-mode . "groovy")
     (sass-mode . "sass")
     (sh-mode . "shellscript")
-    (awk-mode . "awk")))
+    (awk-mode . "awk"))
+  "Alist of major-mode and langkey")
 
 (defconst quickrun/extension-same-as-lang
   '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy" "awk")
@@ -226,7 +227,8 @@ if you set your own language configuration.
     ("erl" . "erlang")
     ("hs"  . "haskell")
     (("md" "markdown" "mdown" "mkdn")  . "markdown")
-    (("sh" "bash" "zsh")  . "shellscript")))
+    (("sh" "bash" "zsh")  . "shellscript"))
+  "Alist of file extensions and langkey")
 
 (defun quickrun/decide-file-type (filename)
   (let ((extension (file-name-extension filename)))
