@@ -160,7 +160,7 @@ was called."
     ("awk" . ((:command . "awk")
               (:exec    . "%c %o -f %s -a")))
     )
-"List of each programming languages information.
+  "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
 5 keys and those values , :command, :compile, :link, :exec, :remove.
 :command pair is mandatory, other pairs are optional. Associated value
@@ -234,7 +234,7 @@ if you set your own language configuration.
            (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode))
           ((member extension quickrun/extension-same-as-lang) extension)
           (t (quickrun/find-lang-from-alist quickrun/extension-alist
-                                             extension)))))
+                                            extension)))))
 
 (defun quickrun/find-lang-from-alist (alist param)
   (loop for pair in alist
@@ -391,10 +391,10 @@ Place holders are beginning with '%' and replaced by:
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
     (let ((remove-tmpl  (quickrun/get-lang-info-param :remove lang-info)))
-     (if remove-tmpl
-         (puthash :remove (mapcar (lambda (x)
-                                    (quickrun/fill-template x tmpl-arg))
-                                  remove-tmpl) info)))
+      (if remove-tmpl
+          (puthash :remove (mapcar (lambda (x)
+                                     (quickrun/fill-template x tmpl-arg))
+                                   remove-tmpl) info)))
     info))
 
 (defun quickrun/fill-template (tmpl info)
@@ -440,16 +440,16 @@ Place holders are beginning with '%' and replaced by:
                                  "bluecloth" "redcarpet" "pandoc"))
         (clojure-candidates    '("jark" "clj-env-dir"))
         (go-candidates         '("8g" "6g" "5g")))
-   (progn
-     (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
-                                 "cl" c-candidates))
-     (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
-                                   "cl" c++-candidates))
-     (quickrun/set-lang-key "javascript" javascript-candidates)
-     (quickrun/set-lang-key "scheme" scheme-candidates)
-     (quickrun/set-lang-key "markdown" markdown-candidates)
-     (quickrun/set-lang-key "clojure" clojure-candidates)
-     (quickrun/set-lang-key "go" go-candidates))))
+    (progn
+      (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
+                                  "cl" c-candidates))
+      (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
+                                    "cl" c++-candidates))
+      (quickrun/set-lang-key "javascript" javascript-candidates)
+      (quickrun/set-lang-key "scheme" scheme-candidates)
+      (quickrun/set-lang-key "markdown" markdown-candidates)
+      (quickrun/set-lang-key "clojure" clojure-candidates)
+      (quickrun/set-lang-key "go" go-candidates))))
 
 (quickrun/init-lang-key)
 
