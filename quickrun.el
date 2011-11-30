@@ -596,3 +596,4 @@ Place holders are beginning with '%' and replaced by:
                  "Specify command argument directly as as file local variable")
 
 (provide 'quickrun)
+;;; quickrun.el ends here
