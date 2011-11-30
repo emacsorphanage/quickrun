@@ -502,6 +502,7 @@ Place holders are beginning with '%' and replaced by:
   (quickrun-common :language lang))
 
 (defvar quickrun/compile-only-flag nil)
+(make-local-variable 'quickrun/compile-only-flag)
 
 (defun quickrun-compile-only ()
   (interactive)
@@ -509,6 +510,7 @@ Place holders are beginning with '%' and replaced by:
    (quickrun-common)))
 
 (defvar quickrun/remove-files nil)
+(make-local-variable 'quickrun/remove-files)
 
 (defun quickrun/get-lang-key (lang)
   (or (gethash lang quickrun/lang-key) lang
