@@ -460,8 +460,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/init-lang-key ()
   "Decide command for programing language which has multiple candidates"
-  (let ((c-candidates          '("clang" "gcc"))
-        (c++-candidates        '("clang++" "g++"))
+  (let ((c-candidates          '("gcc" "clang"))
+        (c++-candidates        '("g++" "clang++"))
         (javascript-candidates '("node" "v8" "js"
                                  "jrunscript" "cscript"))
         (scheme-candidates     '("gosh"))
