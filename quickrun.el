@@ -102,10 +102,10 @@ was called."
                (:exec    . "%c %N %a")
                (:remove  . ("%n.class"))))
 
-    ("perl" . ((:command . "perl")))
-    ("ruby" . ((:command . "ruby")))
+    ("perl" . ((:command . "perl") (:compile-only . "%c -wc %s")))
+    ("ruby" . ((:command . "ruby") (:compile-only . "%c -wc %s")))
     ("python" . ((:command . "python")))
-    ("php" . ((:command . "php")))
+    ("php" . ((:command . "php") (:compile-only . "%c -l %s")))
 
     ("emacs" . ((:command . "emacs")
                 (:exec    . "%c -Q --script %s")))
@@ -280,7 +280,14 @@ if you set your own language configuration.
   (dolist (cmd (list compile link))
     (when cmd
       (message "exec: %s" cmd)
-      (quickrun/command-synchronous cmd))))
+      (cond (quickrun/compile-only-flag
+             (setf compilation-finish-functions
+                   #'quickrun/compilation-finish-func)
+             (compilation-start cmd t (lambda (x) quickrun/buffer-name)))
+            (t (quickrun/command-synchronous cmd))))))
+
+(defun quickrun/compilation-finish-func (buffer str)
+  (quickrun/remove-temp-files))
 
 (defun quickrun/command-synchronous (cmd)
   (let* ((cmd-list (split-string cmd))
@@ -400,7 +407,7 @@ Place holders are beginning with '%' and replaced by:
                                                :argument arg))
          (info (make-hash-table)))
     (quickrun/check-has-command cmd)
-    (dolist (key `(:compile :link :exec))
+    (dolist (key `(:compile :compile-only :link :exec))
       (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
                       (and (assoc key quickrun/default-tmpl-alist)
                            (cdr (assoc key quickrun/default-tmpl-alist))))))
@@ -488,6 +495,13 @@ Place holders are beginning with '%' and replaced by:
    (list (completing-read "QuickRun Lang: " quickrun/language-alist)))
   (quickrun-common :language lang))
 
+(defvar quickrun/compile-only-flag nil)
+
+(defun quickrun-compile-only ()
+  (interactive)
+  (let ((quickrun/compile-only-flag t))
+   (quickrun-common)))
+
 (defvar quickrun/remove-files nil)
 
 (defun quickrun/get-lang-key (lang)
@@ -515,19 +529,25 @@ Place holders are beginning with '%' and replaced by:
            (quickrun/add-remove-files src)))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-state
-            (let ((compile-cmd (gethash :compile cmd-info-hash))
-                  (link-cmd    (gethash :link    cmd-info-hash)))
+            (let ((compile-cmd (or (gethash :compile cmd-info-hash)
+                                   (gethash :compile-only cmd-info-hash)))
+                  (link-cmd (or (and quickrun/compile-only-flag nil)
+                                (gethash :link cmd-info-hash))))
               (catch 'compile
+                (when (and quickrun/compile-only-flag (null compile-cmd))
+                  (message "[%s] compilation command not found" lang-key)
+                  (throw 'compile 'command-not-found))
                 (and compile-cmd
                      (quickrun/compile-and-link compile-cmd link-cmd))))))
-      (cond ((eq compile-state 'compile-error)
+      (cond ((member compile-state '(compile-error command-not-found))
              (unless (string= orig-src src)
                (delete-file src)))
             (t
-             (let* ((exec-cmd (gethash :exec cmd-info-hash))
-                    (process (quickrun/run exec-cmd)))
-               (quickrun/add-remove-files (gethash :remove cmd-info-hash))
-               (set-process-sentinel process #'quickrun/sentinel)))))))
+             (quickrun/add-remove-files (gethash :remove cmd-info-hash))
+             (unless quickrun/compile-only-flag
+               (let* ((exec-cmd (gethash :exec cmd-info-hash))
+                      (process (quickrun/run exec-cmd)))
+                 (set-process-sentinel process #'quickrun/sentinel))))))))
 
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
