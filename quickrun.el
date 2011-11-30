@@ -77,7 +77,7 @@ was called."
                   (:exec    . "%n %a")
                   (:remove . ("%n"))))
 
-    ("c++/clang++" . ((:command . "clang")
+    ("c++/clang++" . ((:command . "clang++")
                       (:compile . "%c %o -o %n %s")
                       (:exec    . "%n %a")
                       (:remove  . ("%n"))))
