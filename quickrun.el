@@ -507,7 +507,7 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun-compile-only ()
   (interactive)
   (let ((quickrun/compile-only-flag t))
-   (quickrun-common)))
+    (quickrun-common)))
 
 (defvar quickrun/remove-files nil)
 (make-local-variable 'quickrun/remove-files)
