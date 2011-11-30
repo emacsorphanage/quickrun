@@ -301,8 +301,7 @@ if you set your own language configuration.
          (args     (cdr cmd-list))
          (buf      (get-buffer-create quickrun/buffer-name)))
     (with-current-buffer buf
-      (erase-buffer)
-      (goto-char (point-min)))
+      (erase-buffer))
     (let ((compile-func (apply-partially 'call-process program nil buf t)))
       (when (not (= (apply compile-func args) 0))
         (pop-to-buffer buf)
@@ -323,8 +322,7 @@ if you set your own language configuration.
          (run-func (apply-partially 'start-process process-name buf program)))
     (message "exec: %s" cmd)
     (with-current-buffer buf
-      (erase-buffer)
-      (goto-char (point-min)))
+      (erase-buffer))
     (lexical-let ((process (apply run-func args)))
       (if quickrun/timeout-seconds
           (setq quickrun/timeout-timer
@@ -396,7 +394,7 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/check-has-command (cmd &optional cleanup)
   (unless (executable-find cmd)
-    (funcall cleanup cmd)))
+    (and cleanup (funcall cleanup cmd))))
 
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
