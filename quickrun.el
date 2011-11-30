@@ -226,7 +226,7 @@ if you set your own language configuration.
   "Extension of file is same as language key")
 
 (defvar quickrun/extension-alist
-  '((("cpp" "C") . "c++")
+  '((("cpp" "C" "cxx" "cc") . "c++")
     ("m"    . "objc")
     (("pl" "pm")   . "perl")
     ("rb" . "ruby")
