@@ -538,7 +538,8 @@ Place holders are beginning with '%' and replaced by:
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-state
             (let ((compile-cmd (or (gethash :compile cmd-info-hash)
-                                   (gethash :compile-only cmd-info-hash)))
+                                   (and quickrun/compile-only-flag
+                                        (gethash :compile-only cmd-info-hash))))
                   (link-cmd (or (and quickrun/compile-only-flag nil)
                                 (gethash :link cmd-info-hash))))
               (catch 'compile
