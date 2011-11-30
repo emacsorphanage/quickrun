@@ -152,6 +152,7 @@ was called."
                   (:exec    . "%e %a")
                   (:remove  . ("%e" "%n.5"))))
 
+    ("io" . ((:command . "io")))
     ("groovy" . ((:command . "groovy")))
     ("scala" . ((:command . "scala")))
     ("sass" . ((:command . "sass")
@@ -206,6 +207,7 @@ if you set your own language configuration.
     (erlang-mode . "erlang")
     ((ocaml-mode tuareg-mode) . "ocaml")
     (go-mode . "go")
+    (io-mode . "io")
     (haskell-mode . "haskell")
     (java-mode . "java")
     (d-mode . "d")
@@ -237,6 +239,7 @@ if you set your own language configuration.
     ("erl" . "erlang")
     ("ml" . "ocaml")
     ("hs"  . "haskell")
+    ("io" . "io")
     (("md" "markdown" "mdown" "mkdn")  . "markdown")
     (("sh" "bash" "zsh")  . "shellscript"))
   "Alist of file extensions and langkey")

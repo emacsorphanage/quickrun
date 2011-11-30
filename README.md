@@ -69,6 +69,7 @@ Support Programming Languages
 * Markdown(require Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
 * Haskell(require runghc)
 * Go Language(require 8g or 6g or 5g)
+* Io
 * Groovy
 * Scala
 * SASS
