@@ -104,7 +104,7 @@ was called."
 
     ("perl" . ((:command . "perl") (:compile-only . "%c -wc %s")))
     ("ruby" . ((:command . "ruby") (:compile-only . "%c -wc %s")))
-    ("python" . ((:command . "python")))
+    ("python" . ((:command . "python") (:compile-only . "pyflakes %s")))
     ("php" . ((:command . "php") (:compile-only . "%c -l %s")))
 
     ("emacs" . ((:command . "emacs")
