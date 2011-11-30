@@ -77,10 +77,10 @@ was called."
                   (:exec    . "%n %a")
                   (:remove . ("%n"))))
 
-    ("c++/clang" . ((:command . "clang")
-                    (:compile . "%c %o -o %n %s")
-                    (:exec    . "%n %a")
-                    (:remove  . ("%n"))))
+    ("c++/clang++" . ((:command . "clang")
+                      (:compile . "%c %o -o %n %s")
+                      (:exec    . "%n %a")
+                      (:remove  . ("%n"))))
 
     ("c++/cl" . ((:command . "cl")
                  (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
@@ -461,7 +461,7 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun/init-lang-key ()
   "Decide command for programing language which has multiple candidates"
   (let ((c-candidates          '("clang" "gcc"))
-        (c++-candidates        '("clang" "g++"))
+        (c++-candidates        '("clang++" "g++"))
         (javascript-candidates '("node" "v8" "js"
                                  "jrunscript" "cscript"))
         (scheme-candidates     '("gosh"))
