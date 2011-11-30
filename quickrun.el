@@ -156,6 +156,7 @@ was called."
     ("scala" . ((:command . "scala")))
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")))
+    ("less" . ((:command . "lessc")))
 
     ("erlang" . ((:command . "escript")))
     ("ocaml" . ((:command . "ocamlc")
@@ -213,12 +214,13 @@ if you set your own language configuration.
     (scala-mode . "scala")
     (groove-mode . "groovy")
     (sass-mode . "sass")
+    ((less-mode less-css-mode) . "less")
     (sh-mode . "shellscript")
     (awk-mode . "awk"))
   "Alist of major-mode and langkey")
 
 (defconst quickrun/extension-same-as-lang
-  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "groovy" "awk")
+  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "less" "groovy" "awk")
   "Extension of file is same as language key")
 
 (defvar quickrun/extension-alist

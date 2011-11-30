@@ -72,6 +72,7 @@ Support Programming Languages
 * Groovy
 * Scala
 * SASS
+* LESS(require lessc)
 * Erlang(require escript)
 * Ocaml(require ocamlc)
 * ShellScript
