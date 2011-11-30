@@ -52,7 +52,7 @@ Run command by specified language
 Support Programming Languages
 -----------------------------
 * C(requir gcc or clang or Visual C++)
-* C++(require g++ or clang or Visual C++)
+* C++(require g++ or clang++ or Visual C++)
 * Objective-C(require gobjc)
 * D Language(require dmd)
 * Java(require JDK)
