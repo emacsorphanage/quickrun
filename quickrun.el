@@ -280,11 +280,17 @@ if you set your own language configuration.
   (dolist (cmd (list compile link))
     (when cmd
       (message "exec: %s" cmd)
-      (cond (quickrun/compile-only-flag
-             (setf compilation-finish-functions
-                   #'quickrun/compilation-finish-func)
-             (compilation-start cmd t (lambda (x) quickrun/buffer-name)))
+      (cond (quickrun/compile-only-flag (quickrun/compilation-start cmd))
             (t (quickrun/command-synchronous cmd))))))
+
+(defun quickrun/compilation-start (cmd)
+  (let ((program (car (split-string cmd))))
+    (quickrun/check-has-command program
+                                #'(lambda (command)
+                                    (message "%s not found" command)
+                                    (throw 'compile 'command-not-found)))
+    (setf compilation-finish-functions #'quickrun/compilation-finish-func)
+    (compilation-start cmd t (lambda (x) quickrun/buffer-name))))
 
 (defun quickrun/compilation-finish-func (buffer str)
   (quickrun/remove-temp-files))
@@ -388,10 +394,9 @@ Place holders are beginning with '%' and replaced by:
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
 
-(defun quickrun/check-has-command (cmd)
+(defun quickrun/check-has-command (cmd &optional cleanup)
   (unless (executable-find cmd)
-    (quickrun/remove-temp-files)
-    (error "Command not found: %s" cmd)))
+    (funcall cleanup cmd)))
 
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
@@ -406,7 +411,9 @@ Place holders are beginning with '%' and replaced by:
                                                :source src
                                                :argument arg))
          (info (make-hash-table)))
-    (quickrun/check-has-command cmd)
+    (quickrun/check-has-command cmd #'(lambda (cmd)
+                                        (quickrun/remove-temp-files)
+                                        (error "Command not found: %s" cmd)))
     (dolist (key `(:compile :compile-only :link :exec))
       (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
                       (and (assoc key quickrun/default-tmpl-alist)
