@@ -402,8 +402,9 @@ Place holders are beginning with '%' and replaced by:
   (let* ((lang-info (quickrun/get-lang-info lang))
          (cmd       (or (quickrun/get-lang-info-param :command lang-info)
                         (error "not specified command parameter")))
-         (cmd-opt   (or (quickrun/get-lang-info-param :cmdopt lang-info) ""))
-         (arg       (or argument
+         (cmd-opt   (or quickrun-command-option
+                        (quickrun/get-lang-info-param :cmdopt lang-info) ""))
+         (arg       (or argument quickrun-command-argument
                         (quickrun/get-lang-info-param :argument lang-info)
                         ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
@@ -570,5 +571,27 @@ Place holders are beginning with '%' and replaced by:
            (delete-process process)
            (cancel-timer quickrun/timeout-timer))
           (t nil))))
+
+;;
+;; file local variable
+;; Based on shadow.el. https://raw.github.com/mooz/shadow.el/master/shadow.el
+;;
+(defmacro quickrun/defvar (name &optional value safep doc)
+  "Define buffer-local and safe-local variable."
+  (declare (indent defun))
+  `(progn
+     (defvar ,name ,value ,doc)
+     (make-variable-buffer-local (quote ,name))
+     ;; Suppress file local variable warning
+     ,(when safep
+        `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
+
+(quickrun/defvar quickrun-command-option
+                 nil stringp
+                 "Specify command option directly as as file local variable")
+
+(quickrun/defvar quickrun-command-argument
+                 nil stringp
+                 "Specify command argument directly as as file local variable")
 
 (provide 'quickrun)
