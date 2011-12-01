@@ -495,10 +495,18 @@ Place holders are beginning with '%' and replaced by:
    (list (read-string "QuickRun Arg: ")))
   (quickrun-common :argument arg))
 
+(defvar quickrun-last-lang nil)
+(make-local-variable 'quickrun-last-lang)
+
 (defun quickrun-lang (lang)
   "Run specified commands quickly for current buffer"
   (interactive
-   (list (completing-read "QuickRun Lang: " quickrun/language-alist)))
+   (list (completing-read
+          (format "QuickRun Lang%s: "
+                  (and quickrun-last-lang
+                       (format "[Default: %s]" quickrun-last-lang)))
+          quickrun/language-alist
+          nil nil nil nil quickrun-last-lang)))
   (quickrun-common :language lang))
 
 (defvar quickrun/compile-only-flag nil)
@@ -531,6 +539,7 @@ Place holders are beginning with '%' and replaced by:
          (extension (or (and lang (quickrun/extension-from-lang lang))
                         (file-name-extension orig-src)))
          (src (quickrun/temp-name extension)))
+    (setq quickrun-last-lang lang-key)
     (cond ((string= lang-key "java") (setq src orig-src))
           (t
            (copy-file orig-src src)
