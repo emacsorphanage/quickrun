@@ -268,9 +268,8 @@ if you set your own language configuration.
                 (t extensions))))))
 
 (defun quickrun/get-lang-info (lang)
-  (let ((pair (assoc lang quickrun/language-alist)))
-    (or (and pair (cdr pair))
-        (error "not found [%s] language information" lang))))
+  (or (assoc-default lang quickrun/language-alist)
+      (error "not found [%s] language information" lang)))
 
 ;;
 ;; Compile
@@ -380,14 +379,13 @@ Place holders are beginning with '%' and replaced by:
       ("%a" . ,argument))))
 
 (defun quickrun/get-lang-info-param (key lang-info)
-  (let ((pair (assoc key lang-info)))
-    (when pair
-      (let ((tmpl (cdr pair)))
-        (cond ((functionp tmpl)
-               (let ((ret (funcall tmpl)))
-                 (or (and (stringp ret) ret)
-                     (error "%s's param should return string" key))))
-              (t tmpl))))))
+  (let ((tmpl (assoc-default key lang-info)))
+    (when tmpl
+      (cond ((functionp tmpl)
+             (let ((ret (funcall tmpl)))
+               (or (and (stringp ret) ret)
+                   (error "%s's param should return string" key))))
+            (t tmpl)))))
 
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
@@ -415,11 +413,10 @@ Place holders are beginning with '%' and replaced by:
                                         (error "Command not found: %s" cmd)))
     (dolist (key `(:compile :compile-only :link :exec))
       (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
-                      (and (assoc key quickrun/default-tmpl-alist)
-                           (cdr (assoc key quickrun/default-tmpl-alist))))))
+                      (assoc-default key quickrun/default-tmpl-alist))))
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
-    (let ((remove-tmpl  (quickrun/get-lang-info-param :remove lang-info)))
+    (let ((remove-tmpl (quickrun/get-lang-info-param :remove lang-info)))
       (if remove-tmpl
           (puthash :remove (mapcar (lambda (x)
                                      (quickrun/fill-template x tmpl-arg))
@@ -430,7 +427,7 @@ Place holders are beginning with '%' and replaced by:
   (let ((place-holders quickrun/template-place-holders)
         (str tmpl))
     (dolist (holder place-holders str)
-      (let ((rep (cdr (assoc holder info)))
+      (let ((rep (assoc-default holder info))
             (case-fold-search nil)
             (case-replace nil))
         (setq str (replace-regexp-in-string holder rep str nil))))))
@@ -442,8 +439,30 @@ Place holders are beginning with '%' and replaced by:
   (or (string= system-type "ms-dos")
       (string= system-type "windows-nt")))
 
+(defconst quickrun/support-languages
+  '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
+    "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
+    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk")
+  "Programming languages supported by quickrun.el")
+
 (defvar quickrun/lang-key
   (make-hash-table :test #'equal))
+
+(defun* quickrun-add-parameter (key alist &key default extension mode)
+  (cond ((not key) (error "undefined 1st argument 'key'"))
+        ((not alist) (error "undefined 2nd argument 'language alist'"))
+        ((not (assoc :command alist))
+         (error "not found :command parameter in language alist")))
+  (push (cons key alist) quickrun/language-alist)
+  (let ((lang-key (or default key)))
+    (when default
+      (unless (member default quickrun/support-languages)
+        (error ":default parameter %s is not supported" default))
+      (puthash lang-key key quickrun/lang-key))
+    (if extension
+        (push (cons extension lang-key) quickrun/extension-alist))
+    (if mode
+        (push (cons mode lang-key) quickrun/major-mode-alist))))
 
 (defun quickrun/find-executable (lst)
   (or (find-if (lambda (cmd) (executable-find cmd)) lst) ""))
@@ -460,6 +479,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/init-lang-key ()
   "Decide command for programing language which has multiple candidates"
+  (dolist (lang quickrun/support-languages)
+    (puthash lang lang quickrun/lang-key))
   (let ((c-candidates          '("gcc" "clang"))
         (c++-candidates        '("g++" "clang++"))
         (javascript-candidates '("node" "v8" "js"
