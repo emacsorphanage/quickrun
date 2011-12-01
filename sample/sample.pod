@@ -1,0 +1,23 @@
+# -*- mode:fundamental -*-
+=encoding utf-8
+
+=head1 NAME
+
+quickrun.el - Emacs edition of quickrun.vim
+
+=head1 SYNOPSIS
+
+    (quickrun-add-parameter "pod"
+                            '((:command . "perldoc")
+                              (:exec    . "%c -T -F %s"))
+                            :extension "pod" :mode 'pod-mode)
+
+=head1 DESCRIPTION
+
+quickrun.el run command quickly for (programming|markup) language.
+
+=head1 AUTHOR
+
+Syohei YOSHIDA
+
+=cut
