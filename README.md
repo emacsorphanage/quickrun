@@ -55,7 +55,7 @@ Support Programming Languages
 
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
-* Objective-C(gobjc)
+* Objective-C(gcc -objc)
 * D Language(dmd)
 * Java(JDK javac and java)
 * Perl(perl)
