@@ -429,10 +429,10 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/fill-template (tmpl info)
   (let ((place-holders quickrun/template-place-holders)
-        (str tmpl))
+        (str tmpl)
+        (case-fold-search nil))
     (dolist (holder place-holders str)
-      (let ((rep (assoc-default holder info))
-            (case-fold-search nil))
+      (let ((rep (assoc-default holder info)))
         (setq str (replace-regexp-in-string holder rep str t))))))
 
 ;;
