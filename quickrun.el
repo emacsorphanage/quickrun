@@ -88,7 +88,10 @@ was called."
                  (:remove  . "%n.obj %n.exe")))
 
     ("objc" . ((:command . "gcc")
-               (:compile . "%c %o -o %n %s -lobjc")
+               (:compile . (lambda ()
+                             (cond ((string= system-type "darwin")
+                                    ("%c %o -o %n %s -framework foundation"))
+                                   (t "%c %o -o %n %s -lobjc"))) )
                (:exec    . "%n %a")
                (:remove  . ("%n"))))
 
