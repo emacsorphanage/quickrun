@@ -153,6 +153,7 @@ was called."
                   (:remove  . ("%e" "%n.5"))))
 
     ("io" . ((:command . "io")))
+    ("lua" . ((:command . "lua")))
     ("groovy" . ((:command . "groovy")))
     ("scala" . ((:command . "scala")))
     ("sass" . ((:command . "sass")
@@ -208,6 +209,7 @@ if you set your own language configuration.
     ((ocaml-mode tuareg-mode) . "ocaml")
     (go-mode . "go")
     (io-mode . "io")
+    (lua-mode . "lua")
     (haskell-mode . "haskell")
     (java-mode . "java")
     (d-mode . "d")
@@ -438,7 +440,7 @@ Place holders are beginning with '%' and replaced by:
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
-    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk")
+    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk" "lua")
   "Programming languages supported by quickrun.el")
 
 (defvar quickrun/lang-key
