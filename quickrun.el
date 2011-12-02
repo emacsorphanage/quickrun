@@ -475,28 +475,23 @@ Place holders are beginning with '%' and replaced by:
       (append cmd lst)
     lst))
 
+(defconst quicklang/lang-candidates
+  `(("c" . ,(quickrun/add-command-if-windows "cl" '("gcc" "clang")))
+    ("c++" . ,(quickrun/add-command-if-windows "cl" '("g++" "clang++")))
+    ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
+    ("scheme" . ("gosh"))
+    ("markdown" . ("Markdown.pl" "kramdown" "bluecloth" "redcarpet" "pandoc"))
+    ("clojure" . ("jark" "clj-env-dir"))
+    ("go" . ("8g" "6g" "5g")))
+  "Candidates of language which has some compilers or interpreters")
+
 (defun quickrun/init-lang-key ()
   "Decide command for programing language which has multiple candidates"
   (dolist (lang quickrun/support-languages)
     (puthash lang lang quickrun/lang-key))
-  (let ((c-candidates          '("gcc" "clang"))
-        (c++-candidates        '("g++" "clang++"))
-        (javascript-candidates '("node" "v8" "js"
-                                 "jrunscript" "cscript"))
-        (scheme-candidates     '("gosh"))
-        (markdown-candidates   '("Markdown.pl" "kramdown"
-                                 "bluecloth" "redcarpet" "pandoc"))
-        (clojure-candidates    '("jark" "clj-env-dir"))
-        (go-candidates         '("8g" "6g" "5g")))
-    (quickrun/set-lang-key "c" (quickrun/add-command-if-windows
-                                "cl" c-candidates))
-    (quickrun/set-lang-key "c++" (quickrun/add-command-if-windows
-                                  "cl" c++-candidates))
-    (quickrun/set-lang-key "javascript" javascript-candidates)
-    (quickrun/set-lang-key "scheme" scheme-candidates)
-    (quickrun/set-lang-key "markdown" markdown-candidates)
-    (quickrun/set-lang-key "clojure" clojure-candidates)
-    (quickrun/set-lang-key "go" go-candidates)))
+  (loop for (lang . candidates) in quicklang/lang-candidates
+        do
+        (quickrun/set-lang-key lang candidates)))
 
 (quickrun/init-lang-key)
 
