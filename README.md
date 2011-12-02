@@ -49,6 +49,10 @@ Run command with arguments.
 
 Run command by specified language
 
+> M-x quickrun-compile-only
+
+Compile only with compile.el framework.
+
 Support Programming Languages
 -----------------------------
 **Programming Language(commands used)**
