@@ -275,11 +275,15 @@ if you set your own language configuration.
 ;;
 
 (defun quickrun/compile-and-link (compile link)
-  (dolist (cmd (list compile link))
-    (when cmd
-      (message "exec: %s" cmd)
-      (cond (quickrun/compile-only-flag (quickrun/compilation-start cmd))
-            (t (quickrun/command-synchronous cmd))))))
+  (unless compile
+    (error "Compile command is null"))
+  (message "QuickRun Compile: %s" compile)
+  (if quickrun/compile-only-flag
+      (quickrun/compilation-start compile)
+    (quickrun/command-synchronous compile))
+  (when link
+    (message "QuickRun Link: %s" link)
+    (quickrun/command-synchronous link)))
 
 (defun quickrun/compilation-start (cmd)
   (let ((program (car (split-string cmd))))
@@ -295,13 +299,14 @@ if you set your own language configuration.
 
 (defun quickrun/command-synchronous (cmd)
   (let* ((cmd-list (split-string cmd))
-         (program  (car cmd-list))
-         (args     (cdr cmd-list))
-         (buf      (get-buffer-create quickrun/buffer-name)))
+         (program (car cmd-list))
+         (args (cdr cmd-list))
+         (buf (get-buffer-create quickrun/buffer-name))
+         (compile-func (apply-partially 'call-process program nil buf t)))
     (with-current-buffer buf
       (erase-buffer))
-    (let ((compile-func (apply-partially 'call-process program nil buf t)))
-      (when (not (= (apply compile-func args) 0))
+    (let ((command-status (apply compile-func args)))
+      (unless (= command-status 0)
         (pop-to-buffer buf)
         (throw 'compile 'compile-error)))))
 
@@ -318,7 +323,7 @@ if you set your own language configuration.
          (program (car cmd-list))
          (args (cdr cmd-list))
          (run-func (apply-partially 'start-process process-name buf program)))
-    (message "exec: %s" cmd)
+    (message "Quickrun Execute: %s" cmd)
     (with-current-buffer buf
       (erase-buffer))
     (lexical-let ((process (apply run-func args)))
@@ -396,7 +401,7 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun/fill-templates (lang src &optional argument)
   (let* ((lang-info (quickrun/get-lang-info lang))
          (cmd       (or (quickrun/get-lang-info-param :command lang-info)
-                        (error "not specified command parameter")))
+                        (error "not specified command parameter in %s") lang))
          (cmd-opt   (or quickrun-command-option
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
          (arg       (or argument quickrun-command-argument
@@ -538,47 +543,51 @@ Place holders are beginning with '%' and replaced by:
   (or (gethash lang quickrun/lang-key) lang
       (error "Can't found language setting")))
 
-(defun quickrun/temp-name (extension)
-  (concat (make-temp-name "qr_") "." extension))
-
 (defun quickrun/add-remove-files (files)
   (if (listp files)
       (setq quickrun/remove-files (append files quickrun/remove-files))
     (push files quickrun/remove-files)))
 
+(defun quickrun/temp-name (src lang)
+  (let ((extension (or (and lang (quickrun/extension-from-lang lang))
+                       (file-name-extension src))))
+   (concat (make-temp-name "qr_") "." extension)))
+
+(defun quickrun/compile-command (cmd-info)
+  (or (gethash :compile cmd-info)
+      (and quickrun/compile-only-flag (gethash :compile-only cmd-info))))
+
+(defun quickrun/link-command (cmd-info)
+  (or (and quickrun/compile-only-flag nil)
+      (gethash :link cmd-info)))
+
 (defun* quickrun-common (&key argument language)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
          (lang-key (or language (quickrun/get-lang-key lang)))
-         (extension (or (and lang (quickrun/extension-from-lang lang))
-                        (file-name-extension orig-src)))
-         (src (quickrun/temp-name extension)))
+         (src (quickrun/temp-name orig-src lang)))
     (setq quickrun-last-lang lang-key)
     (cond ((string= lang-key "java") (setq src orig-src))
           (t
            (copy-file orig-src src)
            (quickrun/add-remove-files src)))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
-           (compile-state
-            (let ((compile-cmd (or (gethash :compile cmd-info-hash)
-                                   (and quickrun/compile-only-flag
-                                        (gethash :compile-only cmd-info-hash))))
-                  (link-cmd (or (and quickrun/compile-only-flag nil)
-                                (gethash :link cmd-info-hash))))
+           (compile-status
+            (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
+                  (link-cmd (quickrun/link-command cmd-info-hash)))
               (catch 'compile
                 (when (and quickrun/compile-only-flag (null compile-cmd))
                   (message "[%s] compilation command not found" lang-key)
                   (throw 'compile 'command-not-found))
                 (and compile-cmd
                      (quickrun/compile-and-link compile-cmd link-cmd))))))
-      (cond ((member compile-state '(compile-error command-not-found))
+      (cond ((member compile-status '(compile-error command-not-found))
              (unless (string= orig-src src)
                (delete-file src)))
             (t
              (quickrun/add-remove-files (gethash :remove cmd-info-hash))
              (unless quickrun/compile-only-flag
-               (let* ((exec-cmd (gethash :exec cmd-info-hash))
-                      (process (quickrun/run exec-cmd)))
+               (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
                  (set-process-sentinel process #'quickrun/sentinel))))))))
 
 (defun quickrun/remove-temp-files ()
