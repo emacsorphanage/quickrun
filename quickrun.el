@@ -221,10 +221,6 @@ if you set your own language configuration.
     (awk-mode . "awk"))
   "Alist of major-mode and langkey")
 
-(defconst quickrun/extension-same-as-lang
-  '("c" "php" "go" "d" "java" "scala" "coffee" "sass" "less" "groovy" "awk")
-  "Extension of file is same as language key")
-
 (defvar quickrun/extension-alist
   '((("cpp" "C" "cxx" "cc") . "c++")
     ("m"    . "objc")
@@ -245,12 +241,13 @@ if you set your own language configuration.
   "Alist of file extensions and langkey")
 
 (defun quickrun/decide-file-type (filename)
-  (let ((extension (file-name-extension filename)))
-    (cond ((not (eq major-mode 'fundamental-mode))
-           (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode))
-          ((member extension quickrun/extension-same-as-lang) extension)
-          (t (quickrun/find-lang-from-alist quickrun/extension-alist
-                                            extension)))))
+  (let* ((extension (file-name-extension filename))
+         (from-major-mode
+          (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode))
+         (from-extension
+          (quickrun/find-lang-from-alist quickrun/extension-alist extension)))
+    (or from-major-mode from-extension
+        (find extension quickrun/support-languages :test #'equal))))
 
 (defun quickrun/find-lang-from-alist (alist param)
   (loop for pair in alist
