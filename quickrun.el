@@ -428,9 +428,8 @@ Place holders are beginning with '%' and replaced by:
         (str tmpl))
     (dolist (holder place-holders str)
       (let ((rep (assoc-default holder info))
-            (case-fold-search nil)
-            (case-replace nil))
-        (setq str (replace-regexp-in-string holder rep str nil))))))
+            (case-fold-search nil))
+        (setq str (replace-regexp-in-string holder rep str t))))))
 
 ;;
 ;; initialize
