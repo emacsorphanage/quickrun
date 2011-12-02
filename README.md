@@ -51,7 +51,8 @@ Run command by specified language
 
 Support Programming Languages
 -----------------------------
-Programming Language(commands used)
+**Programming Language(commands used)**
+
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
 * Objective-C(gobjc)
@@ -65,8 +66,8 @@ Programming Language(commands used)
 * Scheme(gosh in Gauche)
 * Common Lisp(clisp)
 * Clojure(jark or clj-env-dir)
-* Javascript(node.js or v8 or js or jrunscript or cscript)
-* Coffee Script(node.js and coffee)
+* Javascript(node or v8 or js or jrunscript or cscript)
+* Coffee Script(coffee)
 * Markdown(Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
 * Haskell(runghc)
 * Go Language(8g or 6g or 5g)
