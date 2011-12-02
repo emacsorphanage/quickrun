@@ -258,11 +258,11 @@ if you set your own language configuration.
         return (cdr pair)))
 
 (defun quickrun/extension-from-lang (lang)
-  (let ((pair (rassoc lang quickrun/extension-alist)))
-    (if pair
-        (let ((extensions (car pair)))
-          (cond ((listp extensions) (car extensions))
-                (t extensions))))))
+  (let* ((pair (and (rassoc lang quickrun/extension-alist)))
+         (extensions (and pair (car pair))))
+    (if extensions
+        (cond ((listp extensions) (car extensions))
+              (t extensions)))))
 
 (defun quickrun/get-lang-info (lang)
   (or (assoc-default lang quickrun/language-alist)
