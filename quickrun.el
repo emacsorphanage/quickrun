@@ -90,7 +90,7 @@ was called."
     ("objc" . ((:command . "gcc")
                (:compile . (lambda ()
                              (cond ((string= system-type "darwin")
-                                    ("%c %o -o %n %s -framework foundation"))
+                                    "%c %o -o %n %s -framework foundation")
                                    (t "%c %o -o %n %s -lobjc"))) )
                (:exec    . "%n %a")
                (:remove  . ("%n"))))
