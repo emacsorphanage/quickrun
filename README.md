@@ -51,30 +51,32 @@ Run command by specified language
 
 Support Programming Languages
 -----------------------------
-* C(requir gcc or clang or Visual C++)
-* C++(require g++ or clang++ or Visual C++)
-* Objective-C(require gobjc)
-* D Language(require dmd)
-* Java(require JDK)
-* Perl
-* Ruby
-* Python
-* PHP
-* Emacs Lisp
-* Scheme(require gosh in Gauche)
-* Common Lisp(require clisp)
-* Clojure(require jark or clj-env-dir)
-* Javascript(require node.js or v8 or js or jrunscript or cscript)
-* Coffee Script(require node.js and coffee)
-* Markdown(require Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
-* Haskell(require runghc)
-* Go Language(require 8g or 6g or 5g)
-* Io
-* Groovy
-* Scala
-* SASS
-* LESS(require lessc)
-* Erlang(require escript)
-* Ocaml(require ocamlc)
-* ShellScript
-* AWK
+Programming Language(commands used)
+* C(gcc or clang or Visual C++)
+* C++(g++ or clang++ or Visual C++)
+* Objective-C(gobjc)
+* D Language(dmd)
+* Java(JDK javac and java)
+* Perl(perl)
+* Ruby(ruby)
+* Python(python)
+* PHP(php)
+* Emacs Lisp(emacs)
+* Scheme(gosh in Gauche)
+* Common Lisp(clisp)
+* Clojure(jark or clj-env-dir)
+* Javascript(node.js or v8 or js or jrunscript or cscript)
+* Coffee Script(node.js and coffee)
+* Markdown(Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
+* Haskell(runghc)
+* Go Language(8g or 6g or 5g)
+* Io(io)
+* Lua(lua)
+* Groovy(groovy)
+* Scala(scala)
+* SASS(sass)
+* LESS(lessc)
+* Erlang(escript)
+* Ocaml(ocamlc)
+* ShellScript(sheban's shell)
+* AWK(awk)
