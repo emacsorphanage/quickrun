@@ -298,17 +298,15 @@ if you set your own language configuration.
   (quickrun/remove-temp-files))
 
 (defun quickrun/command-synchronous (cmd)
-  (let* ((cmd-list (split-string cmd))
-         (program (car cmd-list))
-         (args (cdr cmd-list))
-         (buf (get-buffer-create quickrun/buffer-name))
-         (compile-func (apply-partially 'call-process program nil buf t)))
-    (with-current-buffer buf
-      (erase-buffer))
-    (let ((command-status (apply compile-func args)))
-      (unless (= command-status 0)
-        (pop-to-buffer buf)
-        (throw 'compile 'compile-error)))))
+  (destructuring-bind (program . args) (split-string cmd)
+    (let* ((buf (get-buffer-create quickrun/buffer-name))
+           (compile-func (apply-partially 'call-process program nil buf t)))
+      (with-current-buffer buf
+        (erase-buffer))
+      (let ((command-status (apply compile-func args)))
+        (unless (= command-status 0)
+          (pop-to-buffer buf)
+          (throw 'compile 'compile-error))))))
 
 ;;
 ;; Execute
@@ -317,21 +315,19 @@ if you set your own language configuration.
 (make-variable-buffer-local 'quickrun-timeout-timer)
 
 (defun quickrun/run (cmd)
-  (let* ((buf (get-buffer-create quickrun/buffer-name))
-         (process-name (format "quickrun-process-%s" (buffer-name)))
-         (cmd-list (split-string cmd))
-         (program (car cmd-list))
-         (args (cdr cmd-list))
-         (run-func (apply-partially 'start-process process-name buf program)))
-    (message "Quickrun Execute: %s" cmd)
-    (with-current-buffer buf
-      (erase-buffer))
-    (lexical-let ((process (apply run-func args)))
-      (if quickrun/timeout-seconds
-          (setq quickrun/timeout-timer
-                (run-at-time quickrun/timeout-seconds nil
-                             #'quickrun/kill-process process)))
-      process)))
+  (destructuring-bind (program . args) (split-string cmd)
+    (let* ((buf (get-buffer-create quickrun/buffer-name))
+           (proc-name (format "quickrun-process-%s" (buffer-name)))
+           (run-func (apply-partially 'start-process proc-name buf program)))
+      (message "Quickrun Execute: %s" cmd)
+      (with-current-buffer buf
+        (erase-buffer))
+      (lexical-let ((process (apply run-func args)))
+        (if quickrun/timeout-seconds
+            (setq quickrun/timeout-timer
+                  (run-at-time quickrun/timeout-seconds nil
+                               #'quickrun/kill-process process)))
+        process))))
 
 (defun quickrun/kill-process (process)
   (when (eq (process-status process) 'run)
