@@ -455,7 +455,7 @@ Place holders are beginning with '%' and replaced by:
   (let ((lang-key (or default key)))
     (when default
       (unless (member default quickrun/support-languages)
-        (error ":default parameter %s is not supported" default))
+        (error "(:default parameter) %s is not support language" default))
       (puthash lang-key key quickrun/lang-key))
     (if extension
         (push (cons extension lang-key) quickrun/extension-alist))
