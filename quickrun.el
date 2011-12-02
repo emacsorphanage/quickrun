@@ -470,9 +470,9 @@ Place holders are beginning with '%' and replaced by:
   (or (find-if (lambda (cmd) (executable-find cmd)) lst) ""))
 
 (defun quickrun/set-lang-key (lang candidates)
-  (puthash lang
-           (concat lang "/" (quickrun/find-executable candidates))
-           quickrun/lang-key))
+  (let ((lang-key (concat lang "/" (quickrun/find-executable candidates))))
+    (if lang-key
+        (puthash lang lang-key quickrun/lang-key))))
 
 (defun quickrun/add-command-if-windows (cmd lst)
   (if (quickrun/windows-p)
