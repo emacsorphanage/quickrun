@@ -1,7 +1,16 @@
+#ifdef __APPLE__
+#import <stdio.h>
+#import <Foundation/NSObject.h>
+#else
 #import <stdio.h>
 #import <objc/Object.h>
+#endif
 
+#ifdef __APPLE__
+@interface HelloClass : NSObject
+#else
 @interface HelloClass : Object
+#endif
 - (void)helloWorld;
 @end
 
