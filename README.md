@@ -107,11 +107,11 @@ int main (int argc, char *argv[])
     std::vector &lt;std::string&gt; lst = { "a", "b", "c", "d" };
 
     for (auto x : lst){
-        std::cout &lt;< "[" << x << "]" << std::endl;
+        std::cout &lt;&lt; "[" &lt;&lt; x &lt;&lt; "]" &lt;&lt; std::endl;
     }
 
     for (auto i = 1; i &lt; argc; i++){
-        std::cout &lt;< "[" << argv[i] << "]" << std::endl;
+        std::cout &lt;&lt; "[" &lt;&lt; argv[i] &lt;&lt; "]" &lt;&lt; std::endl;
     }
 
     return 0;
