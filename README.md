@@ -97,35 +97,40 @@ quickrun.el let you define your own command by file.
 You can do it to use 'quickrun-command' file local variable.
 For example, C11 C++ program file.
 
-> #include <iostream>
-> #include <vector>
-> #include <string>
->
-> int main (int argc, char *argv[])
-> {
->     std::vector <std::string> lst = { "a", "b", "c", "d" };
->
->     for (auto x : lst){
->         std::cout << "[" << x << "]" << std::endl;
->     }
->
->     for (auto i = 1; i < argc; i++){
->         std::cout << "[" << argv[i] << "]" << std::endl;
->     }
->
->     return 0;
-> }
->
-> /*
->   Local Variables:
->   quickrun-command: ((:command . "g++")
->                      (:compile . "%c -std=c++0x -o %n %s")
->                      (:exec    . "%n apple orange melon")
->                      (:remove  . ("%n")))
->   End:
-> */
+<pre>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+int main (int argc, char *argv[])
+{
+    std::vector &lt;std::string&gt; lst = { "a", "b", "c", "d" };
+
+    for (auto x : lst){
+        std::cout &lt;< "[" << x << "]" << std::endl;
+    }
+
+    for (auto i = 1; i &lt; argc; i++){
+        std::cout &lt;< "[" << argv[i] << "]" << std::endl;
+    }
+
+    return 0;
+}
+
+/*
+  Local Variables:
+  quickrun-command: ((:command . "g++")
+                     (:compile . "%c -std=c++0x -o %n %s")
+                     (:exec    . "%n apple orange melon")
+                     (:remove  . ("%n")))
+  End:
+*/
+</pre>
 
 In this case, quickrun compile this file with command(source file is /home/bob/sample/sample.cpp)
-> "g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp".
+
+> g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
+
 And quickrun execute with command.
-> "/home/bob/sample/sample apple orange melon"
+
+> /home/bob/sample/sample apple orange melon
