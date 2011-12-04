@@ -10,6 +10,9 @@ quickrun is a extension to execute editing buffer.
 quickrun is similar to executable-interpret, but quickrun provides more convenient
 commands. quickrun execute not only script languages, but also compiling languages.
 
+
+**This software is under development. Any API may change**
+
 Requirements
 ------------
 Emacs 22.1 or higher.
@@ -91,10 +94,34 @@ Support Programming Languages
 * AWK(awk)
 
 
+User Defined Command
+--------------------
+*quickrun-add-parameter* define new command.
+<pre>
+(quickrun-add-parameter "c++/c11"
+                        '((:command . "g++")
+                          (:compile . "%c -std=c++0x %o -o %n %s")
+                          (:exec    . "%n %a")
+                          (:remove  . ("%n")))
+                        :default "c++")
+
+(quickrun-add-parameter "pod"
+                        '((:command . "perldoc")
+                          (:exec    . "%c -T -F %s"))
+                        :extension "pod" :mode 'pod-mode)
+</pre>
+quickrun-add-parameter has key parameters, ':default', ':extension', ':mode'.
+
+* ':default "c++"' means that quickrun uses this command for C++ files.
+* ':extension "pod"' means that quickrun uses this comand for '.pod' files.
+* ":mode 'pod-mode" means that quickrun uses this command when major-mode is pod-mode.
+
+
 User Defined Command by file
 ----------------------------
 quickrun.el let you define your own command by file.
-You can do it to use 'quickrun-command' file local variable.
+You can do it to use *'quickrun-command'* file local variable.
+
 For example, C11 C++ program file.
 
 <pre>
