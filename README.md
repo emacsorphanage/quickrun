@@ -97,10 +97,10 @@ quickrun.el let you define your own command by file.
 You can do it to use 'quickrun-command' file local variable.
 For example, C11 C++ program file.
 
-#include <iostream>
-#include <vector>
-#include <string>
-
+> #include <iostream>
+> #include <vector>
+> #include <string>
+>
 > int main (int argc, char *argv[])
 > {
 >     std::vector <std::string> lst = { "a", "b", "c", "d" };
