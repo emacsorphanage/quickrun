@@ -270,7 +270,8 @@ if you set your own language configuration.
               (t extensions)))))
 
 (defun quickrun/get-lang-info (lang)
-  (or (assoc-default lang quickrun/language-alist)
+  (or quickrun-command
+      (assoc-default lang quickrun/language-alist)
       (error "not found [%s] language information" lang)))
 
 ;;
@@ -617,6 +618,10 @@ Place holders are beginning with '%' and replaced by:
      ;; Suppress file local variable warning
      ,(when safep
         `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
+
+(quickrun/defvar quickrun-command
+                 nil listp
+                 "Specify command alist directly as as file local variable")
 
 (quickrun/defvar quickrun-command-option
                  nil stringp
