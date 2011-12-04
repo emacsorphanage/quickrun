@@ -15,6 +15,10 @@ Requirements
 Emacs 22.1 or higher.
 
 
+I test quickrun on Ubuntu 11.10(Emacs23.3) and MacOSX(Emacs 23.3, 21.1),
+I don't test on Windows.
+
+
 Installation
 ------------
 
@@ -85,3 +89,44 @@ Support Programming Languages
 * Ocaml(ocamlc)
 * ShellScript(sheban's shell)
 * AWK(awk)
+
+
+User Defined Command by file
+----------------------------
+quickrun.el let you define your own command by file.
+You can do it to use 'quickrun-command' file local variable.
+For example, C11 C++ program file.
+<pre>
+#include <iostream>
+#include <vector>
+#include <string>
+
+int main (int argc, char *argv[])
+{
+    std::vector <std::string> lst = { "a", "b", "c", "d" };
+
+    for (auto x : lst){
+        std::cout << "[" << x << "]" << std::endl;
+    }
+
+    for (auto i = 1; i < argc; i++){
+        std::cout << "[" << argv[i] << "]" << std::endl;
+    }
+
+    return 0;
+}
+
+/*
+  Local Variables:
+  quickrun-command: ((:command . "g++")
+                     (:compile . "%c -std=c++0x -o %n %s")
+                     (:exec    . "%n apple orange melon")
+                     (:remove  . ("%n")))
+  End:
+*/
+</pre>
+
+In this case, quickrun compile this file with command(source file is /home/bob/sample/sample.cpp)
+> "g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp".
+And quickrun execute with command.
+> "/home/bob/sample/sample apple orange melon"
