@@ -3,12 +3,13 @@ quickrun.el
 
 Introduction
 ------------
-quickrun.el is emacs version of [quickrun.vim](https://github.com/thinca/vim-quickrun).
+**quickrun.el** is emacs version of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
 
 quickrun is a extension to execute editing buffer.
 quickrun is similar to executable-interpret, but quickrun provides more convenient
-commands. quickrun execute not only script languages, but also compiling languages.
+commands. quickrun execute not only script languages(Perl, Ruby, Python etc), but also
+compiling languages(C, C++, Go, Java etc).
 
 
 **This software is under development. Any API may change**
@@ -26,39 +27,37 @@ Installation
 ------------
 
 You have installed auto-install
-<pre>
-  (install-elisp "https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el")
-</pre>
+
+    (install-elisp "https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el")
 
 You have not installed auto-install
-<pre>
-  $ cd load-path-dir
-  $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
-</pre>
+
+    $ cd load-path-dir
+    $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
 
 After Installation
-<pre>
-  (require 'quickrun)
-</pre>
+
+    (require 'quickrun)
 
 
 Basic Usage
 -----------
-> M-x quickrun
 
 Run command, compiling, linking, executing.
 
-> M-x quickrun-with-arg
+    M-x quickrun
 
 Run command with arguments.
 
-> M-x quickrun-lang
+    M-x quickrun-with-arg
 
 Run command by specified language
 
-> M-x quickrun-compile-only
+    M-x quickrun-lang
 
 Compile only with compile.el framework.
+
+    M-x quickrun-compile-only
 
 Support Programming Languages
 -----------------------------
@@ -96,25 +95,25 @@ Support Programming Languages
 
 User Defined Command
 --------------------
-*quickrun-add-parameter* define new command.
-<pre>
-(quickrun-add-parameter "c++/c11"
-                        '((:command . "g++")
-                          (:compile . "%c -std=c++0x %o -o %n %s")
-                          (:exec    . "%n %a")
-                          (:remove  . ("%n")))
-                        :default "c++")
+`quickrun-add-parameter` define new command.
 
-(quickrun-add-parameter "pod"
-                        '((:command . "perldoc")
-                          (:exec    . "%c -T -F %s"))
-                        :extension "pod" :mode 'pod-mode)
-</pre>
+    (quickrun-add-parameter "c++/c11"
+                            '((:command . "g++")
+                              (:compile . "%c -std=c++0x %o -o %n %s")
+                              (:exec    . "%n %a")
+                              (:remove  . ("%n")))
+                            :default "c++")
+
+    (quickrun-add-parameter "pod"
+                            '((:command . "perldoc")
+                              (:exec    . "%c -T -F %s"))
+                            :extension "pod" :mode 'pod-mode)
+
 quickrun-add-parameter has key parameters, ':default', ':extension', ':mode'.
 
-* ':default "c++"' means that quickrun uses this command for C++ files.
-* ':extension "pod"' means that quickrun uses this comand for '.pod' files.
-* ":mode 'pod-mode" means that quickrun uses this command when major-mode is pod-mode.
+* `:default "c++"` means that quickrun uses this command for C++ files.
+* `:extension "pod"` means that quickrun uses this comand for '.pod' files.
+* `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
 
 
 User Defined Command by file
@@ -124,40 +123,38 @@ You can do it to use *'quickrun-command'* file local variable.
 
 For example, C11 C++ program file.
 
-<pre>
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
+    #include <iostream>
+    #include <vector>
+    #include <string>
 
-int main (int argc, char *argv[])
-{
-    std::vector &lt;std::string&gt; lst = { "a", "b", "c", "d" };
+    int main (int argc, char *argv[])
+    {
+        std::vector <std::string> lst = { "a", "b", "c", "d" };
 
-    for (auto x : lst){
-        std::cout &lt;&lt; "[" &lt;&lt; x &lt;&lt; "]" &lt;&lt; std::endl;
+        for (auto x : lst){
+            std::cout <&lt; "[" &lt;&lt; x &lt;&lt; "]" &lt;&lt; std::endl;
+        }
+
+        for (auto i = 1; i < argc; i++){
+            std::cout <&lt; "[" &lt;&lt; argv[i] &lt;&lt; "]" &lt;&lt; std::endl;
+        }
+
+        return 0;
     }
 
-    for (auto i = 1; i &lt; argc; i++){
-        std::cout &lt;&lt; "[" &lt;&lt; argv[i] &lt;&lt; "]" &lt;&lt; std::endl;
-    }
-
-    return 0;
-}
-
-/*
-  Local Variables:
-  quickrun-command: ((:command . "g++")
-                     (:compile . "%c -std=c++0x -o %n %s")
-                     (:exec    . "%n apple orange melon")
-                     (:remove  . ("%n")))
-  End:
-*/
-</pre>
+    /*
+      Local Variables:
+      quickrun-command: ((:command . "g++")
+                         (:compile . "%c -std=c++0x -o %n %s")
+                         (:exec    . "%n apple orange melon")
+                         (:remove  . ("%n")))
+      End:
+    */
 
 In this case, quickrun compile this file with command(source file is /home/bob/sample/sample.cpp)
 
-> g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
+    g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
 
 And quickrun execute with command.
 
-> /home/bob/sample/sample apple orange melon
+    /home/bob/sample/sample apple orange melon
