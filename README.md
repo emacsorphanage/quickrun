@@ -132,11 +132,11 @@ For example, C11 C++ program file.
         std::vector <std::string> lst = { "a", "b", "c", "d" };
 
         for (auto x : lst){
-            std::cout <&lt; "[" &lt;&lt; x &lt;&lt; "]" &lt;&lt; std::endl;
+            std::cout << "[" << x << "]" << std::endl;
         }
 
         for (auto i = 1; i < argc; i++){
-            std::cout <&lt; "[" &lt;&lt; argv[i] &lt;&lt; "]" &lt;&lt; std::endl;
+            std::cout << "[" << argv[i] << "]" << std::endl;
         }
 
         return 0;
