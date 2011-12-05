@@ -451,6 +451,14 @@ Place holders are beginning with '%' and replaced by:
 (defvar quickrun/lang-key
   (make-hash-table :test #'equal))
 
+(defun quickrun-set-default (lang key)
+  "Set `key' as default key in programing language `lang'"
+  (interactive)
+  (unless (member lang quickrun/support-languages)
+    (error "%s is not supported. Please see `quickrun/support-languages'"))
+  (unless (gethash key))
+  (puthash lang key quickrun/lang-key))
+
 (defun* quickrun-add-parameter (key alist &key default extension mode)
   (cond ((not key) (error "undefined 1st argument 'key'"))
         ((not alist) (error "undefined 2nd argument 'language alist'"))

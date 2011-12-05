@@ -116,6 +116,16 @@ quickrun-add-parameter has key parameters, ':default', ':extension', ':mode'.
 * `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
 
 
+Change Default Command
+----------------------
+`quickrun-set-default` changes default command in some language.
+
+    (quickrun-set-default "c" "c/clang")
+
+
+This means that quickrun uses "c/clang" command in C files.
+
+
 User Defined Command by file
 ----------------------------
 quickrun.el let you define your own command by file.
