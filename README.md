@@ -93,6 +93,9 @@ Support Programming Languages
 * AWK(awk)
 
 
+See also `quickrun/support-languages` global variable.
+
+
 User Defined Command
 --------------------
 `quickrun-add-parameter` define new command.

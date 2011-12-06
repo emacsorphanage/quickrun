@@ -446,8 +446,9 @@ Place holders are beginning with '%' and replaced by:
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
-    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk" "lua")
-  "Programming languages supported by quickrun.el")
+    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
+    "lua")
+  "Programming languages and Markup languages supported by quickrun.el")
 
 (defvar quickrun/lang-key
   (make-hash-table :test #'equal))
