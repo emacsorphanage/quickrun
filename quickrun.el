@@ -169,7 +169,7 @@ was called."
                 (:exec    . "%n %a")
                 (:remove  . ("%n" "%n.cmi" "%n.cmo"))))
 
-    ("shellscript" . ((:command . (lambda () (symbol-name sh-shell)))))
+    ("shellscript" . ((:command . (lambda () sh-shell))))
     ("awk" . ((:command . "awk")
               (:exec    . "%c %o -f %s -a")))
     )
@@ -387,8 +387,9 @@ Place holders are beginning with '%' and replaced by:
     (when tmpl
       (cond ((functionp tmpl)
              (let ((ret (funcall tmpl)))
-               (or (and (stringp ret) ret)
-                   (error "%s's param should return string" key))))
+               (cond ((stringp ret) ret)
+                     ((symbolp ret) (symbol-name ret))
+                     (error "%s's param should return string" key))))
             (t tmpl)))))
 
 (defconst quickrun/default-tmpl-alist
