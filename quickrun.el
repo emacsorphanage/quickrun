@@ -305,10 +305,10 @@ if you set your own language configuration.
 (defun quickrun/command-synchronous (cmd)
   (destructuring-bind (program . args) (split-string cmd)
     (let* ((buf (get-buffer-create quickrun/buffer-name))
-           (compile-func (apply-partially 'call-process program nil buf t)))
+           (func (apply-partially 'call-process program nil buf t)))
       (with-current-buffer buf
         (erase-buffer))
-      (let ((command-status (apply compile-func args)))
+      (let ((command-status (apply func args)))
         (unless (= command-status 0)
           (pop-to-buffer buf)
           (throw 'compile 'compile-error))))))
