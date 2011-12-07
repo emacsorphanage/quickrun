@@ -540,6 +540,10 @@ Place holders are beginning with '%' and replaced by:
           nil nil nil nil quickrun-last-lang)))
   (quickrun-common :language lang))
 
+(defun quickrun-region (start end)
+  (interactive "r")
+  (quickrun-common :start start :end end))
+
 (defvar quickrun/compile-only-flag nil)
 (make-local-variable 'quickrun/compile-only-flag)
 
@@ -573,7 +577,7 @@ Place holders are beginning with '%' and replaced by:
   (or (and quickrun/compile-only-flag nil)
       (gethash :link cmd-info)))
 
-(defun* quickrun-common (&key argument language)
+(defun* quickrun-common (&key argument language start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
          (lang-key (or language (quickrun/get-lang-key lang)))
@@ -581,7 +585,9 @@ Place holders are beginning with '%' and replaced by:
     (setq quickrun-last-lang lang-key)
     (cond ((string= lang-key "java") (setq src orig-src))
           (t
-           (copy-file orig-src src)
+           (if (and start end)
+               (write-region start end src)
+             (copy-file orig-src src))
            (quickrun/add-remove-files src)))
     (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
            (compile-status
