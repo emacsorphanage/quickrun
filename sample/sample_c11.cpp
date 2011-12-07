@@ -3,12 +3,12 @@
 #include <string>
 
 /*
-(quickrun-add-parameter "c++/c11"
-                        '((:command . "g++")
-                          (:compile . "%c -std=c++0x %o -o %n %s")
-                          (:exec    . "%n %a")
-                          (:remove  . ("%n")))
-                        :default "c++")
+(quickrun-add-command "c++/c11"
+                      '((:command . "g++")
+                        (:compile . "%c -std=c++0x %o -o %n %s")
+                        (:exec    . "%n %a")
+                        (:remove  . ("%n")))
+                      :default "c++")
 */
 
 int main ()

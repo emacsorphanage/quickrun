@@ -462,7 +462,7 @@ Place holders are beginning with '%' and replaced by:
   (unless (gethash key))
   (puthash lang key quickrun/lang-key))
 
-(defun* quickrun-add-parameter (key alist &key default extension mode)
+(defun* quickrun-add-command (key alist &key default extension mode)
   (cond ((not key) (error "undefined 1st argument 'key'"))
         ((not alist) (error "undefined 2nd argument 'language alist'"))
         ((not (assoc :command alist))
@@ -476,7 +476,8 @@ Place holders are beginning with '%' and replaced by:
     (if extension
         (push (cons extension lang-key) quickrun/extension-alist))
     (if mode
-        (push (cons mode lang-key) quickrun/major-mode-alist))))
+        (push (cons mode lang-key) quickrun/major-mode-alist))
+    key))
 
 (defun quickrun/find-executable (lst)
   (or (find-if (lambda (cmd) (executable-find cmd)) lst) ""))

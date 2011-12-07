@@ -98,21 +98,21 @@ See also `quickrun/support-languages` global variable.
 
 User Defined Command
 --------------------
-`quickrun-add-parameter` define new command.
+`quickrun-add-command` define new command.
 
-    (quickrun-add-parameter "c++/c11"
-                            '((:command . "g++")
-                              (:compile . "%c -std=c++0x %o -o %n %s")
-                              (:exec    . "%n %a")
-                              (:remove  . ("%n")))
-                            :default "c++")
+    (quickrun-add-command "c++/c11"
+                           '((:command . "g++")
+                             (:compile . "%c -std=c++0x %o -o %n %s")
+                             (:exec    . "%n %a")
+                             (:remove  . ("%n")))
+                           :default "c++")
 
-    (quickrun-add-parameter "pod"
-                            '((:command . "perldoc")
-                              (:exec    . "%c -T -F %s"))
-                            :extension "pod" :mode 'pod-mode)
+    (quickrun-add-command "pod"
+                           '((:command . "perldoc")
+                             (:exec    . "%c -T -F %s"))
+                           :extension "pod" :mode 'pod-mode)
 
-quickrun-add-parameter has key parameters, ':default', ':extension', ':mode'.
+quickrun-add-command has key parameters, ':default', ':extension', ':mode'.
 
 * `:default "c++"` means that quickrun uses this command to C++ files as default.
 * `:extension "pod"` means that quickrun uses this comand to '.pod' files.
