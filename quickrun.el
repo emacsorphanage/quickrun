@@ -182,7 +182,8 @@ should be string or a function which returns a string object.
 Assosiated values are
 :command = Program name which is used compiled or executed source code.
 :compile = Compile command template
-:link    = Link command template
+:link    = Link command template. (This key should be set when compile command
+           differents from link command. For example Go Lang)
 :exec    = Exec command template. If you omit this parameter, quickrun
            use default parameter \"%c %o %s %a\".
 :remove  = Remove files or directories templates.
