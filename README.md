@@ -114,8 +114,8 @@ User Defined Command
 
 quickrun-add-parameter has key parameters, ':default', ':extension', ':mode'.
 
-* `:default "c++"` means that quickrun uses this command for C++ files.
-* `:extension "pod"` means that quickrun uses this comand for '.pod' files.
+* `:default "c++"` means that quickrun uses this command to C++ files as default.
+* `:extension "pod"` means that quickrun uses this comand to '.pod' files.
 * `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
 
 
@@ -164,7 +164,8 @@ For example, C11 C++ program file.
       End:
     */
 
-In this case, quickrun compile this file with command(source file is /home/bob/sample/sample.cpp)
+In this case, quickrun compiles this file with following command
+(source file is /home/bob/sample/sample.cpp)
 
     g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
 
