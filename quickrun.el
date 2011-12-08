@@ -33,6 +33,8 @@
 (eval-when-compile
   (require 'cl))
 
+(require 'ansi-color)
+
 (defvar quickrun/timeout-seconds 10
   "Timeout seconds for running too long process")
 
@@ -616,9 +618,12 @@ Place holders are beginning with '%' and replaced by:
      ((file-exists-p file) (delete-file file)))))
 
 (defun quickrun/sentinel (process state)
-  (let ((status (process-status process)))
+  (let ((status (process-status process))
+        (buf (process-buffer process)))
     (cond ((eq status 'exit)
-           (pop-to-buffer (process-buffer process))
+           (with-current-buffer buf
+             (ansi-color-apply-on-region (point-min) (point-max)))
+           (pop-to-buffer buf)
            (quickrun/remove-temp-files)
            (delete-process process)
            (cancel-timer quickrun/timeout-timer))
