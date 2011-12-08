@@ -459,7 +459,8 @@ Place holders are beginning with '%' and replaced by:
   (interactive)
   (unless (member lang quickrun/support-languages)
     (error "%s is not supported. Please see `quickrun/support-languages'"))
-  (unless (gethash key))
+  (unless (gethash key quickrun/lang-key)
+    (error "%s is not found."))
   (puthash lang key quickrun/lang-key))
 
 (defun* quickrun-add-command (key alist &key default extension mode)
