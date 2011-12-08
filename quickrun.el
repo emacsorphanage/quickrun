@@ -198,6 +198,37 @@ See explanation of quickrun/template-place-holders
 if you set your own language configuration.
 ")
 
+(defvar quickrun-alist
+  '(("\\.c$"　. "c")
+    ("\\.\\(cpp\\|cxx\\|C\\|cc\\)$" . "c++")
+    ("\\.m$" . "objc")
+    ("\\.\\(pl\\|pm\\)$" . "perl")
+    ("\\.rb$" . "ruby")
+    ("\\.py$" . "python")
+    ("\\.php$" . "php")
+    ("\\.\\(el\\|elisp\\)$" . "emacs")
+    ("\\.\\(lisp\\|lsp\\)$" . "lisp")
+    ("\\.\\(scm\\|scheme\\)$" . "scheme")
+    ("\\.js$" . "javascript")
+    ("\\.clj$" . "clojure")
+    ("\\.erl$" . "erlang")
+    ("\\.ml$" . "ocaml")
+    ("\\.go$" . "go")
+    ("\\.io$" . "io")
+    ("\\.lua$" . "lua")
+    ("\\.hs$" . "haskell")
+    ("\\.java$" . "java")
+    ("\\.d$" . "d")
+    ("\\.\\(md\\|markdown\\|mdown\\|mkdn\\)$" . "markdown")
+    ("\\.coffee$" . "coffee")
+    ("\\.scala$" . "scala")
+    ("\\.groovy$". "groovy")
+    ("\\.sass$" . "sass")
+    ("\\.less$" . "less")
+    ("\\.\\(sh\\|bash\\|zsh\\|csh\\|csh\\)$" . "shellscript")
+    ("\\.awk$" . "awk"))
+  "Alist of (file-regexp . key)")
+
 (defvar quickrun/major-mode-alist
   '((c-mode . "c")
     (c++-mode . "c++")
@@ -229,33 +260,12 @@ if you set your own language configuration.
     (awk-mode . "awk"))
   "Alist of major-mode and langkey")
 
-(defvar quickrun/extension-alist
-  '((("cpp" "C" "cxx" "cc") . "c++")
-    ("m"    . "objc")
-    (("pl" "pm")   . "perl")
-    ("rb" . "ruby")
-    ("py" . "python")
-    (("el" "elisp") . "emacs")
-    (("lisp" "lsp") . "lisp")
-    ("scm" . "scheme")
-    ("js"  . "javascript")
-    ("clj" . "clojure")
-    ("erl" . "erlang")
-    ("ml" . "ocaml")
-    ("hs"  . "haskell")
-    ("io" . "io")
-    (("md" "markdown" "mdown" "mkdn")  . "markdown")
-    (("sh" "bash" "zsh")  . "shellscript"))
-  "Alist of file extensions and langkey")
-
 (defun quickrun/decide-file-type (filename)
-  (let* ((extension (file-name-extension filename))
-         (from-major-mode
-          (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode))
-         (from-extension
-          (quickrun/find-lang-from-alist quickrun/extension-alist extension)))
-    (or from-major-mode from-extension
-        (find extension quickrun/support-languages :test #'equal))))
+  (let ((from-quickrun-alist
+         (assoc-default filename quickrun-alist 'string-match))
+        (from-major-mode
+         (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode)))
+    (or from-quickrun-alist from-major-mode)))
 
 (defun quickrun/find-lang-from-alist (alist param)
   (loop for pair in alist
@@ -392,7 +402,7 @@ Place holders are beginning with '%' and replaced by:
              (let ((ret (funcall tmpl)))
                (cond ((stringp ret) ret)
                      ((symbolp ret) (symbol-name ret))
-                     (error "%s's param should return string" key))))
+                     (error "%s's param should return symbol or string" key))))
             (t tmpl)))))
 
 (defconst quickrun/default-tmpl-alist
@@ -532,15 +542,18 @@ Place holders are beginning with '%' and replaced by:
 (defvar quickrun-last-lang nil)
 (make-local-variable 'quickrun-last-lang)
 
+(defun quickrun/prompt ()
+  (completing-read (format "QuickRun Lang%s: "
+                           (or (and quickrun-last-lang
+                                    (format "[Default: %s]" quickrun-last-lang))
+                               ""))
+                   quickrun/language-alist
+                   nil nil nil nil quickrun-last-lang))
+
 (defun quickrun-lang (lang)
   "Run specified commands quickly for current buffer"
   (interactive
-   (list (completing-read
-          (format "QuickRun Lang%s: "
-                  (and quickrun-last-lang
-                       (format "[Default: %s]" quickrun-last-lang)))
-          quickrun/language-alist
-          nil nil nil nil quickrun-last-lang)))
+   (list (quickrun/prompt)))
   (quickrun-common :language lang))
 
 (defun quickrun-region (start end)
@@ -559,8 +572,7 @@ Place holders are beginning with '%' and replaced by:
 (make-local-variable 'quickrun/remove-files)
 
 (defun quickrun/get-lang-key (lang)
-  (or (gethash lang quickrun/lang-key) lang
-      (error "Can't found language setting")))
+  (or (gethash lang quickrun/lang-key) lang))
 
 (defun quickrun/add-remove-files (files)
   (if (listp files)
@@ -583,7 +595,8 @@ Place holders are beginning with '%' and replaced by:
 (defun* quickrun-common (&key argument language start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
-         (lang-key (or language (quickrun/get-lang-key lang)))
+         (lang-key (or language (quickrun/get-lang-key lang)
+                       (quickrun/prompt)))
          (src (quickrun/temp-name orig-src lang)))
     (setq quickrun-last-lang lang-key)
     (cond ((string= lang-key "java") (setq src orig-src))
