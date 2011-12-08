@@ -275,13 +275,6 @@ if you set your own language configuration.
                (string= param lang))
         return (cdr pair)))
 
-(defun quickrun/extension-from-lang (lang)
-  (let* ((pair (and (rassoc lang quickrun/extension-alist)))
-         (extensions (and pair (car pair))))
-    (if extensions
-        (cond ((listp extensions) (car extensions))
-              (t extensions)))))
-
 (defun quickrun/get-lang-info (lang)
   (or quickrun-command
       (assoc-default lang quickrun/language-alist)
@@ -412,13 +405,13 @@ Place holders are beginning with '%' and replaced by:
   (unless (executable-find cmd)
     (and cleanup (funcall cleanup cmd))))
 
-(defun quickrun/fill-templates (lang src &optional argument)
+(defun quickrun/fill-templates (lang src)
   (let* ((lang-info (quickrun/get-lang-info lang))
          (cmd       (or (quickrun/get-lang-info-param :command lang-info)
                         (error "not specified command parameter in %s") lang))
          (cmd-opt   (or quickrun-command-option
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
-         (arg       (or argument quickrun-command-argument
+         (arg       (or quickrun-command-argument
                         (quickrun/get-lang-info-param :argument lang-info)
                         ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
@@ -475,7 +468,7 @@ Place holders are beginning with '%' and replaced by:
     (error "%s is not found."))
   (puthash lang key quickrun/lang-key))
 
-(defun* quickrun-add-command (key alist &key default extension mode)
+(defun* quickrun-add-command (key alist &key default mode)
   (cond ((not key) (error "undefined 1st argument 'key'"))
         ((not alist) (error "undefined 2nd argument 'language alist'"))
         ((not (assoc :command alist))
@@ -486,8 +479,6 @@ Place holders are beginning with '%' and replaced by:
       (unless (member default quickrun/support-languages)
         (error "(:default parameter) %s is not support language" default))
       (puthash lang-key key quickrun/lang-key))
-    (if extension
-        (push (cons extension lang-key) quickrun/extension-alist))
     (if mode
         (push (cons mode lang-key) quickrun/major-mode-alist))
     key))
@@ -531,13 +522,14 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun ()
   "Run commands quickly for current buffer"
   (interactive)
-  (quickrun-common))
+  (quickrun-common (point-min) (point-max)))
 
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
   (interactive
    (list (read-string "QuickRun Arg: ")))
-  (quickrun-common :argument arg))
+  (let ((quickrun-command-argument arg))
+    (quickrun)))
 
 (defvar quickrun-last-lang nil)
 (make-local-variable 'quickrun-last-lang)
@@ -554,11 +546,12 @@ Place holders are beginning with '%' and replaced by:
   "Run specified commands quickly for current buffer"
   (interactive
    (list (quickrun/prompt)))
-  (quickrun-common :language lang))
+  (let ((quickrun-command-key lang))
+    (quickrun)))
 
 (defun quickrun-region (start end)
   (interactive "r")
-  (quickrun-common :start start :end end))
+  (quickrun-common start end))
 
 (defvar quickrun/compile-only-flag nil)
 (make-local-variable 'quickrun/compile-only-flag)
@@ -566,7 +559,7 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun-compile-only ()
   (interactive)
   (let ((quickrun/compile-only-flag t))
-    (quickrun-common)))
+    (quickrun)))
 
 (defvar quickrun/remove-files nil)
 (make-local-variable 'quickrun/remove-files)
@@ -579,10 +572,10 @@ Place holders are beginning with '%' and replaced by:
       (setq quickrun/remove-files (append files quickrun/remove-files))
     (push files quickrun/remove-files)))
 
-(defun quickrun/temp-name (src lang)
-  (let ((extension (or (and lang (quickrun/extension-from-lang lang))
-                       (file-name-extension src))))
-   (concat (make-temp-name "qr_") "." extension)))
+(defun quickrun/temp-name (src)
+  (let* ((extension (file-name-extension src))
+         (suffix (or (and extension (concat "." extension)) "")))
+    (concat (make-temp-name "qr_") suffix)))
 
 (defun quickrun/compile-command (cmd-info)
   (or (gethash :compile cmd-info)
@@ -592,20 +585,19 @@ Place holders are beginning with '%' and replaced by:
   (or (and quickrun/compile-only-flag nil)
       (gethash :link cmd-info)))
 
-(defun* quickrun-common (&key argument language start end)
+(defun quickrun-common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
-         (lang-key (or language (quickrun/get-lang-key lang)
+         (lang-key (or quickrun-command-key
+                       (quickrun/get-lang-key lang)
                        (quickrun/prompt)))
-         (src (quickrun/temp-name orig-src lang)))
+         (src (quickrun/temp-name orig-src)))
     (setq quickrun-last-lang lang-key)
     (cond ((string= lang-key "java") (setq src orig-src))
           (t
-           (if (and start end)
-               (write-region start end src)
-             (copy-file orig-src src))
+           (write-region start end src)
            (quickrun/add-remove-files src)))
-    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src argument))
+    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src))
            (compile-status
             (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
                   (link-cmd (quickrun/link-command cmd-info-hash)))
@@ -659,6 +651,10 @@ Place holders are beginning with '%' and replaced by:
 (quickrun/defvar quickrun-command
                  nil listp
                  "Specify command alist directly as as file local variable")
+
+(quickrun/defvar quickrun-command-key
+                 nil strintp
+                 "Specify language key directly as as file local variable")
 
 (quickrun/defvar quickrun-command-option
                  nil stringp
