@@ -110,12 +110,11 @@ User Defined Command
     (quickrun-add-command "pod"
                            '((:command . "perldoc")
                              (:exec    . "%c -T -F %s"))
-                           :extension "pod" :mode 'pod-mode)
+                           :mode 'pod-mode)
 
 quickrun-add-command has key parameters, ':default', ':extension', ':mode'.
 
 * `:default "c++"` means that quickrun uses this command to C++ files as default.
-* `:extension "pod"` means that quickrun uses this comand to '.pod' files.
 * `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
 
 
