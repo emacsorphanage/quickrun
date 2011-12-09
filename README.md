@@ -61,6 +61,9 @@ Compile only with compile.el framework.
 
 Support Programming Languages
 -----------------------------
+`quickrun.el` supports following programming languages and markup languages
+as default. But you can register your own command and apply other languages.
+
 **Programming Language(commands used)**
 
 * C(gcc or clang or Visual C++)
@@ -116,6 +119,21 @@ quickrun-add-command has key parameters, ':default', ':extension', ':mode'.
 
 * `:default "c++"` means that quickrun uses this command to C++ files as default.
 * `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
+
+Add new Language setting
+------------------------
+Alist of **filename patterns** vs corresponding **command-key**.
+
+    (quickrun-add-command "prove" '((:command "prove") (:exec "%c -bv %s")))
+    (add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
+
+
+If file name is matched to regexp "\\.t$", then quickrun.el uses "prove"
+command set for that file.
+
+
+quickrun-file-alist is similar to `auto-mode-alist`, car of list is
+regexp, cdr of list is "command-key".
 
 
 Change Default Command
