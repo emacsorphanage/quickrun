@@ -11,6 +11,6 @@ for my $arg (@ARGV) {
 }
 
 # Local Variables:
-# quickrun-command-option:   "-MScalar::Util=looks_like_number -Mutf8"
-# quickrun-command-argument: "765 IdleM@ster 72 "
+# quickrun-option-cmdopt: "-MScalar::Util=looks_like_number -Mutf8"
+# quickrun-option-args:   "765 IdleM@ster 72 "
 # End:

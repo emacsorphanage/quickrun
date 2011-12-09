@@ -9,6 +9,6 @@ int main(int argc, char *argv[])
 
 /*
   Local Variables:
-  quickrun-command-option: "-lm"
+  quickrun-option-cmdopt: "-lm"
   End:
 */
