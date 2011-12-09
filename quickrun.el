@@ -417,7 +417,7 @@ Place holders are beginning with '%' and replaced by:
          (cmd       (or (and quickrun-option-shebang (quickrun/get-shebang src))
                         quickrun-option-command
                         (quickrun/get-lang-info-param :command lang-info)
-                        (error "not specified command parameter in %s") lang))
+                        (error "not specified command parameter in %s" lang)))
          (cmd-opt   (or quickrun-option-cmdopt
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
          (arg       (or quickrun-option-args
