@@ -401,8 +401,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/check-has-command (cmd &optional cleanup)
   (let ((program (car (split-string cmd))))  ; for /usr/bin/env prog
-   (unless (executable-find program)
-     (and cleanup (funcall cleanup program)))))
+    (unless (executable-find program)
+      (and cleanup (funcall cleanup program)))))
 
 (defun quickrun/get-shebang (src)
   (let ((buf (find-file-noselect src)))
@@ -589,9 +589,9 @@ by quickrun.el. But you can register your own command for some languages")
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
          (cmd-key (or (and current-prefix-arg (quickrun/prompt))
-                       quickrun-option-cmdkey
-                       (quickrun/get-command-key lang)
-                       (quickrun/prompt)))
+                      quickrun-option-cmdkey
+                      (quickrun/get-command-key lang)
+                      (quickrun/prompt)))
          (src (quickrun/temp-name orig-src)))
     (setq quickrun-last-lang cmd-key)
     (cond ((string= cmd-key "java") (setq src orig-src))
