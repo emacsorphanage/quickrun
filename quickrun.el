@@ -196,7 +196,7 @@ See explanation of quickrun/template-place-holders
 if you set your own language configuration.
 ")
 
-(defvar quickrun-alist
+(defvar quickrun-file-alist
   '(("\\.c$"　. "c")
     ("\\.\\(cpp\\|cxx\\|C\\|cc\\)$" . "c++")
     ("\\.m$" . "objc")
@@ -260,7 +260,7 @@ if you set your own language configuration.
 
 (defun quickrun/decide-file-type (filename)
   (let ((from-quickrun-alist
-         (assoc-default filename quickrun-alist 'string-match))
+         (assoc-default filename quickrun-file-alist 'string-match))
         (from-major-mode
          (quickrun/find-lang-from-alist quickrun/major-mode-alist major-mode)))
     (or from-quickrun-alist from-major-mode)))
@@ -452,42 +452,39 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua")
-  "Programming languages and Markup languages supported by quickrun.el")
+  "Programming languages and Markup languages supported as default
+by quickrun.el. But you can register your own command for some languages")
 
-(defvar quickrun/lang-key
+(defvar quickrun/command-key-table
   (make-hash-table :test #'equal))
 
 (defun quickrun-set-default (lang key)
   "Set `key' as default key in programing language `lang'"
   (interactive)
-  (unless (member lang quickrun/support-languages)
-    (error "%s is not supported. Please see `quickrun/support-languages'"))
-  (unless (gethash key quickrun/lang-key)
-    (error "%s is not found."))
-  (puthash lang key quickrun/lang-key))
+  (unless (assoc key quickrun/language-alist)
+    (error "%s is not registered." key))
+  (puthash lang key quickrun/command-key-table))
 
 (defun* quickrun-add-command (key alist &key default mode)
   (cond ((not key) (error "undefined 1st argument 'key'"))
-        ((not alist) (error "undefined 2nd argument 'language alist'"))
+        ((not alist) (error "undefined 2nd argument 'command alist'"))
         ((not (assoc :command alist))
          (error "not found :command parameter in language alist")))
-  (push (cons key alist) quickrun/language-alist)
-  (let ((lang-key (or default key)))
-    (when default
-      (unless (member default quickrun/support-languages)
-        (error "(:default parameter) %s is not support language" default))
-      (puthash lang-key key quickrun/lang-key))
+  (push (cons key (copy-alist alist)) quickrun/language-alist)
+  (let ((cmd-key (or default key)))
+    (if default
+        (puthash cmd-key key quickrun/command-key-table))
     (if mode
-        (push (cons mode lang-key) quickrun/major-mode-alist))
+        (push (cons mode cmd-key) quickrun/major-mode-alist))
     key))
 
 (defun quickrun/find-executable (lst)
   (or (find-if (lambda (cmd) (executable-find cmd)) lst) ""))
 
-(defun quickrun/set-lang-key (lang candidates)
-  (let ((lang-key (concat lang "/" (quickrun/find-executable candidates))))
-    (if lang-key
-        (puthash lang lang-key quickrun/lang-key))))
+(defun quickrun/set-command-key (lang candidates)
+  (let ((cmd-key (concat lang "/" (quickrun/find-executable candidates))))
+    (if cmd-key
+        (puthash lang cmd-key quickrun/command-key-table))))
 
 (defun quickrun/add-command-if-windows (cmd lst)
   (if (quickrun/windows-p)
@@ -504,15 +501,15 @@ Place holders are beginning with '%' and replaced by:
     ("go" . ("8g" "6g" "5g")))
   "Candidates of language which has some compilers or interpreters")
 
-(defun quickrun/init-lang-key ()
+(defun quickrun/init-command-key-table ()
   "Decide command for programing language which has multiple candidates"
   (dolist (lang quickrun/support-languages)
-    (puthash lang lang quickrun/lang-key))
+    (puthash lang lang quickrun/command-key-table))
   (loop for (lang . candidates) in quicklang/lang-candidates
         do
-        (quickrun/set-lang-key lang candidates)))
+        (quickrun/set-command-key lang candidates)))
 
-(quickrun/init-lang-key)
+(quickrun/init-command-key-table)
 
 ;;
 ;; main
@@ -534,7 +531,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/prompt ()
   (completing-read (format "QuickRun Lang%s: "
-                           (or (and quickrun-last-lang
+                           (or (and quickrun-command-key
+                                    quickrun-last-lang
                                     (format "[Default: %s]" quickrun-last-lang))
                                ""))
                    quickrun/language-alist
@@ -555,8 +553,8 @@ Place holders are beginning with '%' and replaced by:
 (defvar quickrun/remove-files nil)
 (make-local-variable 'quickrun/remove-files)
 
-(defun quickrun/get-lang-key (lang)
-  (or (gethash lang quickrun/lang-key) lang))
+(defun quickrun/get-command-key (lang)
+  (or (gethash lang quickrun/command-key-table) lang))
 
 (defun quickrun/add-remove-files (files)
   (if (listp files)
@@ -579,23 +577,23 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun-common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
-         (lang-key (or (and current-prefix-arg (quickrun/prompt))
+         (cmd-key (or (and current-prefix-arg (quickrun/prompt))
                        quickrun-command-key
-                       (quickrun/get-lang-key lang)
+                       (quickrun/get-command-key lang)
                        (quickrun/prompt)))
          (src (quickrun/temp-name orig-src)))
-    (setq quickrun-last-lang lang-key)
-    (cond ((string= lang-key "java") (setq src orig-src))
+    (setq quickrun-last-lang cmd-key)
+    (cond ((string= cmd-key "java") (setq src orig-src))
           (t
            (write-region start end src)
            (quickrun/add-remove-files src)))
-    (let* ((cmd-info-hash (quickrun/fill-templates lang-key src))
+    (let* ((cmd-info-hash (quickrun/fill-templates cmd-key src))
            (compile-status
             (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
                   (link-cmd (quickrun/link-command cmd-info-hash)))
               (catch 'compile
                 (when (and quickrun/compile-only-flag (null compile-cmd))
-                  (message "[%s] compilation command not found" lang-key)
+                  (message "[%s] compilation command not found" cmd-key)
                   (throw 'compile 'command-not-found))
                 (and compile-cmd
                      (quickrun/compile-and-link compile-cmd link-cmd))))))
