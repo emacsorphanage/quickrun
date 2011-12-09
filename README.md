@@ -43,19 +43,26 @@ After Installation
 Basic Usage
 -----------
 
-Run command, compiling, linking, executing.
+Execute current buffer. If `quickrun.el` does not find command-key,
+then `quickrun.el` asks you command-key.
 
     M-x quickrun
 
-Run command by specified language
+Execute current buffer with specified command.
+`quickrun.el` asks you command-key.
 
     C-u M-x quickrun
 
-Run command with arguments.
+Execute region. (Java is not supported)
+
+    M-x quickrun-region
+
+Execute current buffer with arguments.
+`quickrun.el` asks you command line argument
 
     M-x quickrun-with-arg
 
-Compile only with compile.el framework.
+Compile current buffer with compile.el framework, not execute.
 
     M-x quickrun-compile-only
 
@@ -146,10 +153,9 @@ Change Default Command
 This means that quickrun uses "c/clang" command in C files.
 
 
-User Defined Command by file
+User Defined Command with file local variables
 ----------------------------
-quickrun.el let you define your own command by file.
-You can do it to use *'quickrun-command'* file local variable.
+`quickrun.el` has some file local variable.
 
 For example, C11 C++ program file.
 
@@ -174,10 +180,10 @@ For example, C11 C++ program file.
 
     /*
       Local Variables:
-      quickrun-command: ((:command . "g++")
-                         (:compile . "%c -std=c++0x -o %n %s")
-                         (:exec    . "%n apple orange melon")
-                         (:remove  . ("%n")))
+      quickrun-option-cmd: ((:command . "g++")
+                            (:compile . "%c -std=c++0x -o %n %s")
+                            (:exec    . "%n apple orange melon")
+                            (:remove  . ("%n")))
       End:
     */
 
@@ -189,3 +195,57 @@ In this case, quickrun compiles this file with following command
 And quickrun execute with command.
 
     /home/bob/sample/sample apple orange melon
+
+
+Command-Alist
+-------------
+Command alist has ':command', ':compile', ':link', ':exec', ':remove'
+parameters.
+
+:command
+
+`:command` paramter is mandatory parameter.
+
+:compile
+
+Compile command template.
+Set this parameter when compile command is different from execute command
+(Called compile language, like  C, C++, Java etc).
+
+:link
+
+Link command template.
+Set this parameter when compile command is different from link command.
+(like Go Language).
+
+:execute
+
+Execute command temple.
+If this parameter is omitted, `quickrun.el` use default execute
+command template "%c %o %s %a".
+
+:remove
+
+Remove files after executing.
+If command create some intermediate files, you should set this
+parameter. :remove value is atom or list.
+
+
+Format of Command-Alist
+-----------------------
+You can use following placeholders in command-alist.
+
+| Placeholder | Result                                        |
+|:-----------:|:----------------------------------------------|
+|  %c         |  Command                                      |
+|  %o         |  Command line option                          |
+|  %s         |  Source(absolute path)                        |
+|  %a         |  Script's argumetns                           |
+|  %n         |  Source without extension(absolute path)      |
+|  %N         |  Source without extension(nondirectory)       |
+|  %e         |  Source with executable suffix(absolute path) |
+|  %E         |  Source with executable suffix(nondirectory)  |
+
+
+`quickrun.el` copys source file to temporary file firstly,
+so name of source file is at random.
