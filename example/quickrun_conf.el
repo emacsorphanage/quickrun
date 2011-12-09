@@ -18,7 +18,10 @@
 (quickrun-add-command "pod"
                       '((:command . "perldoc")
                         (:exec    . "%c -T -F %s"))
-                      :extension "pod" :mode 'pod-mode)
+                      :mode 'pod-mode)
+
+;; File suffix is '.pod', then `quickrun' use "pod" command-key.
+(add-to-list 'quickrun-file-alist '("\\.pod$" . "pod"))
 
 ;; If you have gcc and clang, quickrun set `gcc' as default,
 ;; `quickrun-set-default' change default command(2nd argument)
