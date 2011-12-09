@@ -153,6 +153,36 @@ Change Default Command
 This means that quickrun uses "c/clang" command in C files.
 
 
+File Local Variables
+--------------------
+File local variables is priority to other parameter.
+
+    quickrun-option-cmd-alist
+
+Command alist.
+
+    quickrun-option-command
+
+String expanded to %c.
+
+    quickrun-option-cmdkey
+
+Command key
+
+    quickrun-option-cmdopt
+
+String expanded to %o
+
+    quickrun-option-args
+
+String expanded to %a.
+
+    quickrun-option-shebang
+
+If this value is not 0, and first line of source file is stated "#!",
+the following string is treated as ":command".
+
+
 User Defined Command with file local variables
 ----------------------------
 `quickrun.el` has some file local variable.
