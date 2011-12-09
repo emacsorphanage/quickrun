@@ -274,7 +274,7 @@ if you set your own language configuration.
         return (cdr pair)))
 
 (defun quickrun/get-lang-info (lang)
-  (or quickrun-option-cmd
+  (or quickrun-option-cmd-alist
       (assoc-default lang quickrun/language-alist)
       (error "not found [%s] language information" lang)))
 
@@ -405,7 +405,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/fill-templates (lang src)
   (let* ((lang-info (quickrun/get-lang-info lang))
-         (cmd       (or (quickrun/get-lang-info-param :command lang-info)
+         (cmd       (or quickrun-option-command
+                        (quickrun/get-lang-info-param :command lang-info)
                         (error "not specified command parameter in %s") lang))
          (cmd-opt   (or quickrun-option-cmdopt
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
@@ -638,12 +639,16 @@ by quickrun.el. But you can register your own command for some languages")
      ,(when safep
         `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
 
-(quickrun/defvar quickrun-option-cmd
+(quickrun/defvar quickrun-option-cmd-alist
                  nil listp
                  "Specify command alist directly as as file local variable")
 
+(quickrun/defvar quickrun-option-command
+                 nil stringp
+                 "Specify command directly as as file local variable")
+
 (quickrun/defvar quickrun-option-cmdkey
-                 nil strintp
+                 nil stringp
                  "Specify language key directly as as file local variable")
 
 (quickrun/defvar quickrun-option-cmdopt
