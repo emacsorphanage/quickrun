@@ -33,7 +33,7 @@
 
 (require 'ansi-color)
 
-(defvar quickrun/timeout-seconds 10
+(defvar quickrun-timeout-seconds 10
   "Timeout seconds for running too long process")
 
 (defconst quickrun/buffer-name "*quickrun*")
@@ -331,9 +331,9 @@ if you set your own language configuration.
       (with-current-buffer buf
         (erase-buffer))
       (lexical-let ((process (apply run-func args)))
-        (if quickrun/timeout-seconds
+        (if quickrun-timeout-seconds
             (setq quickrun/timeout-timer
-                  (run-at-time quickrun/timeout-seconds nil
+                  (run-at-time quickrun-timeout-seconds nil
                                #'quickrun/kill-process process)))
         process))))
 
@@ -344,7 +344,7 @@ if you set your own language configuration.
       (with-current-buffer buf
         (erase-buffer)
         (insert (message "Time out(running over %d second)"
-                         quickrun/timeout-seconds)))
+                         quickrun-timeout-seconds)))
       (quickrun/remove-temp-files)
       (pop-to-buffer buf))))
 
