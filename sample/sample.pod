@@ -7,10 +7,11 @@ quickrun.el - Emacs edition of quickrun.vim
 
 =head1 SYNOPSIS
 
+    (add-to-list 'quickrun-file-alist '("\\.pod$" . "pod"))
     (quickrun-add-command "pod"
                           '((:command . "perldoc")
                             (:exec    . "%c -T -F %s"))
-                          :extension "pod" :mode 'pod-mode)
+                          :mode 'pod-mode)
 
 =head1 DESCRIPTION
 
