@@ -373,7 +373,7 @@ Place holders are beginning with '%' and replaced by:
 (defun* quickrun/place-holder-info (&key command
                                          command-option
                                          source
-                                         argument)
+                                         args)
   (let* ((without-extension (file-name-sans-extension source))
          (executable-suffix (quickrun/executable-suffix command))
          (executable-name (concat without-extension executable-suffix)))
@@ -384,7 +384,7 @@ Place holders are beginning with '%' and replaced by:
       ("%N" . ,without-extension)
       ("%e" . ,(expand-file-name executable-name))
       ("%E" . ,executable-name)
-      ("%a" . ,argument))))
+      ("%a" . ,args))))
 
 (defun quickrun/get-lang-info-param (key lang-info)
   (let ((tmpl (assoc-default key lang-info)))
@@ -400,23 +400,33 @@ Place holders are beginning with '%' and replaced by:
   '((:exec . "%c %o %s %a")))
 
 (defun quickrun/check-has-command (cmd &optional cleanup)
-  (unless (executable-find cmd)
-    (and cleanup (funcall cleanup cmd))))
+  (let ((program (car (split-string cmd))))  ; for /usr/bin/env prog
+   (unless (executable-find program)
+     (and cleanup (funcall cleanup program)))))
+
+(defun quickrun/get-shebang (src)
+  (let ((buf (find-file-noselect src)))
+    (with-current-buffer buf
+      (goto-char (point-min))
+      (if (looking-at "#![ \t]*\\(.*\\)$")
+          (buffer-substring-no-properties (match-beginning 1)
+                                          (match-end 1))))))
 
 (defun quickrun/fill-templates (lang src)
   (let* ((lang-info (quickrun/get-lang-info lang))
-         (cmd       (or quickrun-option-command
+         (cmd       (or (and quickrun-option-shebang (quickrun/get-shebang src))
+                        quickrun-option-command
                         (quickrun/get-lang-info-param :command lang-info)
                         (error "not specified command parameter in %s") lang))
          (cmd-opt   (or quickrun-option-cmdopt
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
          (arg       (or quickrun-option-args
-                        (quickrun/get-lang-info-param :argument lang-info)
+                        (quickrun/get-lang-info-param :args lang-info)
                         ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
                                                :command-option cmd-opt
                                                :source src
-                                               :argument arg))
+                                               :args arg))
          (info (make-hash-table)))
     (quickrun/check-has-command cmd #'(lambda (cmd)
                                         (quickrun/remove-temp-files)
@@ -658,6 +668,10 @@ by quickrun.el. But you can register your own command for some languages")
 (quickrun/defvar quickrun-option-args
                  nil stringp
                  "Specify command argument directly as as file local variable")
+
+(quickrun/defvar quickrun-option-shebang
+                 t booleanp
+                 "Command from schebang")
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
