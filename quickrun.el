@@ -273,7 +273,7 @@ if you set your own language configuration.
                (string= param lang))
         return (cdr pair)))
 
-(defun quickrun/get-lang-info (lang)
+(defun quickrun/command-info (lang)
   (or quickrun-option-cmd-alist
       (assoc-default lang quickrun/language-alist)
       (error "not found [%s] language information" lang)))
@@ -386,8 +386,8 @@ Place holders are beginning with '%' and replaced by:
       ("%E" . ,executable-name)
       ("%a" . ,args))))
 
-(defun quickrun/get-lang-info-param (key lang-info)
-  (let ((tmpl (assoc-default key lang-info)))
+(defun quickrun/command-info-param (key cmd-info)
+  (let ((tmpl (assoc-default key cmd-info)))
     (when tmpl
       (cond ((functionp tmpl)
              (let ((ret (funcall tmpl)))
@@ -413,16 +413,16 @@ Place holders are beginning with '%' and replaced by:
                                           (match-end 1))))))
 
 (defun quickrun/fill-templates (lang src)
-  (let* ((lang-info (quickrun/get-lang-info lang))
-         (cmd       (or (and quickrun-option-shebang (quickrun/get-shebang src))
-                        quickrun-option-command
-                        (quickrun/get-lang-info-param :command lang-info)
-                        (error "not specified command parameter in %s" lang)))
-         (cmd-opt   (or quickrun-option-cmdopt
-                        (quickrun/get-lang-info-param :cmdopt lang-info) ""))
-         (arg       (or quickrun-option-args
-                        (quickrun/get-lang-info-param :args lang-info)
-                        ""))
+  (let* ((cmd-info (quickrun/command-info lang))
+         (cmd      (or (and quickrun-option-shebang (quickrun/get-shebang src))
+                       quickrun-option-command
+                       (quickrun/command-info-param :command cmd-info)
+                       (error "not specified command parameter in %s" lang)))
+         (cmd-opt  (or quickrun-option-cmdopt
+                       (quickrun/command-info-param :cmdopt cmd-info) ""))
+         (arg      (or quickrun-option-args
+                       (quickrun/command-info-param :args cmd-info)
+                       ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
                                                :command-option cmd-opt
                                                :source src
@@ -432,11 +432,11 @@ Place holders are beginning with '%' and replaced by:
                                         (quickrun/remove-temp-files)
                                         (error "Command not found: %s" cmd)))
     (dolist (key `(:compile :compile-only :link :exec))
-      (let ((tmpl (or (quickrun/get-lang-info-param key lang-info)
+      (let ((tmpl (or (quickrun/command-info-param key cmd-info)
                       (assoc-default key quickrun/default-tmpl-alist))))
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
-    (let ((remove-tmpl (quickrun/get-lang-info-param :remove lang-info)))
+    (let ((remove-tmpl (quickrun/command-info-param :remove cmd-info)))
       (if remove-tmpl
           (puthash :remove (mapcar (lambda (x)
                                      (quickrun/fill-template x tmpl-arg))
