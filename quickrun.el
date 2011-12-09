@@ -197,7 +197,7 @@ if you set your own language configuration.
 ")
 
 (defvar quickrun-file-alist
-  '(("\\.c$"　. "c")
+  '(("\\.c$" . "c")
     ("\\.\\(cpp\\|cxx\\|C\\|cc\\)$" . "c++")
     ("\\.m$" . "objc")
     ("\\.\\(pl\\|pm\\)$" . "perl")
@@ -274,7 +274,7 @@ if you set your own language configuration.
         return (cdr pair)))
 
 (defun quickrun/get-lang-info (lang)
-  (or quickrun-command
+  (or quickrun-option-cmd
       (assoc-default lang quickrun/language-alist)
       (error "not found [%s] language information" lang)))
 
@@ -407,9 +407,9 @@ Place holders are beginning with '%' and replaced by:
   (let* ((lang-info (quickrun/get-lang-info lang))
          (cmd       (or (quickrun/get-lang-info-param :command lang-info)
                         (error "not specified command parameter in %s") lang))
-         (cmd-opt   (or quickrun-command-option
+         (cmd-opt   (or quickrun-option-cmdopt
                         (quickrun/get-lang-info-param :cmdopt lang-info) ""))
-         (arg       (or quickrun-command-argument
+         (arg       (or quickrun-option-args
                         (quickrun/get-lang-info-param :argument lang-info)
                         ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
@@ -523,7 +523,7 @@ by quickrun.el. But you can register your own command for some languages")
   "Run commands quickly for current buffer with arguments"
   (interactive
    (list (read-string "QuickRun Arg: ")))
-  (let ((quickrun-command-argument arg))
+  (let ((quickrun-option-args arg))
     (quickrun)))
 
 (defvar quickrun-last-lang nil)
@@ -531,7 +531,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/prompt ()
   (completing-read (format "QuickRun Lang%s: "
-                           (or (and quickrun-command-key
+                           (or (and quickrun-option-cmdkey
                                     quickrun-last-lang
                                     (format "[Default: %s]" quickrun-last-lang))
                                ""))
@@ -578,7 +578,7 @@ by quickrun.el. But you can register your own command for some languages")
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
          (cmd-key (or (and current-prefix-arg (quickrun/prompt))
-                       quickrun-command-key
+                       quickrun-option-cmdkey
                        (quickrun/get-command-key lang)
                        (quickrun/prompt)))
          (src (quickrun/temp-name orig-src)))
@@ -638,19 +638,19 @@ by quickrun.el. But you can register your own command for some languages")
      ,(when safep
         `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
 
-(quickrun/defvar quickrun-command
+(quickrun/defvar quickrun-option-cmd
                  nil listp
                  "Specify command alist directly as as file local variable")
 
-(quickrun/defvar quickrun-command-key
+(quickrun/defvar quickrun-option-cmdkey
                  nil strintp
                  "Specify language key directly as as file local variable")
 
-(quickrun/defvar quickrun-command-option
+(quickrun/defvar quickrun-option-cmdopt
                  nil stringp
                  "Specify command option directly as as file local variable")
 
-(quickrun/defvar quickrun-command-argument
+(quickrun/defvar quickrun-option-args
                  nil stringp
                  "Specify command argument directly as as file local variable")
 
