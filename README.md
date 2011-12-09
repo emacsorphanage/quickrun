@@ -47,13 +47,13 @@ Run command, compiling, linking, executing.
 
     M-x quickrun
 
+Run command by specified language
+
+    C-u M-x quickrun
+
 Run command with arguments.
 
     M-x quickrun-with-arg
-
-Run command by specified language
-
-    M-x quickrun-lang
 
 Compile only with compile.el framework.
 

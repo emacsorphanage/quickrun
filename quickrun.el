@@ -542,13 +542,6 @@ Place holders are beginning with '%' and replaced by:
                    quickrun/language-alist
                    nil nil nil nil quickrun-last-lang))
 
-(defun quickrun-lang (lang)
-  "Run specified commands quickly for current buffer"
-  (interactive
-   (list (quickrun/prompt)))
-  (let ((quickrun-command-key lang))
-    (quickrun)))
-
 (defun quickrun-region (start end)
   (interactive "r")
   (quickrun-common start end))
@@ -588,7 +581,8 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun-common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (lang (quickrun/decide-file-type orig-src))
-         (lang-key (or quickrun-command-key
+         (lang-key (or (and current-prefix-arg (quickrun/prompt))
+                       quickrun-command-key
                        (quickrun/get-lang-key lang)
                        (quickrun/prompt)))
          (src (quickrun/temp-name orig-src)))
