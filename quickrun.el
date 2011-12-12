@@ -38,6 +38,9 @@
 
 (defconst quickrun/buffer-name "*quickrun*")
 
+(defvar quickrun-debug nil
+  "Debug message is enable when `quickrun-debug' is on")
+
 ;;
 ;; Compat
 ;;
@@ -285,12 +288,12 @@ if you set your own language configuration.
 (defun quickrun/compile-and-link (compile link)
   (unless compile
     (error "Compile command is null"))
-  (message "QuickRun Compile: %s" compile)
+  (and quickrun-debug (message "QuickRun Compile: %s" compile))
   (if quickrun/compile-only-flag
       (quickrun/compilation-start compile)
     (quickrun/command-synchronous compile))
   (when link
-    (message "QuickRun Link: %s" link)
+    (and quickrun-debug (message "QuickRun Link: %s" link))
     (quickrun/command-synchronous link)))
 
 (defun quickrun/compilation-start (cmd)
@@ -327,7 +330,7 @@ if you set your own language configuration.
     (let* ((buf (get-buffer-create quickrun/buffer-name))
            (proc-name (format "quickrun-process-%s" (buffer-name)))
            (run-func (apply-partially 'start-process proc-name buf program)))
-      (message "Quickrun Execute: %s" cmd)
+      (and quickrun-debug (message "Quickrun Execute: %s" cmd))
       (with-current-buffer buf
         (erase-buffer))
       (lexical-let ((process (apply run-func args)))
