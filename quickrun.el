@@ -61,51 +61,51 @@ was called."
 
 (defvar quickrun/language-alist
   '(("c/gcc" . ((:command . "gcc")
-                (:compile . "%c %o -o %n %s")
-                (:exec    . "%n %a")
+                (:exec    . ("%c %o -o %n %s" "%n %a"))
+                (:compile-only . "%c -Wall -Werror %o -o %n %s")
                 (:remove . ("%n"))))
 
     ("c/clang" . ((:command . "clang")
-                  (:compile . "%c %o -o %n %s")
-                  (:exec    . "%n %a")
+                  (:exec    . ("%c %o -o %n %s" "%n %a"))
+                  (:compile-only . "%c -Wall -Werror %o -o %n %s")
                   (:remove  . ("%n"))))
 
     ("c/cl" . ((:command . "cl")
-               (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
-               (:exec    . "%n %a")
+               (:exec    . ("%c %o %s /nologo /Fo%n.obj /Fe%n.exe"
+                            "%n %a"))
+               (:compile-only . "%c %o %s /Wall /nologo /Fo%n.obj /Fe%n.exe")
                (:remove  . "%n.obj %n.exe")))
 
     ("c++/g++" . ((:command . "g++")
-                  (:compile . "%c %o -o %n %s")
-                  (:exec    . "%n %a")
-                  (:remove . ("%n"))))
+                  (:exec    . ("%c %o -o %n %s" "%n %a"))
+                  (:compile-only . "%c -Wall -Werror %o -o %n %s")
+                  (:remove  . ("%n"))))
 
     ("c++/clang++" . ((:command . "clang++")
-                      (:compile . "%c %o -o %n %s")
-                      (:exec    . "%n %a")
+                      (:exec    . ("%c %o -o %n %s" "%n %a"))
+                      (:compile-only . "%c -Wall -Werror %o -o %n %s")
                       (:remove  . ("%n"))))
 
     ("c++/cl" . ((:command . "cl")
-                 (:compile . "%c %o %s /nologo /Fo%n.obj /Fe%n.exe")
-                 (:exec    . "%n %a")
+                 (:exec    . ("%c %o %s /nologo /Fo%n.obj /Fe%n.exe"
+                              "%n %a"))
+                 (:compile-only . "%c %o %s /Wall /nologo /Fo%n.obj /Fe%n.exe")
                  (:remove  . "%n.obj %n.exe")))
 
     ("objc" . ((:command . "gcc")
-               (:compile . (lambda ()
-                             (cond ((string= system-type "darwin")
-                                    "%c %o -o %n %s -framework foundation")
-                                   (t "%c %o -o %n %s -lobjc"))) )
-               (:exec    . "%n %a")
+               (:exec    . ((lambda ()
+                              (cond ((string= system-type "darwin")
+                                     "%c %o -o %n %s -framework foundation")
+                                    (t "%c %o -o %n %s -lobjc")))
+                            "%n %a"))
                (:remove  . ("%n"))))
 
     ("d" . ((:command . "dmd")
-            (:compile . "%c %o %s")
-            (:exec    . "%n %a")
+            (:exec    . ("%c %o %s" "%n %a"))
             (:remove  . ("%n" "%n.o"))))
 
     ("java" . ((:command . "java")
-               (:compile . "javac %o %s")
-               (:exec    . "%c %N %a")
+               (:exec    . ("javac %o %s" "%c %N %a"))
                (:remove  . ("%n.class"))))
 
     ("perl" . ((:command . "perl") (:compile-only . "%c -wc %s")))
@@ -143,19 +143,19 @@ was called."
     ("haskell" . ((:command . "runghc")))
 
     ("go/8g"  .  ((:command . "8g")
-                  (:compile . "%c %o -o %n.8 %s")
-                  (:link    . "8l -o %e %n.8")
-                  (:exec    . "%e %a")
+                  (:exec    . ("%c %o -o %n.8 %s"
+                               "8l -o %e %n.8"
+                               "%e %a"))
                   (:remove  . ("%e" "%n.8"))))
     ("go/6g"  .  ((:command . "6g")
-                  (:compile . "%c %o -o %n.6 %s")
-                  (:link    . "6l -o %e %n.6")
-                  (:exec    . "%e %a")
+                  (:exec    . ("%c %o -o %n.6 %s"
+                               "6l -o %e %n.6"
+                               "%e %a"))
                   (:remove  . ("%e" "%n.6"))))
     ("go/5g"  .  ((:command . "5g")
-                  (:compile . "%c %o -o %n.5 %s")
-                  (:link    . "5l -o %e %n.5")
-                  (:exec    . "%e %a")
+                  (:exec    . ("%c %o -o %n.5 %s"
+                               "5l -o %e %n.5"
+                               "%e %a"))
                   (:remove  . ("%e" "%n.5"))))
 
     ("io" . ((:command . "io")))
@@ -168,8 +168,8 @@ was called."
 
     ("erlang" . ((:command . "escript")))
     ("ocaml" . ((:command . "ocamlc")
-                (:compile . "%c %o -o %n %s")
-                (:exec    . "%n %a")
+                (:exec    . ("%c %o -o %n %s"
+                             "%n %a"))
                 (:remove  . ("%n" "%n.cmi" "%n.cmo"))))
 
     ("shellscript" . ((:command . (lambda () sh-shell))))
@@ -178,15 +178,12 @@ was called."
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
-5 keys and those values , :command, :compile, :link, :exec, :remove.
+5 keys and those values , :command, :exec, :remove.
 :command pair is mandatory, other pairs are optional. Associated value
 should be string or a function which returns a string object.
 
 Assosiated values are
 :command = Program name which is used compiled or executed source code.
-:compile = Compile command template
-:link    = Link command template. (This key should be set when compile command
-           differents from link command. For example Go Lang)
 :exec    = Exec command template. If you omit this parameter, quickrun
            use default parameter \"%c %o %s %a\".
 :remove  = Remove files or directories templates.
@@ -282,42 +279,16 @@ if you set your own language configuration.
       (error "not found [%s] language information" lang)))
 
 ;;
-;; Compile
+;; Compile Only
 ;;
-
-(defun quickrun/compile-and-link (compile link)
-  (unless compile
-    (error "Compile command is null"))
-  (and quickrun-debug (message "QuickRun Compile: %s" compile))
-  (if quickrun/compile-only-flag
-      (quickrun/compilation-start compile)
-    (quickrun/command-synchronous compile))
-  (when link
-    (and quickrun-debug (message "QuickRun Link: %s" link))
-    (quickrun/command-synchronous link)))
-
 (defun quickrun/compilation-start (cmd)
   (let ((program (car (split-string cmd))))
-    (quickrun/check-has-command program
-                                #'(lambda (command)
-                                    (message "%s not found" command)
-                                    (throw 'compile 'command-not-found)))
+    (quickrun/check-has-command program)
     (setf compilation-finish-functions #'quickrun/compilation-finish-func)
     (compilation-start cmd t (lambda (x) quickrun/buffer-name))))
 
 (defun quickrun/compilation-finish-func (buffer str)
   (quickrun/remove-temp-files))
-
-(defun quickrun/command-synchronous (cmd)
-  (destructuring-bind (program . args) (split-string cmd)
-    (let* ((buf (get-buffer-create quickrun/buffer-name))
-           (func (apply-partially 'call-process program nil buf t)))
-      (with-current-buffer buf
-        (erase-buffer))
-      (let ((command-status (apply func args)))
-        (unless (= command-status 0)
-          (pop-to-buffer buf)
-          (throw 'compile 'compile-error))))))
 
 ;;
 ;; Execute
@@ -325,12 +296,22 @@ if you set your own language configuration.
 (defvar quickrun/timeout-timer nil)
 (make-variable-buffer-local 'quickrun-timeout-timer)
 
-(defun quickrun/run (cmd)
+(defvar quickrun/command-list nil)
+(make-variable-buffer-local 'quickrun-command-list)
+
+(defun quickrun/exec (cmd-lst)
+  (let ((cmd (car cmd-lst)))
+    (setq quickrun/command-list (cdr cmd-lst))
+    (let ((process (quickrun/exec-cmd cmd)))
+      (set-process-sentinel process #'quickrun/sentinel))))
+
+(defun quickrun/exec-cmd (cmd)
   (destructuring-bind (program . args) (split-string cmd)
     (let* ((buf (get-buffer-create quickrun/buffer-name))
            (proc-name (format "quickrun-process-%s" (buffer-name)))
            (run-func (apply-partially 'start-process proc-name buf program)))
       (and quickrun-debug (message "Quickrun Execute: %s" cmd))
+      (quickrun/check-has-command program)
       (with-current-buffer buf
         (erase-buffer))
       (lexical-let ((process (apply run-func args)))
@@ -350,6 +331,31 @@ if you set your own language configuration.
                          quickrun-timeout-seconds)))
       (quickrun/remove-temp-files)
       (pop-to-buffer buf))))
+
+(defun quickrun/remove-temp-files ()
+  (dolist (file quickrun/remove-files)
+    (cond
+     ((file-directory-p file) (delete-directory file t))
+     ((file-exists-p file) (delete-file file)))))
+
+(defun quickrun/popup-output-buffer (buf)
+  (with-current-buffer buf
+    (ansi-color-apply-on-region (point-min) (point-max)))
+  (pop-to-buffer buf))
+
+(defun quickrun/sentinel (process state)
+  (let ((status (process-status process))
+        (exit-status (process-exit-status process))
+        (buf (process-buffer process)))
+    (cond ((eq status 'exit)
+           (cond ((and (= exit-status 0) quickrun/command-list)
+                  (quickrun/exec quickrun/command-list))
+                 (t
+                  (quickrun/popup-output-buffer buf)
+                  (quickrun/remove-temp-files)))
+           (delete-process process)
+           (cancel-timer quickrun/timeout-timer))
+          (t nil))))
 
 ;;
 ;; Composing command
@@ -373,39 +379,49 @@ Place holders are beginning with '%' and replaced by:
         ((quickrun/windows-p) ".exe")
         (t ".out")))
 
-(defun* quickrun/place-holder-info (&key command
-                                         command-option
-                                         source
-                                         args)
-  (let* ((without-extension (file-name-sans-extension source))
-         (executable-suffix (quickrun/executable-suffix command))
+(defun quickrun/place-holder-info (cmd cmdopt src args)
+  (let* ((without-extension (file-name-sans-extension src))
+         (executable-suffix (quickrun/executable-suffix cmd))
          (executable-name (concat without-extension executable-suffix)))
-    `(("%c" . ,command)
-      ("%o" . ,command-option)
-      ("%s" . ,source)
+    `(("%c" . ,cmd)
+      ("%o" . ,cmdopt)
+      ("%s" . ,src)
       ("%n" . ,(expand-file-name without-extension))
       ("%N" . ,without-extension)
       ("%e" . ,(expand-file-name executable-name))
       ("%E" . ,executable-name)
       ("%a" . ,args))))
 
-(defun quickrun/command-info-param (key cmd-info)
-  (let ((tmpl (assoc-default key cmd-info)))
-    (when tmpl
-      (cond ((functionp tmpl)
-             (let ((ret (funcall tmpl)))
-               (cond ((stringp ret) ret)
-                     ((symbolp ret) (symbol-name ret))
-                     (error "%s's param should return symbol or string" key))))
-            (t tmpl)))))
-
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
 
-(defun quickrun/check-has-command (cmd &optional cleanup)
+(defun quickrun/mklst (item)
+  (if (listp item)
+      item
+    (list item)))
+
+(defun quickrun/extract-template (key cmd-info &optional take-list)
+  (let ((tmpl (or (assoc-default key cmd-info)
+                  (assoc-default key quickrun/default-tmpl-alist))))
+    (cond (take-list
+           (setq tmpl (quickrun/mklst tmpl))
+           (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl))
+          (t
+           (quickrun/eval-parameter tmpl)))))
+
+(defun quickrun/eval-parameter (param)
+  (cond ((functionp param)
+         (let ((ret (funcall param)))
+           (cond ((stringp ret) ret)
+                 ((symbolp ret) (symbol-name ret))
+                 (t
+                  (error "template function should return symbol or string")))))
+        (t param)))
+
+(defun quickrun/check-has-command (cmd)
   (let ((program (car (split-string cmd))))  ; for /usr/bin/env prog
     (unless (executable-find program)
-      (and cleanup (funcall cleanup program)))))
+      (error "'%s' not found" program))))
 
 (defun quickrun/get-shebang (src)
   (let ((buf (find-file-noselect src)))
@@ -415,33 +431,31 @@ Place holders are beginning with '%' and replaced by:
           (buffer-substring-no-properties (match-beginning 1)
                                           (match-end 1))))))
 
+(defun quickrun/template-argument (cmd-info src)
+  (let ((cmd (or quickrun-option-command
+                 (and quickrun-option-shebang (quickrun/get-shebang src))
+                 (quickrun/eval-parameter (assoc-default :command cmd-info))
+                 (error "Not found :command parameter")))
+        (cmd-opt (or quickrun-option-cmdopt
+                     (quickrun/extract-template :cmdopt cmd-info) ""))
+        (arg (or quickrun-option-args
+                 (quickrun/extract-template :args cmd-info) "")))
+    (quickrun/place-holder-info cmd cmd-opt src arg)))
+
 (defun quickrun/fill-templates (cmd-key src)
   (let* ((cmd-info (quickrun/command-info cmd-key))
-         (cmd (or quickrun-option-command
-                  (and quickrun-option-shebang (quickrun/get-shebang src))
-                  (quickrun/command-info-param :command cmd-info)
-                  (error "not specified command parameter in %s" cmd-key)))
-         (cmd-opt  (or quickrun-option-cmdopt
-                       (quickrun/command-info-param :cmdopt cmd-info) ""))
-         (arg (or quickrun-option-args
-                  (quickrun/command-info-param :args cmd-info) ""))
-         (tmpl-arg (quickrun/place-holder-info :command cmd
-                                               :command-option cmd-opt
-                                               :source src
-                                               :args arg))
+         (tmpl-arg (quickrun/template-argument cmd-info src))
          (info (make-hash-table)))
-    (quickrun/check-has-command cmd #'(lambda (cmd)
-                                        (error "Command not found: %s" cmd)))
-    (dolist (key `(:compile :compile-only :link :exec))
-      (let ((tmpl (or (quickrun/command-info-param key cmd-info)
-                      (assoc-default key quickrun/default-tmpl-alist))))
+    (dolist (key `(:compile-only))
+      (let ((tmpl (quickrun/extract-template key cmd-info)))
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
-    (let ((remove-tmpl (quickrun/command-info-param :remove cmd-info)))
-      (if remove-tmpl
-          (puthash :remove (mapcar (lambda (x)
-                                     (quickrun/fill-template x tmpl-arg))
-                                   remove-tmpl) info)))
+    (dolist (key `(:exec :remove))
+      (let ((tmpl (quickrun/extract-template key cmd-info t)))
+        (if tmpl
+            (puthash key
+                     (mapcar (lambda (x) (quickrun/fill-template x tmpl-arg))
+                             tmpl) info))))
     info))
 
 (defun quickrun/fill-template (tmpl info)
@@ -529,7 +543,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun ()
   "Run commands quickly for current buffer"
   (interactive)
-  (quickrun-common (point-min) (point-max)))
+  (quickrun/common (point-min) (point-max)))
 
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
@@ -552,7 +566,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun-region (start end)
   (interactive "r")
-  (quickrun-common start end))
+  (quickrun/common start end))
 
 (defvar quickrun/compile-only-flag nil)
 (make-local-variable 'quickrun/compile-only-flag)
@@ -578,14 +592,6 @@ by quickrun.el. But you can register your own command for some languages")
          (suffix (or (and extension (concat "." extension)) "")))
     (concat (make-temp-name "qr_") suffix)))
 
-(defun quickrun/compile-command (cmd-info)
-  (or (gethash :compile cmd-info)
-      (and quickrun/compile-only-flag (gethash :compile-only cmd-info))))
-
-(defun quickrun/link-command (cmd-info)
-  (or (and quickrun/compile-only-flag nil)
-      (gethash :link cmd-info)))
-
 (defun quickrun/command-key (src)
   (let ((file-type (quickrun/decide-file-type src)))
     (or (and current-prefix-arg (quickrun/prompt))
@@ -593,52 +599,32 @@ by quickrun.el. But you can register your own command for some languages")
         (quickrun/get-command-key file-type)
         (quickrun/prompt))))
 
-(defun quickrun-common (start end)
+(defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (cmd-key (quickrun/command-key orig-src))
          (src (quickrun/temp-name orig-src))
-         (cmd-info-hash (quickrun/fill-templates cmd-key src)))
+         use-copy-file)
     (setq quickrun-last-lang cmd-key)
-    (cond ((or (string= cmd-key "java") quickrun/compile-only-flag)
-           (setq src orig-src))
-          (t
-           (write-region start end src)
-           (quickrun/add-remove-files src)))
-    (let ((compile-status
-           (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
-                 (link-cmd (quickrun/link-command cmd-info-hash)))
-             (catch 'compile
-               (when (and quickrun/compile-only-flag (null compile-cmd))
-                 (message "[%s] compilation command not found" cmd-key)
-                 (throw 'compile 'command-not-found))
-               (and compile-cmd
-                    (quickrun/compile-and-link compile-cmd link-cmd))))))
-      (cond ((member compile-status '(compile-error command-not-found))
-             (unless (string= orig-src src)
-               (delete-file src)))
+    (if (or (string= cmd-key "java") quickrun/compile-only-flag)
+        (setq src orig-src)
+      (setq use-copy-file t))
+    (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
+      (quickrun/add-remove-files (gethash :remove cmd-info-hash))
+      (cond (quickrun/compile-only-flag
+             (let ((cmd (or (gethash :compile-only cmd-info-hash)
+                            (error "%s does not support quickrun-compile-only"
+                                   cmd-key))))
+               (quickrun/compilation-start cmd)))
             (t
-             (quickrun/add-remove-files (gethash :remove cmd-info-hash))
-             (unless quickrun/compile-only-flag
-               (let ((process (quickrun/run (gethash :exec cmd-info-hash))))
-                 (set-process-sentinel process #'quickrun/sentinel))))))))
+             (let ((noerror (ignore-errors
+                              (when use-copy-file
+                                (write-region start end src)
+                                (quickrun/add-remove-files src))
+                              (quickrun/exec (gethash :exec cmd-info-hash)))))
+               (unless noerror
+                 (if use-copy-file
+                     (delete-file src)))))))))
 
-(defun quickrun/remove-temp-files ()
-  (dolist (file quickrun/remove-files)
-    (cond
-     ((file-directory-p file) (delete-directory file t))
-     ((file-exists-p file) (delete-file file)))))
-
-(defun quickrun/sentinel (process state)
-  (let ((status (process-status process))
-        (buf (process-buffer process)))
-    (cond ((eq status 'exit)
-           (with-current-buffer buf
-             (ansi-color-apply-on-region (point-min) (point-max)))
-           (pop-to-buffer buf)
-           (quickrun/remove-temp-files)
-           (delete-process process)
-           (cancel-timer quickrun/timeout-timer))
-          (t nil))))
 
 ;;
 ;; file local variable
