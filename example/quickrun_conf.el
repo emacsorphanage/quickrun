@@ -8,8 +8,8 @@
 ;; Add C++ command for C11 and set it default in C++ file.
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
-                        (:compile . "%c -std=c++0x %o -o %n %s")
-                        (:exec    . "%n %a")
+                        (:exec    . ("%c -std=c++0x %o -o %n %s"
+                                     "%n %a"))
                         (:remove  . ("%n")))
                       :default "c++")
 

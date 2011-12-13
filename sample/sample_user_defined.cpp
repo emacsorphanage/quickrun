@@ -20,8 +20,8 @@ int main (int argc, char *argv[])
 /*
   Local Variables:
   quickrun-option-cmd-alist: ((:command . "g++")
-                              (:compile . "%c -std=c++0x -o %n %s")
-                              (:exec    . "%n apple orange melon")
+                              (:exec    . ("%c -std=c++0x -o %n %s"
+                                           "%n apple orange melon"))
                               (:remove  . ("%n")))
   End:
 */
