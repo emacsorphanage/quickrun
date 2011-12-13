@@ -112,8 +112,8 @@ User Defined Command
 
     (quickrun-add-command "c++/c11"
                            '((:command . "g++")
-                             (:compile . "%c -std=c++0x %o -o %n %s")
-                             (:exec    . "%n %a")
+                             (:exec    . ("%c -std=c++0x %o -o %n %s"
+                                          "%n %a"))
                              (:remove  . ("%n")))
                            :default "c++")
 
@@ -219,8 +219,8 @@ For example, C11 C++ program file.
     /*
       Local Variables:
       quickrun-option-cmd: ((:command . "g++")
-                            (:compile . "%c -std=c++0x -o %n %s")
-                            (:exec    . "%n apple orange melon")
+                            (:exec    . ("%c -std=c++0x -o %n %s"
+                                         "%n apple orange melon"))
                             (:remove  . ("%n")))
       End:
     */
@@ -237,28 +237,19 @@ And quickrun execute with command.
 
 Command-Alist
 -------------
-Command alist has ':command', ':compile', ':link', ':exec', ':remove'
+Command alist has ':command', ':exec', ':remove'
 parameters.
 
 :command
 
 `:command` paramter is mandatory parameter.
 
-:compile
-
-Compile command template.
-Set this parameter when compile command is different from execute command
-(Called compile language, like  C, C++, Java etc).
-
-:link
-
-Link command template.
-Set this parameter when compile command is different from link command.
-(like Go Language).
-
 :execute
 
-Execute command temple.
+Execute command templates. This parameter can take list.
+If you set list parameter, `quickrun.el` executes command
+list in order.
+
 If this parameter is omitted, `quickrun.el` use default execute
 command template "%c %o %s %a".
 
