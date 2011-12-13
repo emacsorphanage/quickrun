@@ -415,24 +415,22 @@ Place holders are beginning with '%' and replaced by:
           (buffer-substring-no-properties (match-beginning 1)
                                           (match-end 1))))))
 
-(defun quickrun/fill-templates (lang src)
-  (let* ((cmd-info (quickrun/command-info lang))
-         (cmd      (or (and quickrun-option-shebang (quickrun/get-shebang src))
-                       quickrun-option-command
-                       (quickrun/command-info-param :command cmd-info)
-                       (error "not specified command parameter in %s" lang)))
+(defun quickrun/fill-templates (cmd-key src)
+  (let* ((cmd-info (quickrun/command-info cmd-key))
+         (cmd (or quickrun-option-command
+                  (and quickrun-option-shebang (quickrun/get-shebang src))
+                  (quickrun/command-info-param :command cmd-info)
+                  (error "not specified command parameter in %s" cmd-key)))
          (cmd-opt  (or quickrun-option-cmdopt
                        (quickrun/command-info-param :cmdopt cmd-info) ""))
-         (arg      (or quickrun-option-args
-                       (quickrun/command-info-param :args cmd-info)
-                       ""))
+         (arg (or quickrun-option-args
+                  (quickrun/command-info-param :args cmd-info) ""))
          (tmpl-arg (quickrun/place-holder-info :command cmd
                                                :command-option cmd-opt
                                                :source src
                                                :args arg))
          (info (make-hash-table)))
     (quickrun/check-has-command cmd #'(lambda (cmd)
-                                        (quickrun/remove-temp-files)
                                         (error "Command not found: %s" cmd)))
     (dolist (key `(:compile :compile-only :link :exec))
       (let ((tmpl (or (quickrun/command-info-param key cmd-info)
@@ -588,30 +586,33 @@ by quickrun.el. But you can register your own command for some languages")
   (or (and quickrun/compile-only-flag nil)
       (gethash :link cmd-info)))
 
+(defun quickrun/command-key (src)
+  (let ((file-type (quickrun/decide-file-type src)))
+    (or (and current-prefix-arg (quickrun/prompt))
+        quickrun-option-cmdkey
+        (quickrun/get-command-key file-type)
+        (quickrun/prompt))))
+
 (defun quickrun-common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
-         (lang (quickrun/decide-file-type orig-src))
-         (cmd-key (or (and current-prefix-arg (quickrun/prompt))
-                      quickrun-option-cmdkey
-                      (quickrun/get-command-key lang)
-                      (quickrun/prompt)))
-         (src (quickrun/temp-name orig-src)))
+         (cmd-key (quickrun/command-key orig-src))
+         (src (quickrun/temp-name orig-src))
+         (cmd-info-hash (quickrun/fill-templates cmd-key src)))
     (setq quickrun-last-lang cmd-key)
     (cond ((or (string= cmd-key "java") quickrun/compile-only-flag)
            (setq src orig-src))
           (t
            (write-region start end src)
            (quickrun/add-remove-files src)))
-    (let* ((cmd-info-hash (quickrun/fill-templates cmd-key src))
-           (compile-status
-            (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
-                  (link-cmd (quickrun/link-command cmd-info-hash)))
-              (catch 'compile
-                (when (and quickrun/compile-only-flag (null compile-cmd))
-                  (message "[%s] compilation command not found" cmd-key)
-                  (throw 'compile 'command-not-found))
-                (and compile-cmd
-                     (quickrun/compile-and-link compile-cmd link-cmd))))))
+    (let ((compile-status
+           (let ((compile-cmd (quickrun/compile-command cmd-info-hash))
+                 (link-cmd (quickrun/link-command cmd-info-hash)))
+             (catch 'compile
+               (when (and quickrun/compile-only-flag (null compile-cmd))
+                 (message "[%s] compilation command not found" cmd-key)
+                 (throw 'compile 'command-not-found))
+               (and compile-cmd
+                    (quickrun/compile-and-link compile-cmd link-cmd))))))
       (cond ((member compile-status '(compile-error command-not-found))
              (unless (string= orig-src src)
                (delete-file src)))
