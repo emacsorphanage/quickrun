@@ -153,6 +153,14 @@ Change Default Command
 This means that quickrun uses "c/clang" command in C files.
 
 
+Timeout Second
+--------------
+`quickrun.el` make the program time-out 10 seconds later as default,
+because of avoiding infinite loop. You can change this value through
+*quickrun-timeout-seconds*. If this variable is set *nil*, time-out
+does not occur.
+
+
 File Local Variables
 --------------------
 File local variables is priority to other parameter.
