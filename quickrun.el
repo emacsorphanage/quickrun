@@ -337,22 +337,24 @@ if you set your own language configuration.
      ((file-directory-p file) (delete-directory file t))
      ((file-exists-p file) (delete-file file)))))
 
-(defun quickrun/popup-output-buffer (buf)
-  (with-current-buffer buf
-    (ansi-color-apply-on-region (point-min) (point-max)))
-  (pop-to-buffer buf))
+(defun quickrun/default-outputter ()
+  (ansi-color-apply-on-region (point-min) (point-max)))
 
 (defun quickrun/make-sentinel (cmds)
   (lexical-let ((rest-commands cmds))
     (lambda (process state)
       (let ((status (process-status process))
             (exit-status (process-exit-status process))
-            (buf (process-buffer process)))
+            (buf (process-buffer process))
+            (outputter (or quickrun-option-outputter
+                           #'quickrun/default-outputter)))
         (cond ((eq status 'exit)
                (cond ((and (= exit-status 0) rest-commands)
                       (quickrun/exec rest-commands))
                      (t
-                      (quickrun/popup-output-buffer buf)
+                      (with-current-buffer buf
+                        (funcall outputter))
+                      (pop-to-buffer buf)
                       (quickrun/remove-temp-files)))
                (delete-process process)
                (cancel-timer quickrun/timeout-timer))
@@ -444,16 +446,23 @@ Place holders are beginning with '%' and replaced by:
   (let* ((cmd-info (quickrun/command-info cmd-key))
          (tmpl-arg (quickrun/template-argument cmd-info src))
          (info (make-hash-table)))
+    ;; take one parameter
     (dolist (key `(:compile-only))
       (let ((tmpl (quickrun/extract-template key cmd-info)))
         (if tmpl
             (puthash key (quickrun/fill-template tmpl tmpl-arg) info))))
+    ;; take one or more parameters
     (dolist (key `(:exec :remove))
       (let ((tmpl (quickrun/extract-template key cmd-info t)))
         (if tmpl
             (puthash key
                      (mapcar (lambda (x) (quickrun/fill-template x tmpl-arg))
                              tmpl) info))))
+    ;; function parameter
+    (dolist (key `(:outputter))
+      (let ((func (assoc-default :outputter cmd-info)))
+        (if (and func (functionp func))
+            (puthash key func info))))
     info))
 
 (defun quickrun/fill-template (tmpl info)
@@ -613,6 +622,7 @@ by quickrun.el. But you can register your own command for some languages")
       (quickrun/copy-region-to-tempfile start end src))
     (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
       (quickrun/add-remove-files (gethash :remove cmd-info-hash))
+      (setq quickrun-option-outputter (gethash :outputter cmd-info-hash))
       (cond (quickrun/compile-only-flag
              (let ((cmd (or (gethash :compile-only cmd-info-hash)
                             (error "%s does not support quickrun-compile-only"
@@ -639,27 +649,31 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/defvar quickrun-option-cmd-alist
                  nil listp
-                 "Specify command alist directly as as file local variable")
+                 "Specify command alist directly as file local variable")
 
 (quickrun/defvar quickrun-option-command
                  nil stringp
-                 "Specify command directly as as file local variable")
+                 "Specify command directly as file local variable")
 
 (quickrun/defvar quickrun-option-cmdkey
                  nil stringp
-                 "Specify language key directly as as file local variable")
+                 "Specify language key directly as file local variable")
 
 (quickrun/defvar quickrun-option-cmdopt
                  nil stringp
-                 "Specify command option directly as as file local variable")
+                 "Specify command option directly as file local variable")
 
 (quickrun/defvar quickrun-option-args
                  nil stringp
-                 "Specify command argument directly as as file local variable")
+                 "Specify command argument directly as file local variable")
+
+(quickrun/defvar quickrun-option-outputter
+                 nil functionp
+                 "Specify format function output buffer as file local variable")
 
 (quickrun/defvar quickrun-option-shebang
                  t booleanp
-                 "Command from schebang")
+                 "Select using command from schebang as file local variable")
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
