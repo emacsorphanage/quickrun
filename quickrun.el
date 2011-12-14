@@ -580,9 +580,6 @@ by quickrun.el. But you can register your own command for some languages")
 (defvar quickrun/remove-files nil)
 (make-local-variable 'quickrun/remove-files)
 
-(defun quickrun/get-command-key (lang)
-  (or (gethash lang quickrun/command-key-table) lang))
-
 (defun quickrun/add-remove-files (files)
   (if (listp files)
       (setq quickrun/remove-files (append files quickrun/remove-files))
@@ -597,7 +594,8 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((file-type (quickrun/decide-file-type src)))
     (or (and current-prefix-arg (quickrun/prompt))
         quickrun-option-cmdkey
-        (quickrun/get-command-key file-type)
+        (gethash file-type quickrun/command-key-table)
+        file-type
         (quickrun/prompt))))
 
 (defun quickrun/common (start end)
