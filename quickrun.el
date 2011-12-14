@@ -524,13 +524,16 @@ by quickrun.el. But you can register your own command for some languages")
         (push (cons mode cmd-key) quickrun/major-mode-alist))
     key))
 
-(defun quickrun/find-executable (lst)
-  (or (find-if (lambda (cmd) (executable-find cmd)) lst) ""))
+(defun quickrun/find-executable (candidates)
+  (loop for candidate in candidates
+        when (executable-find candidate)
+        return candidate))
 
 (defun quickrun/set-command-key (lang candidates)
-  (let ((cmd-key (concat lang "/" (quickrun/find-executable candidates))))
-    (if cmd-key
-        (puthash lang cmd-key quickrun/command-key-table))))
+  (let ((executable (quickrun/find-executable candidates)))
+    (when executable
+      (let ((cmd-key (concat lang "/" executable)))
+        (puthash lang cmd-key quickrun/command-key-table)))))
 
 (defun quickrun/add-command-if-windows (cmd lst)
   (if (quickrun/windows-p)
@@ -625,10 +628,15 @@ by quickrun.el. But you can register your own command for some languages")
       (insert str)))
   (quickrun/add-remove-files dst))
 
+(defun quickrun/kill-quickrun-buffer ()
+  (if (get-buffer quickrun/buffer-name)
+      (kill-buffer quickrun/buffer-name)))
+
 (defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (cmd-key (quickrun/command-key orig-src))
          (src (quickrun/temp-name orig-src)))
+    (quickrun/kill-quickrun-buffer)
     (setq quickrun/last-cmd-key cmd-key)
     (if (or (string= cmd-key "java") quickrun/compile-only-flag)
         (setq src orig-src)
