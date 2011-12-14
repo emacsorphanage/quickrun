@@ -400,8 +400,8 @@ Place holders are beginning with '%' and replaced by:
   (let ((tmpl (or (assoc-default key cmd-info)
                   (assoc-default key quickrun/default-tmpl-alist))))
     (cond (take-list
-           (let ((tmpl-lst (or (and (listp item) item)
-                               (list item))))
+           (let ((tmpl-lst (or (and (listp tmpl) tmpl)
+                               (list tmpl))))
              (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl-lst)))
           (t
            (quickrun/eval-parameter tmpl)))))
@@ -416,7 +416,7 @@ Place holders are beginning with '%' and replaced by:
         (t param)))
 
 (defun quickrun/check-has-command (cmd)
-  (let ((program (car (split-string cmd))))  ; for /usr/bin/env prog
+  (let ((program (car (split-string cmd)))) ; for /usr/bin/env prog
     (unless (executable-find program)
       (error "'%s' not found" program))))
 
