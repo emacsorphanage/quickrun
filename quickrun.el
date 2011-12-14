@@ -601,7 +601,7 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((str (buffer-substring-no-properties start end)))
     (with-temp-file dst
       (insert str)))
-  (quickrun/add-remove-files src))
+  (quickrun/add-remove-files dst))
 
 (defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
