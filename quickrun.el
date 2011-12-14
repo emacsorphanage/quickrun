@@ -416,7 +416,7 @@ Place holders are beginning with '%' and replaced by:
         (t param)))
 
 (defun quickrun/check-has-command (cmd)
-  (let ((program (car (split-string cmd)))) ; for /usr/bin/env prog
+  (let ((program (car (split-string cmd)))) ; for "/usr/bin/env prog"
     (unless (executable-find program)
       (error "'%s' not found" program))))
 
