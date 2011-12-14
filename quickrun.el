@@ -322,14 +322,14 @@ if you set your own language configuration.
 
 (defun quickrun/kill-process (process)
   (when (eq (process-status process) 'run)
-    (kill-process process)
-    (let ((buf (get-buffer-create quickrun/buffer-name)))
-      (with-current-buffer buf
-        (erase-buffer)
-        (insert (message "Time out(running over %d second)"
-                         quickrun-timeout-seconds)))
-      (quickrun/remove-temp-files)
-      (pop-to-buffer buf))))
+    (kill-process process))
+  (let ((buf (get-buffer-create quickrun/buffer-name)))
+    (with-current-buffer buf
+      (erase-buffer)
+      (insert (message "Time out(running over %d second)"
+                       quickrun-timeout-seconds)))
+    (quickrun/remove-temp-files)
+    (pop-to-buffer buf)))
 
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
