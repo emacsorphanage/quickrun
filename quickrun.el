@@ -300,14 +300,18 @@ if you set your own language configuration.
   (let ((next-cmd  (car cmd-lst))
         (rest-cmds (cdr cmd-lst)))
     (ignore-errors
-      (let ((process  (quickrun/exec-cmd next-cmd))
-            (sentinel (quickrun/make-sentinel rest-cmds)))
-        (set-process-sentinel process sentinel)))))
+      (let ((process (quickrun/exec-cmd next-cmd))
+            (outputter (or quickrun-option-outputter
+                           #'quickrun/default-outputter)))
+        (set-process-sentinel process
+                              (quickrun/make-sentinel rest-cmds outputter))))))
 
 (defun quickrun/exec-cmd (cmd)
-  (destructuring-bind (program . args) (split-string cmd)
-    (let* ((buf (get-buffer-create quickrun/buffer-name))
-           (proc-name (format "quickrun-process-%s" (buffer-name)))
+  (let ((cmd-lst (split-string cmd)))
+    (let* ((program (car cmd-lst))
+           (args (cdr cmd-lst))
+           (buf (get-buffer-create quickrun/buffer-name))
+           (proc-name (format "quickrun-process-%s" program))
            (run-func (apply-partially 'start-process proc-name buf program)))
       (and quickrun-debug (message "Quickrun Execute: %s" cmd))
       (quickrun/check-has-command program)
