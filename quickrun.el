@@ -396,17 +396,13 @@ Place holders are beginning with '%' and replaced by:
 (defconst quickrun/default-tmpl-alist
   '((:exec . "%c %o %s %a")))
 
-(defun quickrun/mklst (item)
-  (if (listp item)
-      item
-    (list item)))
-
 (defun quickrun/extract-template (key cmd-info &optional take-list)
   (let ((tmpl (or (assoc-default key cmd-info)
                   (assoc-default key quickrun/default-tmpl-alist))))
     (cond (take-list
-           (setq tmpl (quickrun/mklst tmpl))
-           (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl))
+           (let ((tmpl-lst (or (and (listp item) item)
+                               (list item))))
+             (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl-lst)))
           (t
            (quickrun/eval-parameter tmpl)))))
 
@@ -553,17 +549,18 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-args arg))
     (quickrun)))
 
-(defvar quickrun-last-lang nil)
-(make-local-variable 'quickrun-last-lang)
+(defvar quickrun/last-cmd-key nil)
+(make-local-variable 'quickrun/last-cmd-key)
 
 (defun quickrun/prompt ()
-  (completing-read (format "QuickRun Lang%s: "
-                           (or (and quickrun-option-cmdkey
-                                    quickrun-last-lang
-                                    (format "[Default: %s]" quickrun-last-lang))
-                               ""))
-                   quickrun/language-alist
-                   nil nil nil nil quickrun-last-lang))
+  (let ((default-value (or quickrun-option-cmdkey quickrun/last-cmd-key))
+        (prompt "QuickRun Lang"))
+    (completing-read (format "QuickRun Lang%s: "
+                             (or (and default-value
+                                      (format "[Default: %s]" default-value))
+                                 ""))
+                     quickrun/language-alist
+                     nil nil nil nil default-value)))
 
 (defun quickrun-region (start end)
   (interactive "r")
@@ -598,15 +595,22 @@ by quickrun.el. But you can register your own command for some languages")
         file-type
         (quickrun/prompt))))
 
+(defun quickrun/copy-region (start end dst)
+  ;; Suppress write file message
+  (let ((str (buffer-substring-no-properties start end)))
+    (with-temp-file dst
+      (insert str))))
+
 (defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (cmd-key (quickrun/command-key orig-src))
-         (src (quickrun/temp-name orig-src))
-         use-copy-file)
-    (setq quickrun-last-lang cmd-key)
-    (if (or (string= cmd-key "java") quickrun/compile-only-flag)
-        (setq src orig-src)
-      (setq use-copy-file t))
+         (src (quickrun/temp-name orig-src)))
+    (setq quickrun/last-cmd-key cmd-key)
+    (cond ((or (string= cmd-key "java") quickrun/compile-only-flag)
+           (setq src orig-src))
+          (t
+           (quickrun/copy-region start end src)
+           (quickrun/add-remove-files src)))
     (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
       (quickrun/add-remove-files (gethash :remove cmd-info-hash))
       (cond (quickrun/compile-only-flag
@@ -615,12 +619,6 @@ by quickrun.el. But you can register your own command for some languages")
                                    cmd-key))))
                (quickrun/compilation-start cmd)))
             (t
-             (when use-copy-file
-               ;; Suppress write file message
-               (let ((str (buffer-substring-no-properties start end)))
-                 (with-temp-file src
-                   (insert str)))
-               (quickrun/add-remove-files src))
              (unless (quickrun/exec (gethash :exec cmd-info-hash))
                (quickrun/remove-temp-files)))))))
 
