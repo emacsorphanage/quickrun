@@ -296,14 +296,13 @@ if you set your own language configuration.
 (defvar quickrun/timeout-timer nil)
 (make-variable-buffer-local 'quickrun-timeout-timer)
 
-(defvar quickrun/command-list nil)
-(make-variable-buffer-local 'quickrun-command-list)
-
 (defun quickrun/exec (cmd-lst)
-  (let ((cmd (car cmd-lst)))
-    (setq quickrun/command-list (cdr cmd-lst))
-    (let ((process (quickrun/exec-cmd cmd)))
-      (set-process-sentinel process #'quickrun/sentinel))))
+  (let ((next-cmd  (car cmd-lst))
+        (rest-cmds (cdr cmd-lst)))
+    (ignore-errors
+      (let ((process  (quickrun/exec-cmd next-cmd))
+            (sentinel (quickrun/make-sentinel rest-cmds)))
+        (set-process-sentinel process sentinel)))))
 
 (defun quickrun/exec-cmd (cmd)
   (destructuring-bind (program . args) (split-string cmd)
@@ -343,19 +342,21 @@ if you set your own language configuration.
     (ansi-color-apply-on-region (point-min) (point-max)))
   (pop-to-buffer buf))
 
-(defun quickrun/sentinel (process state)
-  (let ((status (process-status process))
-        (exit-status (process-exit-status process))
-        (buf (process-buffer process)))
-    (cond ((eq status 'exit)
-           (cond ((and (= exit-status 0) quickrun/command-list)
-                  (quickrun/exec quickrun/command-list))
-                 (t
-                  (quickrun/popup-output-buffer buf)
-                  (quickrun/remove-temp-files)))
-           (delete-process process)
-           (cancel-timer quickrun/timeout-timer))
-          (t nil))))
+(defun quickrun/make-sentinel (cmds)
+  (lexical-let ((rest-commands cmds))
+    (lambda (process state)
+      (let ((status (process-status process))
+            (exit-status (process-exit-status process))
+            (buf (process-buffer process)))
+        (cond ((eq status 'exit)
+               (cond ((and (= exit-status 0) rest-commands)
+                      (quickrun/exec rest-commands))
+                     (t
+                      (quickrun/popup-output-buffer buf)
+                      (quickrun/remove-temp-files)))
+               (delete-process process)
+               (cancel-timer quickrun/timeout-timer))
+              (t nil))))))
 
 ;;
 ;; Composing command
@@ -616,14 +617,14 @@ by quickrun.el. But you can register your own command for some languages")
                                    cmd-key))))
                (quickrun/compilation-start cmd)))
             (t
-             (let ((noerror (ignore-errors
-                              (when use-copy-file
-                                (write-region start end src)
-                                (quickrun/add-remove-files src))
-                              (quickrun/exec (gethash :exec cmd-info-hash)))))
-               (unless noerror
-                 (if use-copy-file
-                     (delete-file src)))))))))
+             (when use-copy-file
+               ;; Suppress write file message
+               (let ((str (buffer-substring-no-properties start end)))
+                 (with-temp-file src
+                   (insert str)))
+               (quickrun/add-remove-files src))
+             (unless (quickrun/exec (gethash :exec cmd-info-hash))
+               (quickrun/remove-temp-files)))))))
 
 
 ;;
