@@ -7,6 +7,8 @@ is "quickrun", $var, "setting string 'quickrun'";
 
 like $var, qr/quick/, "var looks like 'quick'";
 
+ok undef, 'error test';
+
 done_testing;
 
 __END__
