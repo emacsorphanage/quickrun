@@ -22,6 +22,9 @@ int main (int argc, char *argv[])
   quickrun-option-cmd-alist: ((:command . "g++")
                               (:exec    . ("%c -std=c++0x -o %n %s"
                                            "%n apple orange melon"))
+                              (:outputter .
+                                (lambda ()
+                                  (highlight-phrase "\\(\\[\\|\\]\\)" "hi-green")))
                               (:remove  . ("%n")))
   End:
 */
