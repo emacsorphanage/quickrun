@@ -399,12 +399,13 @@ Place holders are beginning with '%' and replaced by:
 (defun quickrun/extract-template (key cmd-info &optional take-list)
   (let ((tmpl (or (assoc-default key cmd-info)
                   (assoc-default key quickrun/default-tmpl-alist))))
-    (cond (take-list
-           (let ((tmpl-lst (or (and (listp tmpl) tmpl)
-                               (list tmpl))))
-             (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl-lst)))
-          (t
-           (quickrun/eval-parameter tmpl)))))
+    (when tmpl
+      (cond (take-list
+             (let ((tmpl-lst (or (and (listp tmpl) tmpl)
+                                 (list tmpl))))
+               (mapcar (lambda (x) (quickrun/eval-parameter x)) tmpl-lst)))
+            (t
+             (quickrun/eval-parameter tmpl))))))
 
 (defun quickrun/eval-parameter (param)
   (cond ((functionp param)
@@ -595,22 +596,21 @@ by quickrun.el. But you can register your own command for some languages")
         file-type
         (quickrun/prompt))))
 
-(defun quickrun/copy-region (start end dst)
+(defun quickrun/copy-region-to-tempfile (start end dst)
   ;; Suppress write file message
   (let ((str (buffer-substring-no-properties start end)))
     (with-temp-file dst
-      (insert str))))
+      (insert str)))
+  (quickrun/add-remove-files src))
 
 (defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
          (cmd-key (quickrun/command-key orig-src))
          (src (quickrun/temp-name orig-src)))
     (setq quickrun/last-cmd-key cmd-key)
-    (cond ((or (string= cmd-key "java") quickrun/compile-only-flag)
-           (setq src orig-src))
-          (t
-           (quickrun/copy-region start end src)
-           (quickrun/add-remove-files src)))
+    (if (or (string= cmd-key "java") quickrun/compile-only-flag)
+        (setq src orig-src)
+      (quickrun/copy-region-to-tempfile start end src))
     (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
       (quickrun/add-remove-files (gethash :remove cmd-info-hash))
       (cond (quickrun/compile-only-flag
