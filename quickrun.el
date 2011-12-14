@@ -329,8 +329,9 @@ if you set your own language configuration.
     (kill-process process))
   (let ((buf (get-buffer-create quickrun/buffer-name)))
     (with-current-buffer buf
-      (insert (message "\nTime out(running over %d second)"
-                       quickrun-timeout-seconds)))
+      (insert (format "\nTime out %s(running over %d second)"
+                      (process-name process)
+                      quickrun-timeout-seconds)))
     (quickrun/remove-temp-files)
     (pop-to-buffer buf)))
 
@@ -343,25 +344,34 @@ if you set your own language configuration.
 (defun quickrun/default-outputter ()
   (ansi-color-apply-on-region (point-min) (point-max)))
 
-(defun quickrun/make-sentinel (cmds)
-  (lexical-let ((rest-commands cmds))
+(defun quickrun/popup-output-buffer ()
+  (let ((buf (get-buffer quickrun/buffer-name))
+        (outputter quickrun-option-outputter))
+    (pop-to-buffer buf)
+    ;; because `quickrun-option-outputter' is buffer local variable
+    (setq quickrun-option-outputter outputter)))
+
+(defun quickrun/apply-outputter (outputter)
+  (let ((buf (get-buffer quickrun/buffer-name)))
+    (with-current-buffer buf
+      (funcall outputter))))
+
+(defun quickrun/make-sentinel (cmds outputter)
+  (lexical-let ((rest-commands cmds)
+                (outputter-func outputter))
     (lambda (process state)
       (let ((status (process-status process))
             (exit-status (process-exit-status process))
-            (buf (process-buffer process))
-            (outputter (or quickrun-option-outputter
-                           #'quickrun/default-outputter)))
+            (buf (process-buffer process)))
         (cond ((eq status 'exit)
+               (if quickrun/timeout-timer
+                   (cancel-timer quickrun/timeout-timer))
+               (delete-process process)
                (cond ((and (= exit-status 0) rest-commands)
                       (quickrun/exec rest-commands))
                      (t
-                      (with-current-buffer buf
-                        (funcall outputter))
-                      (pop-to-buffer buf)
-                      (quickrun/remove-temp-files)))
-               (delete-process process)
-               (cancel-timer quickrun/timeout-timer))
-              (t nil))))))
+                      (quickrun/apply-outputter outputter-func)
+                      (quickrun/remove-temp-files)))))))))
 
 ;;
 ;; Composing command
@@ -625,14 +635,16 @@ by quickrun.el. But you can register your own command for some languages")
       (quickrun/copy-region-to-tempfile start end src))
     (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
       (quickrun/add-remove-files (gethash :remove cmd-info-hash))
-      (setq quickrun-option-outputter (gethash :outputter cmd-info-hash))
+      (unless quickrun-option-outputter
+        (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
       (cond (quickrun/compile-only-flag
              (let ((cmd (or (gethash :compile-only cmd-info-hash)
                             (error "%s does not support quickrun-compile-only"
                                    cmd-key))))
                (quickrun/compilation-start cmd)))
             (t
-             (unless (quickrun/exec (gethash :exec cmd-info-hash))
+             (if (quickrun/exec (gethash :exec cmd-info-hash))
+                 (quickrun/popup-output-buffer)
                (quickrun/remove-temp-files)))))))
 
 
