@@ -305,6 +305,8 @@ if you set your own language configuration.
       (let ((process (quickrun/exec-cmd next-cmd))
             (outputter (or quickrun-option-outputter
                            #'quickrun/default-outputter)))
+        (when quickrun-option-input-file
+          (quickrun/process-send-file process))
         (set-process-sentinel process
                               (quickrun/make-sentinel rest-cmds outputter))))))
 
@@ -350,13 +352,21 @@ if you set your own language configuration.
   (let ((buf (get-buffer quickrun/buffer-name))
         (outputter quickrun-option-outputter))
     (pop-to-buffer buf)
-    ;; because `quickrun-option-outputter' is buffer local variable
+    ;; Copy buffer local variable
     (setq quickrun-option-outputter outputter)))
 
 (defun quickrun/apply-outputter (outputter)
   (let ((buf (get-buffer quickrun/buffer-name)))
     (with-current-buffer buf
       (funcall outputter))))
+
+(defun quickrun/process-send-file (process)
+  (let ((buf (find-file-noselect quickrun-option-input-file)))
+    (with-current-buffer buf
+        (send-string process
+                     (buffer-substring-no-properties
+                      (point-min) (point-max)))
+        (process-send-eof process))))
 
 (defun quickrun/make-sentinel (cmds outputter)
   (lexical-let ((rest-commands cmds)
@@ -584,6 +594,11 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-args arg))
     (quickrun)))
 
+(defun quickrun-with-input-file (file)
+  (interactive "fInput File: ")
+  (let ((quickrun-option-input-file file))
+   (quickrun)))
+
 (defvar quickrun/last-cmd-key nil)
 (make-local-variable 'quickrun/last-cmd-key)
 
@@ -706,6 +721,10 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/defvar quickrun-option-shebang
                  t booleanp
+                 "Select using command from schebang as file local variable")
+
+(quickrun/defvar quickrun-option-input-file
+                 nil file-exists-p
                  "Select using command from schebang as file local variable")
 
 (provide 'quickrun)
