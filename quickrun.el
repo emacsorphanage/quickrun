@@ -276,7 +276,8 @@ if you set your own language configuration.
 (defun quickrun/command-info (lang)
   (or quickrun-option-cmd-alist
       (assoc-default lang quickrun/language-alist)
-      (error "not found [%s] language information" lang)))
+      (throw 'quickrun
+             (format "not found [%s] language information") lang)))
 
 ;;
 ;; Compile Only
@@ -428,13 +429,14 @@ Place holders are beginning with '%' and replaced by:
            (cond ((stringp ret) ret)
                  ((symbolp ret) (symbol-name ret))
                  (t
-                  (error "template function should return symbol or string")))))
+                  (throw 'quickrun
+                         "template function should return symbol or string")))))
         (t param)))
 
 (defun quickrun/check-has-command (cmd)
   (let ((program (car (split-string cmd)))) ; for "/usr/bin/env prog"
     (unless (executable-find program)
-      (error "'%s' not found" program))))
+      (throw 'quickrun (format "'%s' not found" program)))))
 
 (defun quickrun/get-shebang (src)
   (let ((buf (find-file-noselect src)))
@@ -448,7 +450,7 @@ Place holders are beginning with '%' and replaced by:
   (let ((cmd (or quickrun-option-command
                  (and quickrun-option-shebang (quickrun/get-shebang src))
                  (quickrun/eval-parameter (assoc-default :command cmd-info))
-                 (error "Not found :command parameter")))
+                 (throw 'quickrun "Not found :command parameter")))
         (cmd-opt (or quickrun-option-cmdopt
                      (quickrun/extract-template :cmdopt cmd-info) ""))
         (arg (or quickrun-option-args
@@ -566,7 +568,13 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun (&optional start end)
   "Run commands quickly for current buffer"
   (interactive)
-  (quickrun/common (or start (point-min)) (or end (point-max))))
+  (let ((beg (or start (point-min)))
+        (end (or end (point-max))))
+    (let ((has-error (catch 'quickrun
+                       (quickrun/common beg end))))
+      (when has-error
+        (message "%s" has-error)
+        (quickrun/remove-temp-files)))))
 
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
@@ -646,14 +654,15 @@ by quickrun.el. But you can register your own command for some languages")
       (unless quickrun-option-outputter
         (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
       (cond (quickrun/compile-only-flag
-             (let ((cmd (or (gethash :compile-only cmd-info-hash)
-                            (error "%s does not support quickrun-compile-only"
-                                   cmd-key))))
+             (let ((cmd (gethash :compile-only cmd-info-hash)))
+               (unless cmd
+                 (throw 'quickrun
+                        (format "%s does not support quickrun-compile-only"
+                                cmd-key)))
                (quickrun/compilation-start cmd)))
             (t
-             (if (quickrun/exec (gethash :exec cmd-info-hash))
-                 (quickrun/popup-output-buffer)
-               (quickrun/remove-temp-files)))))))
+             (when (quickrun/exec (gethash :exec cmd-info-hash))
+               (quickrun/popup-output-buffer)))))))
 
 
 ;;
