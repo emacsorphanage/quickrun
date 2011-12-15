@@ -563,10 +563,10 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 ;; main
 ;;
-(defun quickrun ()
+(defun quickrun (&optional start end)
   "Run commands quickly for current buffer"
   (interactive)
-  (quickrun/common (point-min) (point-max)))
+  (quickrun/common (or start (point-min)) (or end (point-max))))
 
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
@@ -590,7 +590,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun-region (start end)
   (interactive "r")
-  (quickrun/common start end))
+  (quickrun start end))
 
 (defvar quickrun/compile-only-flag nil)
 (make-local-variable 'quickrun/compile-only-flag)
