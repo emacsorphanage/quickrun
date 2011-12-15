@@ -105,6 +105,7 @@ was called."
             (:remove  . ("%n" "%n.o"))))
 
     ("java" . ((:command . "java")
+               (:compile-only . "javac -Werror %o %s")
                (:exec    . ("javac %o %s" "%c %N %a"))
                (:remove  . ("%n.class"))))
 
