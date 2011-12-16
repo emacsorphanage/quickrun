@@ -6,9 +6,9 @@ Introduction
 **quickrun.el** is emacs version of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
 
-quickrun is a extension to execute editing buffer.
-quickrun is similar to executable-interpret, but quickrun provides more convenient
-commands. quickrun execute not only script languages(Perl, Ruby, Python etc), but also
+`quickrun.el` is a extension to execute editing buffer.
+`quickrun.el` is similar to executable-interpret, but `quickrun.el` provides more convenient
+commands. `quickrun.el` execute not only script languages(Perl, Ruby, Python etc), but also
 compiling languages(C, C++, Go, Java etc).
 
 
@@ -19,7 +19,7 @@ Requirements
 Emacs 22.1 or higher.
 
 
-I test quickrun on Ubuntu 11.10(Emacs23.3) and MacOSX(Emacs 23.3, 21.1),
+I test `quickrun.el` on Ubuntu 11.10(Emacs23.3) and MacOSX(Emacs 23.3, 21.1),
 I don't test on Windows.
 
 
@@ -59,6 +59,11 @@ Execute region. (Java is not supported)
 
 Execute current buffer with arguments.
 `quickrun.el` asks you command line argument
+
+    M-x quickrun-with-arg
+
+Execute current buffer with input file which is redirected to STDIN.
+`quickrun.el` asks you input file name.
 
     M-x quickrun-with-arg
 
@@ -155,8 +160,8 @@ This means that quickrun uses "c/clang" command in C files.
 
 Timeout Second
 --------------
-`quickrun.el` make the program time-out 10 seconds later as default,
-because of avoiding infinite loop. You can change this value through
+`quickrun.el` makes program kill 10 seconds later as default,
+for avoiding infinite loop. You can change this value through
 *quickrun-timeout-seconds*. If this variable is set *nil*, time-out
 does not occur.
 
@@ -189,6 +194,14 @@ String expanded to %a.
 
 If this value is not 0, and first line of source file is stated "#!",
 the following string is treated as ":command".
+
+    quickrun-option-outputter
+
+Outputter function.
+
+    quickrun-option-input-file
+
+Input file which is redirected to STDIN.
 
 
 User Defined Command with file local variables
