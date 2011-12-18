@@ -278,7 +278,7 @@ if you set your own language configuration.
   (or quickrun-option-cmd-alist
       (assoc-default lang quickrun/language-alist)
       (throw 'quickrun
-             (format "not found [%s] language information") lang)))
+             (format "not found [%s] language information" lang))))
 
 ;;
 ;; Compile Only
@@ -400,9 +400,10 @@ if you set your own language configuration.
 
 (defun quickrun/defined-outputter-buffer (bufname)
   (let ((buf (get-buffer-create bufname))
-        (curbuf (current-buffer)))
+        (curbuf (current-buffer))
+        (str (buffer-substring (point-min) (point-max))))
     (with-current-buffer buf
-      (insert-buffer curbuf))))
+      (insert str))))
 
 (defun quickrun/defined-outputter-variable (varname)
   (let ((symbol (intern varname))
