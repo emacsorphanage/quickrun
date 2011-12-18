@@ -348,17 +348,52 @@ if you set your own language configuration.
 (defun quickrun/default-outputter ()
   (ansi-color-apply-on-region (point-min) (point-max)))
 
+(defun quickrun/use-defined-outputter (outputter)
+  (let ((name (symbol-name outputter)))
+   (or (eq outputter 'browser)
+       (string-match "^\\(file\\|buffer\\):" name))))
+
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
         (outputter quickrun-option-outputter))
-    (pop-to-buffer buf)
-    ;; Copy buffer local variable
-    (setq quickrun-option-outputter outputter)))
+    (unless (quickrun/use-defined-outputter outputter)
+      (pop-to-buffer buf)
+      ;; Copy buffer local variable
+      (setq quickrun-option-outputter outputter))))
+
+;;
+;; Predefined outputter
+;;
+(defun quickrun/defined-outputter-file (file)
+  (write-region (point-min) (point-max) file))
+
+(defun quickrun/defined-outputter-message ()
+  (message "%s"
+           (buffer-substring-no-properties (point-min) (point-max))))
+
+(defun quickrun/defined-outputter-browser ()
+  (browse-url-of-region (point-min) (point-max)))
 
 (defun quickrun/apply-outputter (outputter)
-  (let ((buf (get-buffer quickrun/buffer-name)))
-    (with-current-buffer buf
-      (funcall outputter))))
+  (lexical-let ((buf (get-buffer quickrun/buffer-name)))
+    (flet ((qr/buffer (bufname)
+                      (let ((b (get-buffer-create bufname)))
+                        (with-current-buffer b
+                          (insert-buffer buf)))))
+      (let ((name (symbol-name outputter)))
+        (cond ((eq outputter 'message)
+               (setq outputter #'quickrun/defined-outputter-message))
+              ((eq outputter 'browser)
+               (setq outputter #'quickrun/defined-outputter-browser))
+              ((string-match "^\\(file\\|buffer\\):\\(.*\\)$" name)
+               (lexical-let* ((func (if (string= (match-string 1 name) "file")
+                                        #'quickrun/defined-outputter-file
+                                      #'qr/buffer))
+                              (output (match-string 2 name)))
+                 (setq outputter (lambda ()
+                                   (funcall func output)))))))
+      (with-current-buffer buf
+        (funcall outputter)))))
 
 (defun quickrun/process-send-file (process)
   (let ((buf (find-file-noselect quickrun-option-input-file)))
@@ -715,8 +750,11 @@ by quickrun.el. But you can register your own command for some languages")
                  nil stringp
                  "Specify command argument directly as file local variable")
 
+(defun quickrun/outputter-p (x)
+  (lambda (x) (or (functionp x) (symbolp x))))
+
 (quickrun/defvar quickrun-option-outputter
-                 nil functionp
+                 nil quickrun/outputter-p
                  "Specify format function output buffer as file local variable")
 
 (quickrun/defvar quickrun-option-shebang
