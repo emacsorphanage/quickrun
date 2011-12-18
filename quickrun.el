@@ -175,7 +175,7 @@ was called."
 
     ("shellscript" . ((:command . (lambda () sh-shell))))
     ("awk" . ((:command . "awk")
-              (:exec    . "%c %o -f %s -a")))
+              (:exec    . "%c %o -f %s %a")))
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
