@@ -289,6 +289,7 @@ You can use following placeholders in command-alist.
 |  %a         |  Script's argumetns                           |
 |  %n         |  Source without extension(absolute path)      |
 |  %N         |  Source without extension(nondirectory)       |
+|  %d         |  Directory name of Source(absolute path)      |
 |  %e         |  Source with executable suffix(absolute path) |
 |  %E         |  Source with executable suffix(nondirectory)  |
 
