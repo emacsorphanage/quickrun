@@ -272,6 +272,10 @@ Remove files after executing.
 If command create some intermediate files, you should set this
 parameter. :remove value is atom or list.
 
+:outputter
+
+Outputter function. Outputter function is called in output buffer(\*quickrun\*).
+
 
 Format of Command-Alist
 -----------------------
@@ -291,3 +295,24 @@ You can use following placeholders in command-alist.
 
 `quickrun.el` copys source file to temporary file firstly,
 so name of source file is at random.
+
+
+Outputter
+---------
+Outputter is a function for processing output buffer, enable some major-mode,
+output other buffer or file, open it with browser etc.
+
+`quickrun.el` defines some function for users. You specify outputter following,
+`quickrun.el` call predefined function
+
+* buffer:buffername
+
+Output to buffer(buffername)
+
+* file:filename
+
+Output to file(filename)
+
+* browser
+
+Open output with browser
