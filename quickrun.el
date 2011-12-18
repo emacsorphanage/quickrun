@@ -349,9 +349,10 @@ if you set your own language configuration.
   (ansi-color-apply-on-region (point-min) (point-max)))
 
 (defun quickrun/use-defined-outputter (outputter)
-  (let ((name (symbol-name outputter)))
-   (or (eq outputter 'browser)
-       (string-match "^\\(file\\|buffer\\):" name))))
+  (when (symbolp outputter)
+    (let ((name (symbol-name outputter)))
+      (or (eq outputter 'browser)
+          (string-match "^\\(file\\|buffer\\):" name)))))
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
@@ -376,24 +377,25 @@ if you set your own language configuration.
 
 (defun quickrun/apply-outputter (outputter)
   (lexical-let ((buf (get-buffer quickrun/buffer-name)))
-    (flet ((qr/buffer (bufname)
-                      (let ((b (get-buffer-create bufname)))
-                        (with-current-buffer b
-                          (insert-buffer buf)))))
-      (let ((name (symbol-name outputter)))
-        (cond ((eq outputter 'message)
-               (setq outputter #'quickrun/defined-outputter-message))
-              ((eq outputter 'browser)
-               (setq outputter #'quickrun/defined-outputter-browser))
-              ((string-match "^\\(file\\|buffer\\):\\(.*\\)$" name)
-               (lexical-let* ((func (if (string= (match-string 1 name) "file")
-                                        #'quickrun/defined-outputter-file
-                                      #'qr/buffer))
-                              (output (match-string 2 name)))
-                 (setq outputter (lambda ()
-                                   (funcall func output)))))))
-      (with-current-buffer buf
-        (funcall outputter)))))
+    (when (symbolp outputter)
+      (flet ((qr/buffer (bufname)
+                        (let ((b (get-buffer-create bufname)))
+                          (with-current-buffer b
+                            (insert-buffer buf)))))
+        (let ((name (symbol-name outputter)))
+          (cond ((eq outputter 'message)
+                 (setq outputter #'quickrun/defined-outputter-message))
+                ((eq outputter 'browser)
+                 (setq outputter #'quickrun/defined-outputter-browser))
+                ((string-match "^\\(file\\|buffer\\):\\(.*\\)$" name)
+                 (lexical-let* ((func (if (string= (match-string 1 name) "file")
+                                          #'quickrun/defined-outputter-file
+                                        #'qr/buffer))
+                                (output (match-string 2 name)))
+                   (setq outputter (lambda ()
+                                     (funcall func output)))))))))
+    (with-current-buffer buf
+      (funcall outputter))))
 
 (defun quickrun/process-send-file (process)
   (let ((buf (find-file-noselect quickrun-option-input-file)))
@@ -522,7 +524,7 @@ Place holders are beginning with '%' and replaced by:
     ;; function parameter
     (dolist (key `(:outputter))
       (let ((func (assoc-default :outputter cmd-info)))
-        (if (and func (functionp func))
+        (if (and func (or (functionp func) (symbolp func)))
             (puthash key func info))))
     info))
 
@@ -617,7 +619,8 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((beg (or start (point-min)))
         (end (or end (point-max))))
     (let ((has-error (catch 'quickrun
-                       (quickrun/common beg end))))
+                       (quickrun/common beg end)
+                       nil)))
       (when has-error
         (message "%s" has-error)
         (quickrun/remove-temp-files)))))
