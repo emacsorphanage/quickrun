@@ -322,7 +322,7 @@ if you set your own language configuration.
       (with-current-buffer buf
         (erase-buffer))
       (lexical-let ((process (apply run-func args)))
-        (if quickrun-timeout-seconds
+        (if (>= quickrun-timeout-seconds 0)
             (setq quickrun/timeout-timer
                   (run-at-time quickrun-timeout-seconds nil
                                #'quickrun/kill-process process)))
@@ -654,7 +654,9 @@ by quickrun.el. But you can register your own command for some languages")
   "Run commands quickly for current buffer"
   (interactive)
   (let ((beg (or start (point-min)))
-        (end (or end (point-max))))
+        (end (or end (point-max)))
+        (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
+                                      quickrun-timeout-seconds)))
     (let ((has-error (catch 'quickrun
                        (quickrun/common beg end)
                        nil)))
@@ -805,6 +807,10 @@ by quickrun.el. But you can register your own command for some languages")
 (quickrun/defvar quickrun-option-input-file
                  nil file-exists-p
                  "Select using command from schebang as file local variable")
+
+(quickrun/defvar quickrun-option-timeout-seconds
+                 nil integerp
+                 "Timeout seconds as file local variable")
 
 (provide 'quickrun)
 ;;; quickrun.el ends here

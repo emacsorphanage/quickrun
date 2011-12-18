@@ -162,8 +162,8 @@ Timeout Second
 --------------
 `quickrun.el` makes program kill 10 seconds later as default,
 for avoiding infinite loop. You can change this value through
-*quickrun-timeout-seconds*. If this variable is set *nil*, time-out
-does not occur.
+*quickrun-timeout-seconds*. If this variable is set negative integer,
+time-out does not occur.
 
 
 File Local Variables
