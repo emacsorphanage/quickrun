@@ -457,13 +457,14 @@ if you set your own language configuration.
 ;; Composing command
 ;;
 (defconst quickrun/template-place-holders
-  '("%c" "%o" "%s" "%a" "%n" "%N" "%e" "%E")
+  '("%c" "%o" "%s" "%a" "%d" "%n" "%N" "%e" "%E")
   "A list of place holders of each language parameter.
 Place holders are beginning with '%' and replaced by:
 %c: :command parameter
 %o: command options
 %s: source code
 %a: program argument
+%d: directory name
 %n: abosolute path of source code without extension
 %N: source code name without extension
 %e: abosolute path of source code with exeutable extension(.exe, .out, .class)
@@ -477,6 +478,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/place-holder-info (cmd cmdopt src args)
   (let* ((without-extension (file-name-sans-extension src))
+         (dirname (file-name-directory (expand-file-name src)))
+         (directory (substring dirname 0 (- (length dirname) 1)))
          (executable-suffix (quickrun/executable-suffix cmd))
          (executable-name (concat without-extension executable-suffix)))
     `(("%c" . ,cmd)
@@ -484,6 +487,7 @@ Place holders are beginning with '%' and replaced by:
       ("%s" . ,src)
       ("%n" . ,(expand-file-name without-extension))
       ("%N" . ,without-extension)
+      ("%d" . ,directory)
       ("%e" . ,(expand-file-name executable-name))
       ("%E" . ,executable-name)
       ("%a" . ,args))))
@@ -711,6 +715,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun/command-key (src)
   (let ((file-type (quickrun/decide-file-type src)))
     (or (and current-prefix-arg (quickrun/prompt))
+        (and quickrun-option-cmd-alist "_user_defined")
         quickrun-option-cmdkey
         (gethash file-type quickrun/command-key-table)
         file-type
