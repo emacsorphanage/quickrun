@@ -403,7 +403,8 @@ if you set your own language configuration.
         (curbuf (current-buffer))
         (str (buffer-substring (point-min) (point-max))))
     (with-current-buffer buf
-      (insert str))))
+      (insert str))
+    (pop-to-buffer buf)))
 
 (defun quickrun/defined-outputter-variable (varname)
   (let ((symbol (intern varname))
