@@ -302,8 +302,8 @@ Outputter
 Outputter is a function for processing output buffer, enable some major-mode,
 output other buffer or file, open it with browser etc.
 
-`quickrun.el` defines some function for users. You specify outputter following,
-`quickrun.el` call predefined function
+`quickrun.el` defines some functions as default. You can specify outputter
+following as symbols or string, `quickrun.el` call predefined function
 
 * buffer:buffername
 
@@ -313,6 +313,18 @@ Output to buffer(buffername)
 
 Output to file(filename)
 
+* variable:varname
+
+Output to variable(varname)
+
 * browser
 
-Open output with browser
+Output to Web browser(using function `browse-url`)
+
+* message
+
+Output to \*Message\* buffer(using function `message`)
+
+* null
+
+No output.
