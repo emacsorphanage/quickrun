@@ -523,14 +523,12 @@ Place holders are beginning with '%' and replaced by:
       (throw 'quickrun (format "'%s' not found" program)))))
 
 (defun quickrun/get-shebang (src)
-  (let* ((buf (find-file-noselect src))
-         (shebang (with-current-buffer buf
-                    (goto-char (point-min))
-                    (if (looking-at "#![ \t]*\\(.*\\)$")
-                        (buffer-substring-no-properties (match-beginning 1)
-                                                        (match-end 1))))))
-    (kill-buffer buf)
-    shebang))
+  (with-temp-buffer
+    (insert-file-contents src)
+    (goto-char (point-min))
+    (if (looking-at "#![ \t]*\\(.*\\)$")
+        (buffer-substring-no-properties (match-beginning 1)
+                                        (match-end 1)))))
 
 (defun quickrun/template-argument (cmd-info src)
   (let ((cmd (or quickrun-option-command
