@@ -758,6 +758,28 @@ by quickrun.el. But you can register your own command for some languages")
              (when (quickrun/exec (gethash :exec cmd-info-hash))
                (quickrun/popup-output-buffer)))))))
 
+;;
+;; anything
+;;
+
+(defvar anything-c-source-quickrun
+  '((name . "anything-quickrun")
+    (volatile)
+    (candidates . (lambda ()
+                    (loop for cmd-alist in quickrun/language-alist
+                          collect (car cmd-alist))))
+    (action . (("Run this cmd-key" . quickrun/anything-action-default))))
+  "anything source of `quickrun'")
+
+(defun quickrun/anything-action-default (cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun)))
+
+(defun anything-quickrun ()
+  (interactive)
+  (unless (featurep 'anything)
+    (error "anything is not installed."))
+  (anything anything-c-source-quickrun))
 
 ;;
 ;; file local variable
