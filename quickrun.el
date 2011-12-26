@@ -810,10 +810,14 @@ by quickrun.el. But you can register your own command for some languages")
   '((name . "anything-quickrun")
     (volatile)
     (candidates . (lambda ()
-                    (loop for cmd-alist in quickrun/language-alist
-                          collect (car cmd-alist))))
+                    (loop for (cmd-key . cmd-info) in quickrun/language-alist
+                          collect (quickrun/anything-candidate cmd-key cmd-info))))
     (action . (("Run this cmd-key" . quickrun/anything-action-default))))
   "anything source of `quickrun'")
+
+(defun quickrun/anything-candidate (cmd-key cmd-info)
+  (let ((description (or (assoc-default :description cmd-info) "")))
+    (cons (format "%-25s %s" cmd-key description) cmd-key)))
 
 (defun quickrun/anything-action-default (cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
