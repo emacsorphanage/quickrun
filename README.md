@@ -71,6 +71,10 @@ Compile current buffer with compile.el framework, not execute.
 
     M-x quickrun-compile-only
 
+`M-x quickrun` with anything interaface
+
+    M-x anything-quickrun
+
 Support Programming Languages
 -----------------------------
 `quickrun.el` supports following programming languages and markup languages
@@ -141,7 +145,8 @@ Alist of **filename patterns** vs corresponding **command-key**.
 
 
 If file name is matched to regexp "\\.t$", then quickrun.el uses "prove"
-command set for that file.
+command set for that file. `quickrun-file-alist` is a higher priority
+to select command-key than major-mode.
 
 
 quickrun-file-alist is similar to `auto-mode-alist`, car of list is
