@@ -807,7 +807,7 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 
 (defvar anything-c-source-quickrun
-  '((name . "anything-quickrun")
+  '((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
                     (loop for (cmd-key . cmd-info) in quickrun/language-alist
