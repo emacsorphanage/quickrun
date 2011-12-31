@@ -129,10 +129,16 @@ User Defined Command
                              (:exec    . "%c -T -F %s"))
                            :mode 'pod-mode)
 
-quickrun-add-command has key parameters, ':default', ':extension', ':mode'.
+quickrun-add-command has key parameters, ':default', ':mode'.
 
-* `:default "c++"` means that quickrun uses this command to C++ files as default.
-* `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
+* `:default` parameter overwrites command-key used of default support language.
+
+`:default "c++"` means that quickrun uses this command to C++ files as default.
+
+* `:mode` parameter means that which major-mode use this command-key.
+
+`:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
+
 
 Add new Language setting
 ------------------------
