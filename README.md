@@ -12,8 +12,6 @@ commands. `quickrun.el` execute not only script languages(Perl, Ruby, Python etc
 compiling languages(C, C++, Go, Java etc).
 
 
-**This software is under development. Any API may change**
-
 Requirements
 ------------
 Emacs 22.1 or higher.
