@@ -26,6 +26,12 @@
 ;;     (require 'quickrun)
 ;;
 
+;;; History:
+
+;; Version 0.1  2011/12/31 syohex
+;; init version
+
+
 ;;; Code:
 
 (eval-when-compile
