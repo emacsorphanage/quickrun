@@ -3,6 +3,8 @@
 ;; Copyright (C) 2011  by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
+;; URL: https://github.com/syohex/emacs-quickrun
+;; Version: 0.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,11 +21,17 @@
 
 ;;; Commentary:
 
+;; quickrun.el executes editing buffer. quickrun.el selects commands to execute
+;; buffer automatically. Please see https://github.com/syohex/emacs-quickrun
+;; for more information.
+;;
 ;; This package respects `quickrun.vim' developed by thinca
 ;;   - https://github.com/thinca/vim-quickrun
 ;;
 ;; To use this package, add these lines to your .emacs file:
 ;;     (require 'quickrun)
+;;
+;; And you call 'M-x quickrun'.
 ;;
 
 ;;; History:
