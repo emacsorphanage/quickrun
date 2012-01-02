@@ -259,7 +259,7 @@ And quickrun execute with command.
 
 Command-Alist
 -------------
-Command alist has ':command', ':exec', ':remove'
+Command alist has ':command', ':exec', ':remove', ':outputter', ':description'
 parameters.
 
 :command
@@ -283,7 +283,11 @@ parameter. :remove value is atom or list.
 
 :outputter
 
-Outputter function. Outputter function is called in output buffer(\*quickrun\*).
+Please see Outputter section.
+
+:description
+
+Description of this command. This parameter is used in `anything-quickrun`
 
 
 Format of Command-Alist
