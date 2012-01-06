@@ -682,7 +682,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/add-command-if-windows (cmd lst)
   (if (quickrun/windows-p)
-      (append cmd lst)
+      (cons cmd lst)
     lst))
 
 (defconst quicklang/lang-candidates
