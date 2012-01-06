@@ -18,7 +18,7 @@ Emacs 22.1 or higher.
 
 
 I test `quickrun.el` on Ubuntu 11.10(Emacs23.3) and MacOSX(Emacs 23.3, 21.1),
-I don't test on Windows.
+Windows7 64bit(Emacs 23.3).
 
 
 Installation

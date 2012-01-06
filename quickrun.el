@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.1
+;; Version: 0.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 0.2  2012/01/06 syohex
+;; Fix for Windows(Thanks to leoncamel)
 
 ;; Version 0.1  2011/12/31 syohex
 ;; init version
