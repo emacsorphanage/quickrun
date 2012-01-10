@@ -59,20 +59,6 @@
   "Debug message is enable when `quickrun-debug' is on")
 
 ;;
-;; Compat
-;;
-
-(unless (fboundp 'apply-partially)
-  (defun apply-partially (fun &rest args)
-    "Return a function that is a partial application of FUN to ARGS.
-ARGS is a list of the first N arguments to pass to FUN.
-The result is a new function which does the same as FUN, except that
-the first N arguments are fixed at the values with which this function
-was called."
-    (lexical-let ((fun fun) (args1 args))
-      (lambda (&rest args2) (apply fun (append args1 args2))))))
-
-;;
 ;; language command parameters
 ;;
 
@@ -372,17 +358,14 @@ if you set your own language configuration.
                               (quickrun/make-sentinel rest-cmds outputter))))))
 
 (defun quickrun/exec-cmd (cmd)
-  (let ((cmd-lst (split-string cmd)))
-    (let* ((program (car cmd-lst))
-           (args (cdr cmd-lst))
-           (buf (get-buffer-create quickrun/buffer-name))
-           (proc-name (format "quickrun-process-%s" program))
-           (run-func (apply-partially 'start-process proc-name buf program)))
-      (and quickrun-debug (message "Quickrun Execute: %s" cmd))
-      (quickrun/check-has-command program)
-      (with-current-buffer buf
-        (erase-buffer))
-      (lexical-let ((process (apply run-func args)))
+  (and quickrun-debug (message "Quickrun Execute: %s" cmd))
+  (let ((program (car (split-string cmd)))
+        (buf (get-buffer-create quickrun/buffer-name)))
+    (quickrun/check-has-command program)
+    (with-current-buffer buf
+      (erase-buffer))
+    (let ((proc-name (format "quickrun-process-%s" program)))
+      (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
         (if (>= quickrun-timeout-seconds 0)
             (setq quickrun/timeout-timer
                   (run-at-time quickrun-timeout-seconds nil
