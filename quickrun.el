@@ -135,7 +135,7 @@
               (:description . "Run PHP script")))
 
     ("emacs" . ((:command . "emacs")
-                (:exec    . "%c -Q --script %s")
+                (:exec    . "%c -q --no-site-file --batch -l %s")
                 (:description . "Run Elisp as script file")))
     ("lisp/clisp" . ((:command . "clisp")
                      (:description . "Run Lisp file with clisp")))
