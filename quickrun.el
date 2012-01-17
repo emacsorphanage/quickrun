@@ -507,6 +507,8 @@ if you set your own language configuration.
                       (quickrun/exec rest-commands))
                      (t
                       (quickrun/apply-outputter outputter-func)
+                      (if (> scroll-conservatively 0)
+                          (recenter))
                       (quickrun/remove-temp-files)))))))))
 
 ;;
