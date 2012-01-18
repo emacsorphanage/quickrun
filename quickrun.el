@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.3
+;; Version: 0.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,10 @@
 ;;
 
 ;;; History:
+
+;; Version 0.4  2012/01/18 syohex
+;; Fix command-alist of emacs lisp and update its sample
+;; Fix case of that scroll-conservatively is not zero.
 
 ;; Version 0.3  2012/01/12 syohex
 ;; Support command line arguments that contain spaces or tabs
