@@ -5,6 +5,14 @@
 ;; require quickrun.el
 (require 'quickrun)
 
+;; You should assign key binding, if you often use `quickrun' commands.
+(global-set-key (kbd "<f5>") 'quickrun)
+(global-set-key (kbd "M-<f5>") 'quickrun-compile-only)
+
+;; I recomment you set popwin for quickrun.el
+;; See also http://www.emacswiki.org/emacs/PopWin
+(push '("*quickrun*") popwin:special-display-config)
+
 ;; Add C++ command for C11 and set it default in C++ file.
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
