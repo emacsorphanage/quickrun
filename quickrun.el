@@ -778,7 +778,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun/command-key (src)
   (let ((file-type (quickrun/decide-file-type src)))
     (or (and current-prefix-arg (quickrun/prompt))
-        (and quickrun-option-cmd-alist "_user_defined")
+        (and quickrun-option-cmd-alist "_user_defined") ;; setting dummy value
         quickrun-option-cmdkey
         (gethash file-type quickrun/command-key-table)
         file-type
