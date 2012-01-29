@@ -317,29 +317,28 @@ Outputter is a function for processing output buffer, enable some major-mode,
 output other buffer or file, open it with browser etc. Default outputter is
 to output to \*quickrun\* buffer and processing ANSI Color sequence.
 
-`quickrun.el` defines some functions as default. You can specify outputter
-following as symbols or string, `quickrun.el` call predefined function
+`quickrun.el` defines following functions as default.
 
 * buffer:buffername
 
-Output to buffer(buffername)
+Output to buffer. [outputter *buffer* sample](sample/sample_outputter_buffer.pl)
 
 * file:filename
 
-Output to file(filename)
+Output to file. [outputter *file* sample](sample/sample_outputter_file.pl)
 
 * variable:varname
 
-Output to variable(varname)
+Output to variable. [outputter *variable* sample](sample/sample_outputter_variable.pl)
 
 * browser
 
-Output to Web browser(using function `browse-url`)
+Output to Web browser(using function *browse-url`) [outputter *browser* sample](sample/sample_outputter_browser.pl)
 
 * message
 
-Output to \*Message\* buffer(using function `message`)
+Output to \*Message\* buffer(using function *message`) [outputter *message* sample](sample/sample_outputter_message.pl)
 
 * null
 
-No output.
+No output. [outputter *null* sample](sample/sample_outputter_null.pl)
