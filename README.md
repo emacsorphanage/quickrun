@@ -321,24 +321,24 @@ to output to \*quickrun\* buffer and processing ANSI Color sequence.
 
 * buffer:buffername
 
-Output to buffer. [outputter *buffer* sample](emacs-quickrun/sample/sample_outputter_buffer.pl)
+Output to buffer. [outputter *buffer* sample](emacs-quickrun/tree/master/sample/sample_outputter_buffer.pl)
 
 * file:filename
 
-Output to file. [outputter *file* sample](emacs-quickrun/sample/sample_outputter_file.pl)
+Output to file. [outputter *file* sample](emacs-quickrun/tree/master/sample/sample_outputter_file.pl)
 
 * variable:varname
 
-Output to variable. [outputter *variable* sample](emacs-quickrun/sample/sample_outputter_variable.pl)
+Output to variable. [outputter *variable* sample](emacs-quickrun/tree/master/sample/sample_outputter_variable.pl)
 
 * browser
 
-Output to Web browser(using function *browse-url`) [outputter *browser* sample](emacs-quickrun/sample/sample_outputter_browser.pl)
+Output to Web browser(using function *browse-url*) [outputter *browser* sample](emacs-quickrun/tree/master/sample/sample_outputter_browser.pl)
 
 * message
 
-Output to \*Message\* buffer(using function *message`) [outputter *message* sample](emacs-quickrun/sample/sample_outputter_message.pl)
+Output to \*Message\* buffer(using function *message*) [outputter *message* sample](emacs-quickrun/tree/master/sample/sample_outputter_message.pl)
 
 * null
 
-No output. [outputter *null* sample](emacs-quickrun/sample/sample_outputter_null.pl)
+No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_outputter_null.pl)
