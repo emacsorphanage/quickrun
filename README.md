@@ -144,7 +144,7 @@ Add new Language setting
 ------------------------
 Alist of **filename patterns** vs corresponding **command-key**.
 
-    (quickrun-add-command "prove" '((:command "prove") (:exec "%c -bv %s")))
+    (quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
     (add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
 
 
