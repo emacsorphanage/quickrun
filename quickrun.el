@@ -357,7 +357,6 @@ if you set your own language configuration.
 ;; Execute
 ;;
 (defvar quickrun/timeout-timer nil)
-(make-variable-buffer-local 'quickrun-timeout-timer)
 
 (defun quickrun/exec (cmd-lst)
   (let ((next-cmd  (car cmd-lst))
@@ -738,7 +737,6 @@ by quickrun.el. But you can register your own command for some languages")
    (quickrun)))
 
 (defvar quickrun/last-cmd-key nil)
-(make-local-variable 'quickrun/last-cmd-key)
 
 (defun quickrun/prompt ()
   (let ((default-value (or quickrun-option-cmdkey quickrun/last-cmd-key))
@@ -755,7 +753,6 @@ by quickrun.el. But you can register your own command for some languages")
   (quickrun start end))
 
 (defvar quickrun/compile-only-flag nil)
-(make-local-variable 'quickrun/compile-only-flag)
 
 (defun quickrun-compile-only ()
   (interactive)
@@ -763,7 +760,6 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun)))
 
 (defvar quickrun/remove-files nil)
-(make-local-variable 'quickrun/remove-files)
 
 (defun quickrun/add-remove-files (files)
   (if (listp files)
@@ -800,6 +796,8 @@ by quickrun.el. But you can register your own command for some languages")
          (cmd-key (quickrun/command-key orig-src))
          (src (quickrun/temp-name orig-src)))
     (quickrun/kill-quickrun-buffer)
+    (unless (local-variable-p 'quickrun/last-cmd-key)
+      (make-local-variable 'quickrun/last-cmd-key))
     (setq quickrun/last-cmd-key cmd-key)
     (if (or (string= cmd-key "java") quickrun/compile-only-flag)
         (setq src orig-src)
