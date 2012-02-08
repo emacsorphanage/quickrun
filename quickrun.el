@@ -36,6 +36,9 @@
 
 ;;; History:
 
+;; Version 0.5  2012/02/08 syohex
+;; Add quickrun group and modify global variable with `customize'
+
 ;; Version 0.4  2012/01/18 syohex
 ;; Fix command-alist of emacs lisp and update its sample
 ;; Fix case of that scroll-conservatively is not zero.
@@ -58,13 +61,22 @@
 
 (require 'ansi-color)
 
-(defvar quickrun-timeout-seconds 10
-  "Timeout seconds for running too long process")
+(defgroup quickrun nil
+  "Execute buffer quickly"
+  :group 'processes
+  :prefix 'quickrun)
+
+(defcustom quickrun-timeout-seconds 10
+  "Timeout seconds for running too long process"
+  :type 'integer
+  :group 'quickrun)
+
+(defcustom quickrun-debug nil
+  "Enable debug message"
+  :type 'boolean
+  :group 'quickrun)
 
 (defconst quickrun/buffer-name "*quickrun*")
-
-(defvar quickrun-debug nil
-  "Debug message is enable when `quickrun-debug' is on")
 
 ;;
 ;; language command parameters
