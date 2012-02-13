@@ -417,7 +417,7 @@ if you set your own language configuration.
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
         (outputter quickrun-option-outputter))
-    (unless (quickrun/use-defined-outputter outputter)
+    (unless (quickrun/defined-outputter-p outputter)
       (pop-to-buffer buf)
       ;; Copy buffer local variable
       (setq quickrun-option-outputter outputter))))
@@ -443,14 +443,19 @@ if you set your own language configuration.
 (defun quickrun/default-outputter ()
   (ansi-color-apply-on-region (point-min) (point-max)))
 
-(defun quickrun/use-defined-outputter (outputter)
-  (when (or (symbolp outputter) (stringp outputter))
-    (let ((name (or (and (symbolp outputter) (symbol-name outputter))
-                    outputter)))
-      (or (assoc outputter quickrun/defined-outputter-symbol)
-          (assoc-default name
-                         quickrun/defined-outputter-symbol-with-arg
-                         'string-match)))))
+(defun quickrun/outputter-multi-p (outputter)
+  (and (not (functionp outputter)) (listp outputter)
+       (eq (car outputter) 'multi)))
+
+(defun quickrun/defined-outputter-p (outputter)
+  (cond ((quickrun/outputter-multi-p outputter) t)
+        ((or (symbolp outputter) (stringp outputter))
+         (let ((name (or (and (symbolp outputter) (symbol-name outputter))
+                         outputter)))
+           (or (assoc outputter quickrun/defined-outputter-symbol)
+               (assoc-default name
+                              quickrun/defined-outputter-symbol-with-arg
+                              'string-match))))))
 
 (defun quickrun/defined-outputter-file (file)
   (write-region (point-min) (point-max) file))
@@ -472,32 +477,36 @@ if you set your own language configuration.
         (curbuf (current-buffer))
         (str (buffer-substring (point-min) (point-max))))
     (with-current-buffer buf
-      (insert str))
-    (pop-to-buffer buf)))
+      (insert str))))
 
 (defun quickrun/defined-outputter-variable (varname)
   (let ((symbol (intern varname))
         (value (buffer-substring (point-min) (point-max))))
     (set symbol value)))
 
-(defun quickrun/apply-outputter (outputter)
-  (let ((buf (get-buffer quickrun/buffer-name)))
-    (when (symbolp outputter)
-      (lexical-let* ((name (symbol-name outputter))
-                     (func (assoc-default outputter
-                                          quickrun/defined-outputter-symbol))
-                     (func-with-arg
-                      (assoc-default name
-                                     quickrun/defined-outputter-symbol-with-arg
-                                     'string-match)))
-        (cond (func (setq outputter func))
-              (func-with-arg
-               (if (string-match ":\\(.*\\)$" name)
-                   (setq outputter (lambda ()
-                                     (funcall func-with-arg
-                                              (match-string 1 name)))))))))
-    (with-current-buffer buf
-      (funcall outputter))))
+(defun quickrun/apply-outputter (op)
+  (let ((buf (get-buffer quickrun/buffer-name))
+        (outputters (or (and (quickrun/outputter-multi-p op) (cdr op))
+                        (list op))))
+    (dolist (outputter outputters)
+      (let ((outputter-func outputter))
+        (when (symbolp outputter)
+          (lexical-let* ((name (symbol-name outputter))
+                         (func (assoc-default outputter
+                                              quickrun/defined-outputter-symbol))
+                         (func-with-arg
+                          (assoc-default name
+                                         quickrun/defined-outputter-symbol-with-arg
+                                         'string-match)))
+            (cond (func (setq outputter-func func))
+                  (func-with-arg
+                   (if (string-match ":\\(.*\\)$" name)
+                       (setq outputter-func
+                             (lambda ()
+                               (funcall func-with-arg
+                                        (match-string 1 name)))))))))
+        (with-current-buffer buf
+          (funcall outputter-func))))))
 
 (defun quickrun/process-send-file (process)
   (let ((buf (find-file-noselect quickrun-option-input-file)))
@@ -891,7 +900,8 @@ by quickrun.el. But you can register your own command for some languages")
                  "Specify command argument directly as file local variable")
 
 (defun quickrun/outputter-p (x)
-  (lambda (x) (or (functionp x) (symbolp x) (stringp x))))
+  (lambda (x) (or (functionp x) (symbolp x) (stringp x)
+                  (quickrun/outputter-multi-p x))))
 
 (quickrun/defvar quickrun-option-outputter
                  nil quickrun/outputter-p
