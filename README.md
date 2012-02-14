@@ -339,6 +339,10 @@ Output to Web browser(using function *browse-url*) [outputter *browser* sample](
 
 Output to \*Message\* buffer(using function *message*) [outputter *message* sample](emacs-quickrun/tree/master/sample/sample_outputter_message.pl)
 
+* multi
+
+Use multiple outputters.  [outputter *multi* sample](emacs-quickrun/tree/master/sample/sample_outputter_multi.pl)
+
 * null
 
 No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_outputter_null.pl)
