@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.5
+;; Version: 0.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,10 @@
 ;;
 
 ;;; History:
+
+;; Version 0.6  2012/02/14 syohex
+;; Implement 'multi' outputter.
+;; Change outputter:buffer behavior, not popup-buffer.
 
 ;; Version 0.5  2012/02/08 syohex
 ;; Add quickrun group and modify global variable with `customize'
