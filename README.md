@@ -108,6 +108,7 @@ as default. But you can register your own command and apply other languages.
 * Ocaml(ocamlc)
 * ShellScript(sheban's shell)
 * AWK(awk)
+* Rust(rustc)
 
 
 See also `quickrun/support-languages` global variable.
