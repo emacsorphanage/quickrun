@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.6
+;; Version: 0.7
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 0.7  2012/02/14 syohex
+;; Support Mozilla Rust language(Thanks to koko1000ban).
 
 ;; Version 0.6  2012/02/14 syohex
 ;; Implement 'multi' outputter.
@@ -253,7 +256,7 @@
     ("awk" . ((:command . "awk")
               (:exec    . "%c %o -f %s %a")
               (:description . "Run AWK script")))
-    
+
     ("rust" . ((:command . "rustc")
                (:exec . ("%c %o -o %n %s" "%n %a"))
                (:compile-only . "%c --no-trans --warn-unused-imports %o -o %n %s")
