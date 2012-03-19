@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.7
+;; Version: 0.8
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 0.8  2012/03/19 syohex
+;; Support Dart and Elixir
 
 ;; Version 0.7  2012/02/14 syohex
 ;; Support Mozilla Rust language(Thanks to koko1000ban).
