@@ -262,6 +262,12 @@
                (:compile-only . "%c --no-trans --warn-unused-imports %o -o %n %s")
                (:remove . ("%n"))
                (:description . "Compile rust and execute")))
+
+    ("dart/checked" . ((:command . "dart")
+                       (:cmdopt  . "--enable-type-checks")
+                       (:description . "Run dart with '--enable-type-checks' option")))
+    ("dart/production" . ((:command . "dart")
+                          (:description . "Run dart as without '--enable-type-checks' option")))
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -312,7 +318,8 @@ if you set your own language configuration.
     ("\\.less$" . "less")
     ("\\.\\(sh\\|bash\\|zsh\\|csh\\|csh\\)$" . "shellscript")
     ("\\.awk$" . "awk")
-    ("\\.rs$" . "rust"))
+    ("\\.rs$" . "rust")
+    ("\\.dart$" . "dart/checked"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -344,7 +351,8 @@ if you set your own language configuration.
     ((less-mode less-css-mode) . "less")
     (sh-mode . "shellscript")
     (awk-mode . "awk")
-    (rust-mode . "rust"))
+    (rust-mode . "rust")
+    (dart-mode . "dart/checked"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -679,7 +687,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust")
+    "lua" "rust" "dart")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
