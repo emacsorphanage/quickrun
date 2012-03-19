@@ -268,6 +268,9 @@
                        (:description . "Run dart with '--enable-type-checks' option")))
     ("dart/production" . ((:command . "dart")
                           (:description . "Run dart as without '--enable-type-checks' option")))
+
+    ("elixir" . ((:command . "elixir")
+                 (:description . "Run Elixir script")))
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -319,7 +322,8 @@ if you set your own language configuration.
     ("\\.\\(sh\\|bash\\|zsh\\|csh\\|csh\\)$" . "shellscript")
     ("\\.awk$" . "awk")
     ("\\.rs$" . "rust")
-    ("\\.dart$" . "dart/checked"))
+    ("\\.dart$" . "dart/checked")
+    ("\\.exs?$" . "elixir"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -352,7 +356,8 @@ if you set your own language configuration.
     (sh-mode . "shellscript")
     (awk-mode . "awk")
     (rust-mode . "rust")
-    (dart-mode . "dart/checked"))
+    (dart-mode . "dart/checked")
+    (elixir-mode . "elixir"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -687,7 +692,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart")
+    "lua" "rust" "dart" "elixir")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 

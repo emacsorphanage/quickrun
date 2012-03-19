@@ -110,6 +110,7 @@ as default. But you can register your own command and apply other languages.
 * AWK(awk)
 * Rust(rustc)
 * Dart(dart)
+* Elixir(elixir)
 
 
 See also `quickrun/support-languages` global variable.
