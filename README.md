@@ -109,6 +109,7 @@ as default. But you can register your own command and apply other languages.
 * ShellScript(sheban's shell)
 * AWK(awk)
 * Rust(rustc)
+* Dart(dart)
 
 
 See also `quickrun/support-languages` global variable.
