@@ -688,8 +688,10 @@ Place holders are beginning with '%' and replaced by:
 ;; initialize
 ;;
 (defun quickrun/windows-p ()
-  (or (string= system-type "ms-dos")
-      (string= system-type "windows-nt")))
+  (and (not (and (boundp 'quickrun/use-cygwin-gcc-p)
+                 quickrun/use-cygwin-gcc-p))
+       (or (string= system-type "ms-dos")
+           (string= system-type "windows-nt"))))
 
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
