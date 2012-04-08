@@ -94,15 +94,15 @@
 
 (defvar quickrun/language-alist
   '(("c/gcc" . ((:command . "gcc")
-                (:exec    . ("%c %o -o %n %s" "%n %a"))
-                (:compile-only . "%c -Wall -Werror %o -o %n %s")
-                (:remove . ("%n"))
+                (:exec    . ("%c %o -o %e %s" "%e %a"))
+                (:compile-only . "%c -Wall -Werror %o -o %e %s")
+                (:remove . ("%e"))
                 (:description . "Compile C file with gcc and execute")))
 
     ("c/clang" . ((:command . "clang")
-                  (:exec    . ("%c %o -o %n %s" "%n %a"))
-                  (:compile-only . "%c -Wall -Werror %o -o %n %s")
-                  (:remove  . ("%n"))
+                  (:exec    . ("%c %o -o %e %s" "%e %a"))
+                  (:compile-only . "%c -Wall -Werror %o -o %e %s")
+                  (:remove  . ("%e"))
                   (:description . "Compile C file with llvm/clang and execute")))
 
     ("c/cl" . ((:command . "cl")
@@ -113,15 +113,15 @@
                (:description . "Compile C file with VC++/cl and execute")))
 
     ("c++/g++" . ((:command . "g++")
-                  (:exec    . ("%c %o -o %n %s" "%n %a"))
-                  (:compile-only . "%c -Wall -Werror %o -o %n %s")
-                  (:remove  . ("%n"))
+                  (:exec    . ("%c %o -o %e %s" "%e %a"))
+                  (:compile-only . "%c -Wall -Werror %o -o %e %s")
+                  (:remove  . ("%e"))
                   (:description . "Compile C++ file with g++ and execute")))
 
     ("c++/clang++" . ((:command . "clang++")
-                      (:exec    . ("%c %o -o %n %s" "%n %a"))
-                      (:compile-only . "%c -Wall -Werror %o -o %n %s")
-                      (:remove  . ("%n"))
+                      (:exec    . ("%c %o -o %e %s" "%e %a"))
+                      (:compile-only . "%c -Wall -Werror %o -o %e %s")
+                      (:remove  . ("%e"))
                       (:description . "Compile C++ file with llvm/clang++ and execute")))
 
     ("c++/cl" . ((:command . "cl")
@@ -134,15 +134,15 @@
     ("objc" . ((:command . "gcc")
                (:exec    . ((lambda ()
                               (cond ((string= system-type "darwin")
-                                     "%c %o -o %n %s -framework foundation")
-                                    (t "%c %o -o %n %s -lobjc")))
-                            "%n %a"))
-               (:remove  . ("%n"))
+                                     "%c %o -o %e %s -framework foundation")
+                                    (t "%c %o -o %e %s -lobjc")))
+                            "%e %a"))
+               (:remove  . ("%e"))
                (:description . "Compile Objective-C file with gcc and execute")))
 
     ("d" . ((:command . "dmd")
-            (:exec    . ("%c %o %s" "%n %a"))
-            (:remove  . ("%n" "%n.o"))
+            (:exec    . ("%c %o -of%e %s" "%e %a"))
+            (:remove  . ("%e" "%n.o"))
             (:description . "Compile D language file and execute")))
 
     ("java" . ((:command . "java")
@@ -249,9 +249,9 @@
     ("erlang" . ((:command . "escript")
                  (:description . "Run Erlang file with escript")))
     ("ocaml" . ((:command . "ocamlc")
-                (:exec    . ("%c %o -o %n %s"
-                             "%n %a"))
-                (:remove  . ("%n" "%n.cmi" "%n.cmo"))
+                (:exec    . ("%c %o -o %e %s"
+                             "%e %a"))
+                (:remove  . ("%e" "%n.cmi" "%n.cmo"))
                 (:description . "Compile Ocaml file with ocamlc and execute")))
 
     ("shellscript" . ((:command . (lambda () sh-shell))
@@ -261,9 +261,9 @@
               (:description . "Run AWK script")))
 
     ("rust" . ((:command . "rustc")
-               (:exec . ("%c %o -o %n %s" "%n %a"))
-               (:compile-only . "%c --no-trans --warn-unused-imports %o -o %n %s")
-               (:remove . ("%n"))
+               (:exec . ("%c %o -o %e %s" "%e %a"))
+               (:compile-only . "%c --no-trans --warn-unused-imports %o -o %e %s")
+               (:remove . ("%e"))
                (:description . "Compile rust and execute")))
 
     ("dart/checked" . ((:command . "dart")
