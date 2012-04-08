@@ -36,6 +36,9 @@
 
 ;;; History:
 
+;; Version 0.9  2012/04/08 syohex
+;; Fix problem of not removing temporary file on Windows.
+
 ;; Version 0.8  2012/03/19 syohex
 ;; Support Dart and Elixir
 
