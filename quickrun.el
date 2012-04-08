@@ -689,7 +689,8 @@ Place holders are beginning with '%' and replaced by:
 ;;
 (defun quickrun/windows-p ()
   (or (string= system-type "ms-dos")
-      (string= system-type "windows-nt")))
+      (string= system-type "windows-nt")
+      (string= system-type "cygwin")))
 
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
@@ -733,14 +734,14 @@ by quickrun.el. But you can register your own command for some languages")
       (let ((cmd-key (concat lang "/" executable)))
         (puthash lang cmd-key quickrun/command-key-table)))))
 
-(defun quickrun/add-command-if-windows (cmd lst)
+(defun quickrun/append-commands-if-windows (cmds lst)
   (if (quickrun/windows-p)
-      (cons cmd lst)
+      (append lst cmds)
     lst))
 
 (defconst quicklang/lang-candidates
-  `(("c" . ,(quickrun/add-command-if-windows "cl" '("gcc" "clang")))
-    ("c++" . ,(quickrun/add-command-if-windows "cl" '("g++" "clang++")))
+  `(("c" . ,(quickrun/append-commands-if-windows '("cl") '("gcc" "clang")))
+    ("c++" . ,(quickrun/append-commands-if-windows '("cl") '("g++" "clang++")))
     ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
     ("lisp" . ("clisp" "sbcl" "ccl"))
     ("scheme" . ("gosh"))
