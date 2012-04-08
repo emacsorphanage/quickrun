@@ -763,6 +763,7 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 ;; main
 ;;
+;;;###autoload
 (defun quickrun (&optional start end)
   "Run commands quickly for current buffer"
   (interactive)
@@ -891,6 +892,7 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun)))
 
+;;;###autoload
 (defun anything-quickrun ()
   (interactive)
   (unless (featurep 'anything)
