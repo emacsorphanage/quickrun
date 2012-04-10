@@ -17,18 +17,16 @@ Requirements
 Emacs 22.1 or higher.
 
 
-I test `quickrun.el` on Ubuntu 11.10(Emacs23.3) and MacOSX(Emacs 23.3, 21.1),
-Windows7 64bit(Emacs 23.3).
+I test `quickrun.el` on Ubuntu 11.10(Emacs23.3), MacOSX(Emacs 23.3, 22.1),
+Windows7 64bit(NTEmacs 23.3), Windows7 Cygwin.
 
 
 Installation
 ------------
 
-You have installed auto-install
+You can install `quickrun.el` from [Marmalade](http://marmalade-repo.org/) with package.el.
 
-    (install-elisp "https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el")
-
-You have not installed auto-install
+Install directly:
 
     $ cd load-path-dir
     $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
