@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 0.9
+;; Version: 1.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 1.0  2012/04/30 syohex
+;; Fixed PHP CR problem(Thanks to mat)
 
 ;; Version 0.9  2012/04/08 syohex
 ;; Fix problem of not removing temporary file on Windows.
@@ -423,7 +426,8 @@ if you set your own language configuration.
     (quickrun/check-has-command program)
     (with-current-buffer buf
       (erase-buffer))
-    (let ((proc-name (format "quickrun-process-%s" program)))
+    (let ((proc-name (format "quickrun-process-%s" program))
+          (process-connection-type nil))
       (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
         (if (>= quickrun-timeout-seconds 0)
             (setq quickrun/timeout-timer
