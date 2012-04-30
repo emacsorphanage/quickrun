@@ -61,7 +61,7 @@ Execute current buffer with arguments.
 Execute current buffer with input file which is redirected to STDIN.
 `quickrun.el` asks you input file name.
 
-    M-x quickrun-with-arg
+    M-x quickrun-with-input-file
 
 Compile current buffer with compile.el framework, not execute.
 
