@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.0
+;; Version: 1.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,10 @@
 ;;
 
 ;;; History:
+
+;; Version 1.1  2012/06/13 syohex
+;; Support JSX and fortran(gfortran).
+;; Support gccgo for golang
 
 ;; Version 1.0  2012/04/30 syohex
 ;; Fixed PHP CR problem(Thanks to mat)
@@ -151,6 +155,11 @@
             (:remove  . ("%e" "%n.o"))
             (:description . "Compile D language file and execute")))
 
+    ("fortran/gfortran" . ((:command . "gfortran")
+                           (:exec    . ("%c %o -o %e %s" "%e %a"))
+                           (:remove  . ("%e"))
+                           (:description . "Compile Fortran language with gfortran")))
+
     ("java" . ((:command . "java")
                (:compile-only . "javac -Werror %o %s")
                (:exec    . ("javac %o %s" "%c %N %a"))
@@ -203,6 +212,11 @@
     ("coffee" . ((:command . "coffee")
                  (:description . "Run Coffee script")))
 
+    ("jsx" . ((:command . "jsx")
+              (:exec . "%c --run %o %s %a")
+              (:compile-only . "%c %o %s %s")
+              (:description . "Run Coffee script")))
+
     ("markdown/Markdown.pl" . ((:command . "Markdown.pl")
                                (:description . "Convert Markdown to HTML with Markdown.pl")))
     ("markdown/bluecloth"   . ((:command . "bluecloth")
@@ -237,6 +251,11 @@
                                "%e %a"))
                   (:remove  . ("%e" "%n.5"))
                   (:description . "Compile Go file with 5g(ARM) and execute")))
+
+    ("go/gccgo"  .  ((:command . "gccgo")
+                     (:exec    . ("%c -static-libgcc %o -o %e %s"
+                                  "%e %a"))
+                     (:remove  . ("%e"))))
 
     ("io" . ((:command . "io")
              (:description . "Run IO Language script")))
@@ -322,8 +341,10 @@ if you set your own language configuration.
     ("\\.hs$" . "haskell")
     ("\\.java$" . "java")
     ("\\.d$" . "d")
+    ("\\.\\(f\\|for\\|f90\\|f95\\)" . "fortran")
     ("\\.\\(md\\|markdown\\|mdown\\|mkdn\\)$" . "markdown")
     ("\\.coffee$" . "coffee")
+    ("\\.jsx$" . "jsx")
     ("\\.scala$" . "scala")
     ("\\.groovy$". "groovy")
     ("\\.sass$" . "sass")
@@ -356,8 +377,10 @@ if you set your own language configuration.
     (haskell-mode . "haskell")
     (java-mode . "java")
     (d-mode . "d")
+    (fortran-mode . "fortran")
     (markdown-mode . "markdown")
     (coffee-mode . "coffee")
+    (jsx-mode . "jsx")
     (scala-mode . "scala")
     (groove-mode . "groovy")
     (sass-mode . "sass")
@@ -703,7 +726,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart" "elixir")
+    "lua" "rust" "dart" "elixir" "jsx" "fortran")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
@@ -749,12 +772,13 @@ by quickrun.el. But you can register your own command for some languages")
 (defconst quicklang/lang-candidates
   `(("c" . ,(quickrun/append-commands-if-windows '("cl") '("gcc" "clang")))
     ("c++" . ,(quickrun/append-commands-if-windows '("cl") '("g++" "clang++")))
+    ("fortran" . ("gfortran"))
     ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
     ("lisp" . ("clisp" "sbcl" "ccl"))
     ("scheme" . ("gosh"))
     ("markdown" . ("Markdown.pl" "kramdown" "bluecloth" "redcarpet" "pandoc"))
     ("clojure" . ("jark" "clj-env-dir"))
-    ("go" . ("8g" "6g" "5g")))
+    ("go" . ("gccgo" "8g" "6g" "5g")))
   "Candidates of language which has some compilers or interpreters")
 
 (defun quickrun/init-command-key-table ()
