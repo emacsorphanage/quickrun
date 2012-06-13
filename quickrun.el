@@ -248,6 +248,11 @@
                   (:remove  . ("%e" "%n.5"))
                   (:description . "Compile Go file with 5g(ARM) and execute")))
 
+    ("go/gccgo"  .  ((:command . "gccgo")
+                     (:exec    . ("%c -static-libgcc %o -o %e %s"
+                                  "%e %a"))
+                     (:remove  . ("%e"))))
+
     ("io" . ((:command . "io")
              (:description . "Run IO Language script")))
     ("lua" . ((:command . "lua")
@@ -769,7 +774,7 @@ by quickrun.el. But you can register your own command for some languages")
     ("scheme" . ("gosh"))
     ("markdown" . ("Markdown.pl" "kramdown" "bluecloth" "redcarpet" "pandoc"))
     ("clojure" . ("jark" "clj-env-dir"))
-    ("go" . ("8g" "6g" "5g")))
+    ("go" . ("gccgo" "8g" "6g" "5g")))
   "Candidates of language which has some compilers or interpreters")
 
 (defun quickrun/init-command-key-table ()
