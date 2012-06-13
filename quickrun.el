@@ -722,7 +722,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart" "elixir")
+    "lua" "rust" "dart" "elixir" "jsx" "fortran")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
