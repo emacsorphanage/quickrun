@@ -208,6 +208,11 @@
     ("coffee" . ((:command . "coffee")
                  (:description . "Run Coffee script")))
 
+    ("jsx" . ((:command . "jsx")
+              (:exec . "%c --run %o %s %a")
+              (:compile-only . "%c %o %s %s")
+              (:description . "Run Coffee script")))
+
     ("markdown/Markdown.pl" . ((:command . "Markdown.pl")
                                (:description . "Convert Markdown to HTML with Markdown.pl")))
     ("markdown/bluecloth"   . ((:command . "bluecloth")
@@ -330,6 +335,7 @@ if you set your own language configuration.
     ("\\.\\(f\\|for\\|f90\\|f95\\)" . "fortran")
     ("\\.\\(md\\|markdown\\|mdown\\|mkdn\\)$" . "markdown")
     ("\\.coffee$" . "coffee")
+    ("\\.jsx$" . "jsx")
     ("\\.scala$" . "scala")
     ("\\.groovy$". "groovy")
     ("\\.sass$" . "sass")
@@ -365,6 +371,7 @@ if you set your own language configuration.
     (fortran-mode . "fortran")
     (markdown-mode . "markdown")
     (coffee-mode . "coffee")
+    (jsx-mode . "jsx")
     (scala-mode . "scala")
     (groove-mode . "groovy")
     (sass-mode . "sass")
