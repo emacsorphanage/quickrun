@@ -72,6 +72,10 @@ Compile current buffer with compile.el framework, not execute.
 
     M-x anything-quickrun
 
+`M-x quickrun` with helm interaface
+
+    M-x helm-quickrun
+
 Support Programming Languages
 -----------------------------
 `quickrun.el` supports following programming languages and markup languages
@@ -291,7 +295,8 @@ Please see Outputter section.
 
 :description
 
-Description of this command. This parameter is used in `anything-quickrun`
+Description of this command. This parameter is used in
+`anything-quickrun` or `helm-quickrun`
 
 
 Format of Command-Alist
