@@ -931,6 +931,18 @@ by quickrun.el. But you can register your own command for some languages")
   (anything anything-c-source-quickrun))
 
 ;;
+;; helm
+;;
+
+;;;###autoload
+(defun helm-quickrun ()
+  (interactive)
+  (unless (featurep 'helm)
+    (error "helm is not installed."))
+  (let ((buf (get-buffer-create "*helm quickrun*")))
+    (helm :sources anything-c-source-quickrun :buffer buf)))
+
+;;
 ;; file local variable
 ;; Based on shadow.el. https://raw.github.com/mooz/shadow.el/master/shadow.el
 ;;
