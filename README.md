@@ -364,7 +364,7 @@ No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_ou
 Using quickrun as function from other functions
 -----------------------------------------------
 `quickrun' can be used as function from other functions.
-You can pass configuration by `:command` argument.
+You can pass configuration by `:source` argument.
 Sample is following:
 
     (defun test-perl ()
@@ -375,6 +375,6 @@ Sample is following:
                        (goto-char (point-min))
                        (if (re-search-forward "^\\(.+\\)$" nil t)
                            (match-string 1)))))
-        (quickrun :command `((:command . "prove")
-                             (:default-directory . ,topdir)
-                             (:exec . ("%c -bv --color %s"))))))
+        (quickrun :source `((:command . "prove")
+                            (:default-directory . ,topdir)
+                            (:exec . ("%c -bv --color %s"))))))

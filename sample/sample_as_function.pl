@@ -9,6 +9,6 @@ __END__
 
 (defun exec-perl ()
   (interactive)
-  (quickrun :command '((:command . "perl")
-                       (:default-directory . "/home/syohei/tmp")
-                       (:exec . ("perl -MCwd -MFile::Spec::Functions %s")))))
+  (quickrun :source '((:command . "perl")
+                      (:default-directory . "/home/syohei/tmp")
+                      (:exec . ("perl -MCwd -MFile::Spec::Functions %s")))))

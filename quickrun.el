@@ -829,7 +829,7 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
-                                       (plist-get plist :command)))
+                                       (plist-get plist :source)))
         (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
                                       quickrun-timeout-seconds)))
     (let ((has-error (catch 'quickrun
