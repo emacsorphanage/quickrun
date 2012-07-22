@@ -445,6 +445,9 @@ if you set your own language configuration.
         (set-process-sentinel process
                               (quickrun/make-sentinel rest-cmds outputter))))))
 
+(defun quickrun/default-directory ()
+  (or quickrun-option-default-directory default-directory))
+
 (defun quickrun/exec-cmd (cmd)
   (and quickrun-debug (message "Quickrun Execute: %s" cmd))
   (let ((program (car (split-string cmd)))
@@ -453,7 +456,8 @@ if you set your own language configuration.
     (with-current-buffer buf
       (erase-buffer))
     (let ((proc-name (format "quickrun-process-%s" program))
-          (process-connection-type nil))
+          (process-connection-type nil)
+          (default-directory (quickrun/default-directory)))
       (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
         (if (>= quickrun-timeout-seconds 0)
             (setq quickrun/timeout-timer
@@ -480,11 +484,13 @@ if you set your own language configuration.
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
-        (outputter quickrun-option-outputter))
+        (outputter quickrun-option-outputter)
+        (default-dir (quickrun/default-directory)))
     (unless (quickrun/defined-outputter-p outputter)
       (pop-to-buffer buf)
       ;; Copy buffer local variable
-      (setq quickrun-option-outputter outputter))))
+      (setq quickrun-option-outputter outputter
+            quickrun-option-default-directory default-dir))))
 
 ;;
 ;; Predefined outputter
@@ -707,6 +713,11 @@ Place holders are beginning with '%' and replaced by:
       (let ((func (assoc-default :outputter cmd-info)))
         (if (and func (or (functionp func) (symbolp func)))
             (puthash key func info))))
+    ;; setting new default-directory if ':default-directory' is specified
+    (let ((dir (assoc-default :default-directory cmd-info)))
+      (if dir
+          (setq quickrun-option-default-directory
+                (file-name-as-directory dir))))
     info))
 
 (defun quickrun/fill-template (tmpl info)
@@ -998,6 +1009,10 @@ by quickrun.el. But you can register your own command for some languages")
 (quickrun/defvar quickrun-option-timeout-seconds
                  nil integerp
                  "Timeout seconds as file local variable")
+
+(quickrun/defvar quickrun-option-default-directory
+                 nil file-directory-p
+                 "Default directory where command is executed")
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
