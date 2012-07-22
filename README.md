@@ -248,10 +248,10 @@ For example, C11 C++ program file.
 
     /*
       Local Variables:
-      quickrun-option-cmd: ((:command . "g++")
-                            (:exec    . ("%c -std=c++0x -o %n %s"
-                                         "%n apple orange melon"))
-                            (:remove  . ("%n")))
+      quickrun-option-cmd-alist: ((:command . "g++")
+                                  (:exec    . ("%c -std=c++0x -o %n %s"
+                                               "%n apple orange melon"))
+                                  (:remove  . ("%n")))
       End:
     */
 
