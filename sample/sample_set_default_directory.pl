@@ -7,7 +7,7 @@ print "hello\n";
 #
 #  Local Variables:
 #  quickrun-option-cmd-alist: ((:command . "sh")
-#                              (:exec    . ("ls -l" "pwd"))
-#                              (:default-directory . "/usr/local/bin"))
+#                              (:exec    . ("sh -c 'ls -l'"))
+#                              (:default-directory . "/tmp"))
 #  End:
 #
