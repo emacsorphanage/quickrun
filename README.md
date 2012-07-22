@@ -293,6 +293,10 @@ parameter. :remove value is atom or list.
 
 Please see Outputter section.
 
+:default-directory
+
+Directory where commands are executed.
+
 :description
 
 Description of this command. This parameter is used in
@@ -355,3 +359,22 @@ Use multiple outputters.  [outputter *multi* sample](emacs-quickrun/tree/master/
 * null
 
 No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_outputter_null.pl)
+
+
+Using quickrun as function from other functions
+-----------------------------------------------
+`quickrun' can be used as function from other functions.
+You can pass configuration by `:command` argument.
+Sample is following:
+
+    (defun test-perl ()
+      (interactive)
+      (let* ((cmd "git rev-parse --show-toplevel")
+             (topdir (with-temp-buffer
+                       (call-process-shell-command cmd nil t nil)
+                       (goto-char (point-min))
+                       (if (re-search-forward "^\\(.+\\)$" nil t)
+                           (match-string 1)))))
+        (quickrun :command `((:command . "prove")
+                             (:default-directory . ,topdir)
+                             (:exec . ("%c -bv --color %s"))))))
