@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.2
+;; Version: 1.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,10 @@
 ;;
 
 ;;; History:
+
+;; Version 1.3  2012/07/22 syohex
+;; Support ':default-directory' parameter
+;; Modify `quickrun' for using from other functions.
 
 ;; Version 1.2  2012/07/07 syohex
 ;; Add helm-quickrun which is quickrun helm interface
