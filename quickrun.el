@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.4
+;; Version: 1.5
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 1.5  2012/07/22 syohex
+;; Rename quickrun parameter argument.
 
 ;; Version 1.4  2012/07/22 syohex
 ;; Fixed for specified lambda to ':exec' parameter
