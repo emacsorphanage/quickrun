@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.3
+;; Version: 1.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;;
 
 ;;; History:
+
+;; Version 1.4  2012/07/22 syohex
+;; Fixed for specified lambda to ':exec' parameter
 
 ;; Version 1.3  2012/07/22 syohex
 ;; Support ':default-directory' parameter
@@ -675,7 +678,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defun quickrun/eval-parameter (param)
   (cond ((functionp param)
-         (let ((ret (funcall param)))
+         (let* ((default-directory (quickrun/default-directory))
+                (ret (funcall param)))
            (cond ((stringp ret) ret)
                  ((symbolp ret) (symbol-name ret))
                  (t
