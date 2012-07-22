@@ -448,15 +448,17 @@ if you set your own language configuration.
 (defun quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
 
-(defun quickrun/set-default-directory (dir)
-  (let ((formatted-dir (file-name-as-directory dir)))
-    (if (file-directory-p formatted-dir)
-       (setq quickrun-option-default-directory formatted-dir)
-      (throw 'quickrun
-             (format "'%s' is not existed directory" dir)))))
+(defun quickrun/set-default-directory (cmd-key)
+  (let* ((cmd-info (quickrun/command-info cmd-key))
+         (dir (assoc-default :default-directory cmd-info)))
+    (when dir
+      (let ((formatted-dir (file-name-as-directory dir)))
+        (if (file-directory-p formatted-dir)
+            (setq quickrun-option-default-directory formatted-dir)
+          (throw 'quickrun
+                 (format "'%s' is not existed directory" dir)))))))
 
 (defun quickrun/exec-cmd (cmd)
-  (and quickrun-debug (message "Quickrun Execute: %s" cmd))
   (let ((program (car (split-string cmd)))
         (buf (get-buffer-create quickrun/buffer-name)))
     (quickrun/check-has-command program)
@@ -465,6 +467,8 @@ if you set your own language configuration.
     (let ((proc-name (format "quickrun-process-%s" program))
           (process-connection-type nil)
           (default-directory (quickrun/default-directory)))
+      (and quickrun-debug
+           (message "Quickrun Execute: %s at %s" cmd default-directory))
       (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
         (if (>= quickrun-timeout-seconds 0)
             (setq quickrun/timeout-timer
@@ -643,7 +647,7 @@ Place holders are beginning with '%' and replaced by:
          (executable-name (concat without-extension executable-suffix)))
     `(("%c" . ,cmd)
       ("%o" . ,cmdopt)
-      ("%s" . ,src)
+      ("%s" . ,(file-name-nondirectory src))
       ("%n" . ,(expand-file-name without-extension))
       ("%N" . ,without-extension)
       ("%d" . ,directory)
@@ -720,10 +724,6 @@ Place holders are beginning with '%' and replaced by:
       (let ((func (assoc-default :outputter cmd-info)))
         (if (and func (or (functionp func) (symbolp func)))
             (puthash key func info))))
-    ;; setting new default-directory if ':default-directory' is specified
-    (let ((dir (assoc-default :default-directory cmd-info)))
-      (if dir
-          (quickrun/set-default-directory dir)))
     info))
 
 (defun quickrun/fill-template (tmpl info)
@@ -815,11 +815,13 @@ by quickrun.el. But you can register your own command for some languages")
 ;; main
 ;;
 ;;;###autoload
-(defun quickrun (&optional start end)
+(defun quickrun (&rest plist)
   "Run commands quickly for current buffer"
   (interactive)
-  (let ((beg (or start (point-min)))
-        (end (or end (point-max)))
+  (let ((beg (or (plist-get plist :start) (point-min)))
+        (end (or (plist-get plist :end) (point-max)))
+        (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
+                                       (plist-get plist :command)))
         (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
                                       quickrun-timeout-seconds)))
     (let ((has-error (catch 'quickrun
@@ -855,7 +857,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun-region (start end)
   (interactive "r")
-  (quickrun start end))
+  (quickrun :start start :end end))
 
 (defvar quickrun/compile-only-flag nil)
 
@@ -866,15 +868,18 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defvar quickrun/remove-files nil)
 
-(defun quickrun/add-remove-files (files)
-  (if (listp files)
-      (setq quickrun/remove-files (append files quickrun/remove-files))
-    (push files quickrun/remove-files)))
+(defun quickrun/add-remove-files (removed-files)
+  (let* ((files (if (listp removed-files)
+                    removed-files
+                  (list removed-files)))
+         (abs-paths (mapcar (lambda (f) (expand-file-name f)) files)))
+    (setq quickrun/remove-files (append abs-paths quickrun/remove-files))))
 
 (defun quickrun/temp-name (src)
   (let* ((extension (file-name-extension src))
-         (suffix (or (and extension (concat "." extension)) "")))
-    (concat (make-temp-name "qr_") suffix)))
+         (suffix (or (and extension (concat "." extension)) ""))
+         (dir (quickrun/default-directory)))
+    (expand-file-name (concat dir (make-temp-name "qr_") suffix))))
 
 (defun quickrun/command-key (src)
   (let ((file-type (quickrun/decide-file-type src)))
@@ -889,8 +894,8 @@ by quickrun.el. But you can register your own command for some languages")
   ;; Suppress write file message
   (let ((str (buffer-substring-no-properties start end)))
     (with-temp-file dst
-      (insert str)))
-  (quickrun/add-remove-files dst))
+      (insert str))
+    (quickrun/add-remove-files dst)))
 
 (defun quickrun/kill-quickrun-buffer ()
   (if (get-buffer quickrun/buffer-name)
@@ -898,29 +903,31 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/common (start end)
   (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
-         (cmd-key (quickrun/command-key orig-src))
-         (src (quickrun/temp-name orig-src)))
+         (cmd-key (quickrun/command-key orig-src)))
+    (quickrun/set-default-directory cmd-key)
     (quickrun/kill-quickrun-buffer)
     (unless (local-variable-p 'quickrun/last-cmd-key)
       (make-local-variable 'quickrun/last-cmd-key))
     (setq quickrun/last-cmd-key cmd-key)
-    (if (or (string= cmd-key "java") quickrun/compile-only-flag)
-        (setq src orig-src)
-      (quickrun/copy-region-to-tempfile start end src))
-    (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
-      (quickrun/add-remove-files (gethash :remove cmd-info-hash))
-      (unless quickrun-option-outputter
-        (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
-      (cond (quickrun/compile-only-flag
-             (let ((cmd (gethash :compile-only cmd-info-hash)))
-               (unless cmd
-                 (throw 'quickrun
-                        (format "%s does not support quickrun-compile-only"
-                                cmd-key)))
-               (quickrun/compilation-start cmd)))
-            (t
-             (when (quickrun/exec (gethash :exec cmd-info-hash))
-               (quickrun/popup-output-buffer)))))))
+
+    (let ((src (quickrun/temp-name orig-src)))
+      (if (or (string= cmd-key "java") quickrun/compile-only-flag)
+          (setq src orig-src)
+        (quickrun/copy-region-to-tempfile start end src))
+      (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
+        (quickrun/add-remove-files (gethash :remove cmd-info-hash))
+        (unless quickrun-option-outputter
+          (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
+        (cond (quickrun/compile-only-flag
+               (let ((cmd (gethash :compile-only cmd-info-hash)))
+                 (unless cmd
+                   (throw 'quickrun
+                          (format "%s does not support quickrun-compile-only"
+                                  cmd-key)))
+                 (quickrun/compilation-start cmd)))
+              (t
+               (when (quickrun/exec (gethash :exec cmd-info-hash))
+                 (quickrun/popup-output-buffer))))))))
 
 ;;
 ;; anything
