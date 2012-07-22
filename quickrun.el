@@ -448,6 +448,13 @@ if you set your own language configuration.
 (defun quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
 
+(defun quickrun/set-default-directory (dir)
+  (let ((formatted-dir (file-name-as-directory dir)))
+    (if (file-directory-p formatted-dir)
+       (setq quickrun-option-default-directory formatted-dir)
+      (throw 'quickrun
+             (format "'%s' is not existed directory" dir)))))
+
 (defun quickrun/exec-cmd (cmd)
   (and quickrun-debug (message "Quickrun Execute: %s" cmd))
   (let ((program (car (split-string cmd)))
@@ -716,8 +723,7 @@ Place holders are beginning with '%' and replaced by:
     ;; setting new default-directory if ':default-directory' is specified
     (let ((dir (assoc-default :default-directory cmd-info)))
       (if dir
-          (setq quickrun-option-default-directory
-                (file-name-as-directory dir))))
+          (quickrun/set-default-directory dir)))
     info))
 
 (defun quickrun/fill-template (tmpl info)
