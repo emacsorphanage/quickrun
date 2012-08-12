@@ -462,30 +462,15 @@ if you set your own language configuration.
           (set-process-sentinel process
                                 (quickrun/make-sentinel rest-cmds outputter)))))))
 
-(defvar quickrun/shell-done-commands)
-(defvar quickrun/shell-command-num)
-
-(defun quickrun/shell-initialize ()
-  (setq quickrun/shell-done-commands 0
-        quickrun/shell-command-num (length cmd-lst))
-  (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
-
-(defun quickrun/shell-finalize ()
-  (quickrun/remove-temp-files)
-  (setq quickrun/shell-done-commands 0 quickrun/shell-command-num 0)
-  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
-
 (defun quickrun/eshell-post-hook ()
-  (incf quickrun/shell-done-commands)
-  (if (or (not (zerop eshell-last-command-status))
-          (= quickrun/shell-done-commands quickrun/shell-command-num))
-      (quickrun/shell-finalize)))
+  (quickrun/remove-temp-files)
+  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
         (eshell-buffer-name "*eshell-quickrun*"))
-    (quickrun/shell-initialize)
     (eshell)
+    (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
     (end-of-buffer)
     (eshell-kill-input)
     (insert cmd-str)
