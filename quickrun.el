@@ -867,12 +867,14 @@ by quickrun.el. But you can register your own command for some languages")
                      nil nil nil nil default-value)))
 
 (defun quickrun-region (start end)
+  "Run commands with specified region"
   (interactive "r")
   (quickrun :start start :end end))
 
 (defvar quickrun/compile-only-flag nil)
 
 (defun quickrun-compile-only ()
+  "Exec only compilation"
   (interactive)
   (let ((quickrun/compile-only-flag t))
     (quickrun)))
