@@ -93,6 +93,7 @@
   (require 'cl))
 
 (require 'ansi-color)
+(require 'eshell)
 
 (defgroup quickrun nil
   "Execute buffer quickly"
@@ -442,18 +443,53 @@ if you set your own language configuration.
 ;; Execute
 ;;
 (defvar quickrun/timeout-timer nil)
+(defvar quickrun/run-in-shell nil)
+
+(defun quickrun/concat-commands (cmd-lst)
+  (mapconcat #'identity cmd-lst " && "))
 
 (defun quickrun/exec (cmd-lst)
   (let ((next-cmd  (car cmd-lst))
         (rest-cmds (cdr cmd-lst)))
-    (ignore-errors
-      (let ((process (quickrun/exec-cmd next-cmd))
-            (outputter (or quickrun-option-outputter
-                           #'quickrun/default-outputter)))
-        (when quickrun-option-input-file
-          (quickrun/process-send-file process))
-        (set-process-sentinel process
-                              (quickrun/make-sentinel rest-cmds outputter))))))
+    (if quickrun/run-in-shell
+        (quickrun/send-to-shell cmd-lst)
+      (ignore-errors
+        (let ((process (quickrun/exec-cmd next-cmd))
+              (outputter (or quickrun-option-outputter
+                             #'quickrun/default-outputter)))
+          (when quickrun-option-input-file
+            (quickrun/process-send-file process))
+          (set-process-sentinel process
+                                (quickrun/make-sentinel rest-cmds outputter)))))))
+
+(defvar quickrun/shell-done-commands)
+(defvar quickrun/shell-command-num)
+
+(defun quickrun/shell-initialize ()
+  (setq quickrun/shell-done-commands 0
+        quickrun/shell-command-num (length cmd-lst))
+  (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
+
+(defun quickrun/shell-finalize ()
+  (quickrun/remove-temp-files)
+  (setq quickrun/shell-done-commands 0 quickrun/shell-command-num 0)
+  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
+
+(defun quickrun/eshell-post-hook ()
+  (incf quickrun/shell-done-commands)
+  (if (or (not (zerop eshell-last-command-status))
+          (= quickrun/shell-done-commands quickrun/shell-command-num))
+      (quickrun/shell-finalize)))
+
+(defun quickrun/send-to-shell (cmd-lst)
+  (let ((cmd-str (quickrun/concat-commands cmd-lst))
+        (eshell-buffer-name "*eshell-quickrun*"))
+    (quickrun/shell-initialize)
+    (eshell)
+    (end-of-buffer)
+    (eshell-kill-input)
+    (insert cmd-str)
+    (eshell-send-input)))
 
 (defun quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
@@ -877,6 +913,13 @@ by quickrun.el. But you can register your own command for some languages")
   "Exec only compilation"
   (interactive)
   (let ((quickrun/compile-only-flag t))
+    (quickrun)))
+
+(defun quickrun-shell ()
+  "Run commands in shell for interactive programs"
+  (interactive)
+  (let ((quickrun/run-in-shell t)
+        (quickrun-timeout-seconds nil))
     (quickrun)))
 
 (defvar quickrun/remove-files nil)
