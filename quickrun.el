@@ -520,7 +520,8 @@ if you set your own language configuration.
                       (process-name process)
                       quickrun-timeout-seconds)))
     (quickrun/remove-temp-files)
-    (pop-to-buffer buf)))
+    (pop-to-buffer buf)
+    (setq buffer-read-only t)))
 
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
