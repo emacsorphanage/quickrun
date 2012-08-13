@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.5
+;; Version: 1.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -33,59 +33,6 @@
 ;;
 ;; And you call 'M-x quickrun'.
 ;;
-
-;;; History:
-
-;; Version 1.5  2012/07/22 syohex
-;; Rename quickrun parameter argument.
-
-;; Version 1.4  2012/07/22 syohex
-;; Fixed for specified lambda to ':exec' parameter
-
-;; Version 1.3  2012/07/22 syohex
-;; Support ':default-directory' parameter
-;; Modify `quickrun' for using from other functions.
-
-;; Version 1.2  2012/07/07 syohex
-;; Add helm-quickrun which is quickrun helm interface
-
-;; Version 1.1  2012/06/13 syohex
-;; Support JSX and fortran(gfortran).
-;; Support gccgo for golang
-
-;; Version 1.0  2012/04/30 syohex
-;; Fixed PHP CR problem(Thanks to mat)
-
-;; Version 0.9  2012/04/08 syohex
-;; Fix problem of not removing temporary file on Windows.
-
-;; Version 0.8  2012/03/19 syohex
-;; Support Dart and Elixir
-
-;; Version 0.7  2012/02/14 syohex
-;; Support Mozilla Rust language(Thanks to koko1000ban).
-
-;; Version 0.6  2012/02/14 syohex
-;; Implement 'multi' outputter.
-;; Change outputter:buffer behavior, not popup-buffer.
-
-;; Version 0.5  2012/02/08 syohex
-;; Add quickrun group and modify global variable with `customize'
-
-;; Version 0.4  2012/01/18 syohex
-;; Fix command-alist of emacs lisp and update its sample
-;; Fix case of that scroll-conservatively is not zero.
-
-;; Version 0.3  2012/01/12 syohex
-;; Support command line arguments that contain spaces or tabs
-;; Add Common Lisp command-alist(ccl and sbcl)
-
-;; Version 0.2  2012/01/06 syohex
-;; Fix for Windows(Thanks to leoncamel)
-
-;; Version 0.1  2011/12/31 syohex
-;; init version
-
 
 ;;; Code:
 
