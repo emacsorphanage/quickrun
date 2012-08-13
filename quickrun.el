@@ -462,13 +462,17 @@ if you set your own language configuration.
           (set-process-sentinel process
                                 (quickrun/make-sentinel rest-cmds outputter)))))))
 
+(defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
+
 (defun quickrun/eshell-post-hook ()
   (quickrun/remove-temp-files)
-  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
+  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+  (when (y-or-n-p "Delete shell window? ")
+    (delete-window (get-buffer-window quickrun/eshell-buffer-name))))
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
-        (eshell-buffer-name "*eshell-quickrun*"))
+        (eshell-buffer-name quickrun/eshell-buffer-name))
     (eshell)
     (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
     (end-of-buffer)
