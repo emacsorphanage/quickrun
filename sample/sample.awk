@@ -1,4 +1,4 @@
 #!/usr/bin/env awk
 BEGIN {
-    print "Hello World"
+    print "Hello awk"
 }

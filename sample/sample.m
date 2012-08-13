@@ -16,7 +16,7 @@
 
 @implementation HelloClass
 - (void)helloWorld {
-    printf("Hello world!\n");
+    printf("Hello Objective C!\n");
 }
 @end
 

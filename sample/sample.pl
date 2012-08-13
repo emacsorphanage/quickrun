@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-print "This is test\n";
+print "This is Perl test\n";
 
 sub add {
     $_[0] + $_[1];

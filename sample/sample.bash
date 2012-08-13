@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function helloworld () {
-    printf "Hello World $1"
+    printf "Hello Bash $1"
 }
 
 helloworld "quickrun"

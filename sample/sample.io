@@ -1,4 +1,4 @@
 helloworld := method(
-    writeln("Hello World")
+    writeln("Hello Io language")
 )
 helloworld(hello)

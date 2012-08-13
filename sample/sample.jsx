@@ -17,7 +17,7 @@ class HelloEditor {
 
 class _Main {
     static function main(args :string[]) : void {
-        var he = new HelloEditor(['Emacs', 'Vim', 'TextMate']);
+        var he = new HelloEditor(['Emacs', 'JSX']);
         he.hello();
     }
 }
