@@ -457,8 +457,6 @@ if you set your own language configuration.
         (let ((process (quickrun/exec-cmd next-cmd))
               (outputter (or quickrun-option-outputter
                              #'quickrun/default-outputter)))
-          (when quickrun-option-input-file
-            (quickrun/process-send-file process))
           (set-process-sentinel process
                                 (quickrun/make-sentinel rest-cmds outputter)))))))
 
@@ -640,14 +638,6 @@ if you set your own language configuration.
                                         (match-string 1 name)))))))))
         (with-current-buffer buf
           (funcall outputter-func))))))
-
-(defun quickrun/process-send-file (process)
-  (let ((buf (find-file-noselect quickrun-option-input-file)))
-    (with-current-buffer buf
-        (send-string process
-                     (buffer-substring-no-properties
-                      (point-min) (point-max)))
-        (process-send-eof process))))
 
 (defun quickrun/make-sentinel (cmds outputter)
   (lexical-let ((rest-commands cmds)
@@ -891,11 +881,6 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-args arg))
     (quickrun)))
 
-(defun quickrun-with-input-file (file)
-  (interactive "fInput File: ")
-  (let ((quickrun-option-input-file file))
-   (quickrun)))
-
 (defvar quickrun/last-cmd-key nil)
 
 (defun quickrun/prompt ()
@@ -1075,10 +1060,6 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/defvar quickrun-option-shebang
                  t booleanp
-                 "Select using command from schebang as file local variable")
-
-(quickrun/defvar quickrun-option-input-file
-                 nil file-exists-p
                  "Select using command from schebang as file local variable")
 
 (quickrun/defvar quickrun-option-timeout-seconds

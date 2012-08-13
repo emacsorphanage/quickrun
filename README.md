@@ -64,11 +64,6 @@ which reads input from STDIN.
 
     M-x quickrun-shell
 
-Execute current buffer with input file which is redirected to STDIN.
-`quickrun.el` asks you input file name.
-
-    M-x quickrun-with-input-file
-
 Compile current buffer with compile.el framework, not execute.
 
     M-x quickrun-compile-only
@@ -220,10 +215,6 @@ the following string is treated as ":command".
     quickrun-option-outputter
 
 Outputter function.
-
-    quickrun-option-input-file
-
-Input file which is redirected to STDIN.
 
 
 User Defined Command with file local variables
