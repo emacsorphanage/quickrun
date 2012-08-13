@@ -443,6 +443,7 @@ if you set your own language configuration.
         (buf (get-buffer-create quickrun/buffer-name)))
     (quickrun/check-has-command program)
     (with-current-buffer buf
+      (setq buffer-read-only nil)
       (erase-buffer))
     (let ((proc-name (format "quickrun-process-%s" program))
           (process-connection-type nil)
@@ -480,7 +481,6 @@ if you set your own language configuration.
         (default-dir (quickrun/default-directory)))
     (unless (quickrun/defined-outputter-p outputter)
       (pop-to-buffer buf)
-      (quickrun/mode)
       ;; Copy buffer local variable
       (setq quickrun-option-outputter outputter
             quickrun-option-default-directory default-dir))))
@@ -603,7 +603,8 @@ if you set your own language configuration.
                       (quickrun/apply-outputter outputter-func)
                       (if (> scroll-conservatively 0)
                           (recenter))
-                      (quickrun/remove-temp-files)))))))))
+                      (quickrun/remove-temp-files)
+                      (quickrun/mode)))))))))
 
 ;;
 ;; Composing command
