@@ -534,9 +534,25 @@ if you set your own language configuration.
         (default-dir (quickrun/default-directory)))
     (unless (quickrun/defined-outputter-p outputter)
       (pop-to-buffer buf)
+      (quickrun/mode)
       ;; Copy buffer local variable
       (setq quickrun-option-outputter outputter
             quickrun-option-default-directory default-dir))))
+
+(defun quickrun/delete-window ()
+  (interactive)
+  (let ((win (get-buffer-window quickrun/buffer-name)))
+    (delete-window win)))
+
+(defvar quickrun/mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") 'quickrun/delete-window)
+    map))
+
+(define-derived-mode quickrun/mode nil "Quickrun"
+  ""
+  (setq buffer-read-only t)
+  (use-local-map quickrun/mode-map))
 
 ;;
 ;; Predefined outputter
