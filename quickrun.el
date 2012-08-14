@@ -408,22 +408,30 @@ if you set your own language configuration.
                                 (quickrun/make-sentinel rest-cmds outputter)))))))
 
 (defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
+(defvar quickrun/shell-last-command)
 
 (defun quickrun/eshell-post-hook ()
-  (quickrun/remove-temp-files)
-  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-  (when (y-or-n-p "Delete shell window? ")
-    (delete-window (get-buffer-window quickrun/eshell-buffer-name))))
+  (let ((input (read-char "Press 'r' to run again, any other key to finish")))
+    (cond ((char-equal input ?r)
+           (quickrun/insert-command quickrun/shell-last-command))
+          (t
+           (quickrun/remove-temp-files)
+           (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+           (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
+
+(defun quickrun/insert-command (cmd-str)
+  (end-of-buffer)
+  (eshell-kill-input)
+  (insert cmd-str)
+  (eshell-send-input))
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
         (eshell-buffer-name quickrun/eshell-buffer-name))
     (eshell)
+    (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
     (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-    (end-of-buffer)
-    (eshell-kill-input)
-    (insert cmd-str)
-    (eshell-send-input)))
+    (quickrun/insert-command cmd-str)))
 
 (defun quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
