@@ -1,4 +1,4 @@
 (defn helloworld []
-  (println "Hello World"))
+  (println "Hello Clojure"))
 
 (helloworld)

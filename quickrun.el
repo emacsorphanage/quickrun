@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.5
+;; Version: 1.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,65 +34,13 @@
 ;; And you call 'M-x quickrun'.
 ;;
 
-;;; History:
-
-;; Version 1.5  2012/07/22 syohex
-;; Rename quickrun parameter argument.
-
-;; Version 1.4  2012/07/22 syohex
-;; Fixed for specified lambda to ':exec' parameter
-
-;; Version 1.3  2012/07/22 syohex
-;; Support ':default-directory' parameter
-;; Modify `quickrun' for using from other functions.
-
-;; Version 1.2  2012/07/07 syohex
-;; Add helm-quickrun which is quickrun helm interface
-
-;; Version 1.1  2012/06/13 syohex
-;; Support JSX and fortran(gfortran).
-;; Support gccgo for golang
-
-;; Version 1.0  2012/04/30 syohex
-;; Fixed PHP CR problem(Thanks to mat)
-
-;; Version 0.9  2012/04/08 syohex
-;; Fix problem of not removing temporary file on Windows.
-
-;; Version 0.8  2012/03/19 syohex
-;; Support Dart and Elixir
-
-;; Version 0.7  2012/02/14 syohex
-;; Support Mozilla Rust language(Thanks to koko1000ban).
-
-;; Version 0.6  2012/02/14 syohex
-;; Implement 'multi' outputter.
-;; Change outputter:buffer behavior, not popup-buffer.
-
-;; Version 0.5  2012/02/08 syohex
-;; Add quickrun group and modify global variable with `customize'
-
-;; Version 0.4  2012/01/18 syohex
-;; Fix command-alist of emacs lisp and update its sample
-;; Fix case of that scroll-conservatively is not zero.
-
-;; Version 0.3  2012/01/12 syohex
-;; Support command line arguments that contain spaces or tabs
-;; Add Common Lisp command-alist(ccl and sbcl)
-
-;; Version 0.2  2012/01/06 syohex
-;; Fix for Windows(Thanks to leoncamel)
-
-;; Version 0.1  2011/12/31 syohex
-;; init version
-
-
 ;;; Code:
 
 (eval-when-compile
   (require 'cl))
 
 (require 'ansi-color)
+(require 'eshell)
 
 (defgroup quickrun nil
   "Execute buffer quickly"
@@ -442,18 +390,48 @@ if you set your own language configuration.
 ;; Execute
 ;;
 (defvar quickrun/timeout-timer nil)
+(defvar quickrun/run-in-shell nil)
+
+(defun quickrun/concat-commands (cmd-lst)
+  (mapconcat #'identity cmd-lst " && "))
 
 (defun quickrun/exec (cmd-lst)
   (let ((next-cmd  (car cmd-lst))
         (rest-cmds (cdr cmd-lst)))
-    (ignore-errors
-      (let ((process (quickrun/exec-cmd next-cmd))
-            (outputter (or quickrun-option-outputter
-                           #'quickrun/default-outputter)))
-        (when quickrun-option-input-file
-          (quickrun/process-send-file process))
-        (set-process-sentinel process
-                              (quickrun/make-sentinel rest-cmds outputter))))))
+    (if quickrun/run-in-shell
+        (quickrun/send-to-shell cmd-lst)
+      (ignore-errors
+        (let ((process (quickrun/exec-cmd next-cmd))
+              (outputter (or quickrun-option-outputter
+                             #'quickrun/default-outputter)))
+          (set-process-sentinel process
+                                (quickrun/make-sentinel rest-cmds outputter)))))))
+
+(defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
+(defvar quickrun/shell-last-command)
+
+(defun quickrun/eshell-post-hook ()
+  (let ((input (read-char "Press 'r' to run again, any other key to finish")))
+    (cond ((char-equal input ?r)
+           (quickrun/insert-command quickrun/shell-last-command))
+          (t
+           (quickrun/remove-temp-files)
+           (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+           (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
+
+(defun quickrun/insert-command (cmd-str)
+  (end-of-buffer)
+  (eshell-kill-input)
+  (insert cmd-str)
+  (eshell-send-input))
+
+(defun quickrun/send-to-shell (cmd-lst)
+  (let ((cmd-str (quickrun/concat-commands cmd-lst))
+        (eshell-buffer-name quickrun/eshell-buffer-name))
+    (eshell)
+    (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
+    (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+    (quickrun/insert-command cmd-str)))
 
 (defun quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
@@ -473,6 +451,7 @@ if you set your own language configuration.
         (buf (get-buffer-create quickrun/buffer-name)))
     (quickrun/check-has-command program)
     (with-current-buffer buf
+      (setq buffer-read-only nil)
       (erase-buffer))
     (let ((proc-name (format "quickrun-process-%s" program))
           (process-connection-type nil)
@@ -495,7 +474,8 @@ if you set your own language configuration.
                       (process-name process)
                       quickrun-timeout-seconds)))
     (quickrun/remove-temp-files)
-    (pop-to-buffer buf)))
+    (pop-to-buffer buf)
+    (setq buffer-read-only t)))
 
 (defun quickrun/remove-temp-files ()
   (dolist (file quickrun/remove-files)
@@ -512,6 +492,21 @@ if you set your own language configuration.
       ;; Copy buffer local variable
       (setq quickrun-option-outputter outputter
             quickrun-option-default-directory default-dir))))
+
+(defun quickrun/delete-window ()
+  (interactive)
+  (let ((win (get-buffer-window quickrun/buffer-name)))
+    (delete-window win)))
+
+(defvar quickrun/mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") 'quickrun/delete-window)
+    map))
+
+(define-derived-mode quickrun/mode nil "Quickrun"
+  ""
+  (setq buffer-read-only t)
+  (use-local-map quickrun/mode-map))
 
 ;;
 ;; Predefined outputter
@@ -599,14 +594,6 @@ if you set your own language configuration.
         (with-current-buffer buf
           (funcall outputter-func))))))
 
-(defun quickrun/process-send-file (process)
-  (let ((buf (find-file-noselect quickrun-option-input-file)))
-    (with-current-buffer buf
-        (send-string process
-                     (buffer-substring-no-properties
-                      (point-min) (point-max)))
-        (process-send-eof process))))
-
 (defun quickrun/make-sentinel (cmds outputter)
   (lexical-let ((rest-commands cmds)
                 (outputter-func outputter))
@@ -624,7 +611,8 @@ if you set your own language configuration.
                       (quickrun/apply-outputter outputter-func)
                       (if (> scroll-conservatively 0)
                           (recenter))
-                      (quickrun/remove-temp-files)))))))))
+                      (quickrun/remove-temp-files)
+                      (quickrun/mode)))))))))
 
 ;;
 ;; Composing command
@@ -849,11 +837,6 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-args arg))
     (quickrun)))
 
-(defun quickrun-with-input-file (file)
-  (interactive "fInput File: ")
-  (let ((quickrun-option-input-file file))
-   (quickrun)))
-
 (defvar quickrun/last-cmd-key nil)
 
 (defun quickrun/prompt ()
@@ -867,14 +850,23 @@ by quickrun.el. But you can register your own command for some languages")
                      nil nil nil nil default-value)))
 
 (defun quickrun-region (start end)
+  "Run commands with specified region"
   (interactive "r")
   (quickrun :start start :end end))
 
 (defvar quickrun/compile-only-flag nil)
 
 (defun quickrun-compile-only ()
+  "Exec only compilation"
   (interactive)
   (let ((quickrun/compile-only-flag t))
+    (quickrun)))
+
+(defun quickrun-shell ()
+  "Run commands in shell for interactive programs"
+  (interactive)
+  (let ((quickrun/run-in-shell t)
+        (quickrun-timeout-seconds nil))
     (quickrun)))
 
 (defvar quickrun/remove-files nil)
@@ -1024,10 +1016,6 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/defvar quickrun-option-shebang
                  t booleanp
-                 "Select using command from schebang as file local variable")
-
-(quickrun/defvar quickrun-option-input-file
-                 nil file-exists-p
                  "Select using command from schebang as file local variable")
 
 (quickrun/defvar quickrun-option-timeout-seconds

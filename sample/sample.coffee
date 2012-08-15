@@ -1,4 +1,4 @@
 hello = ->
-    console.log("Hello World!")
+    console.log("Hello CoffeeScript!")
 
 hello()

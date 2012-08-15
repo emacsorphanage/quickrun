@@ -59,10 +59,10 @@ Execute current buffer with arguments.
 
     M-x quickrun-with-arg
 
-Execute current buffer with input file which is redirected to STDIN.
-`quickrun.el` asks you input file name.
+Execute current buffer in eshell for interactive command such as program
+which reads input from STDIN.
 
-    M-x quickrun-with-input-file
+    M-x quickrun-shell
 
 Compile current buffer with compile.el framework, not execute.
 
@@ -215,10 +215,6 @@ the following string is treated as ":command".
     quickrun-option-outputter
 
 Outputter function.
-
-    quickrun-option-input-file
-
-Input file which is redirected to STDIN.
 
 
 User Defined Command with file local variables

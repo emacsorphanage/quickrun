@@ -1,5 +1,5 @@
 def helloworld() {
-    println("Hello world")
+    println("Hello Groovy")
 }
 
 helloworld()

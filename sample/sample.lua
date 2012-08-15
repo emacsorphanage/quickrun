@@ -1,5 +1,5 @@
 function helloWorld()
-   print("Hello, world")
+   print("Hello, Lua")
 end
 
 helloWorld()

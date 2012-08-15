@@ -1,3 +1,3 @@
 program hello
-  print *, 'Hello World!'
+  print *, 'Hello Fortran95!'
 end program hello
