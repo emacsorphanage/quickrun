@@ -420,7 +420,7 @@ if you set your own language configuration.
            (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
 
 (defun quickrun/insert-command (cmd-str)
-  (end-of-buffer)
+  (goto-char (point-max))
   (eshell-kill-input)
   (insert cmd-str)
   (eshell-send-input))
