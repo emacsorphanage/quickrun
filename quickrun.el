@@ -428,7 +428,6 @@ if you set your own language configuration.
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
-        (eshell-banner-message "")
         (eshell-buffer-name quickrun/eshell-buffer-name))
     (eshell)
     (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
