@@ -529,6 +529,7 @@ if you set your own language configuration.
     ))
 
 (defun quickrun/default-outputter ()
+  (quickrun/mode)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
 (defun quickrun/outputter-multi-p (outputter)
@@ -613,8 +614,7 @@ if you set your own language configuration.
                       (quickrun/apply-outputter outputter-func)
                       (if (> scroll-conservatively 0)
                           (recenter))
-                      (quickrun/remove-temp-files)
-                      (quickrun/mode)))))))))
+                      (quickrun/remove-temp-files)))))))))
 
 ;;
 ;; Composing command
