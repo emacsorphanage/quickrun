@@ -417,6 +417,7 @@ if you set your own language configuration.
           (t
            (quickrun/remove-temp-files)
            (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+           (kill-buffer (get-buffer quickrun/eshell-buffer-name))
            (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
 
 (defun quickrun/insert-command (cmd-str)
