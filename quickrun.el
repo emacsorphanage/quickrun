@@ -417,6 +417,7 @@ if you set your own language configuration.
           (t
            (quickrun/remove-temp-files)
            (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+           (kill-buffer (get-buffer quickrun/eshell-buffer-name))
            (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
 
 (defun quickrun/insert-command (cmd-str)
@@ -427,6 +428,7 @@ if you set your own language configuration.
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
+        (eshell-banner-message "")
         (eshell-buffer-name quickrun/eshell-buffer-name))
     (eshell)
     (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
@@ -527,6 +529,7 @@ if you set your own language configuration.
     ))
 
 (defun quickrun/default-outputter ()
+  (quickrun/mode)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
 (defun quickrun/outputter-multi-p (outputter)
@@ -611,8 +614,7 @@ if you set your own language configuration.
                       (quickrun/apply-outputter outputter-func)
                       (if (> scroll-conservatively 0)
                           (recenter))
-                      (quickrun/remove-temp-files)
-                      (quickrun/mode)))))))))
+                      (quickrun/remove-temp-files)))))))))
 
 ;;
 ;; Composing command
