@@ -40,6 +40,7 @@
   (require 'cl))
 
 (require 'ansi-color)
+(require 'em-banner)
 (require 'eshell)
 
 (defgroup quickrun nil
@@ -428,7 +429,8 @@ if you set your own language configuration.
 
 (defun quickrun/send-to-shell (cmd-lst)
   (let ((cmd-str (quickrun/concat-commands cmd-lst))
-        (eshell-buffer-name quickrun/eshell-buffer-name))
+        (eshell-buffer-name quickrun/eshell-buffer-name)
+        (eshell-banner-message ""))
     (eshell)
     (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
     (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
