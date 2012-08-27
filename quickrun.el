@@ -411,15 +411,22 @@ if you set your own language configuration.
 (defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
 (defvar quickrun/shell-last-command)
 
+(defun quickrun/eshell-finish ()
+  (quickrun/remove-temp-files)
+  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
+  (kill-buffer (get-buffer quickrun/eshell-buffer-name))
+  (delete-window (get-buffer-window quickrun/eshell-buffer-name)))
+
 (defun quickrun/eshell-post-hook ()
-  (let ((input (read-char "Press 'r' to run again, any other key to finish")))
-    (cond ((char-equal input ?r)
-           (quickrun/insert-command quickrun/shell-last-command))
-          (t
-           (quickrun/remove-temp-files)
-           (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-           (kill-buffer (get-buffer quickrun/eshell-buffer-name))
-           (delete-window (get-buffer-window quickrun/eshell-buffer-name))))))
+  (let ((rerun-p nil))
+    (unwind-protect
+        (ignore-errors
+          (let ((input (read-char "Press 'r' to run again, any other key to finish")))
+            (when (char-equal input ?r)
+              (quickrun/insert-command quickrun/shell-last-command)
+              (setq rerun-p t))))
+      (unless rerun-p
+        (quickrun/eshell-finish)))))
 
 (defun quickrun/insert-command (cmd-str)
   (goto-char (point-max))
