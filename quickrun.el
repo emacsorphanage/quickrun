@@ -825,14 +825,18 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 ;;;###autoload
 (defun quickrun (&rest plist)
-  "Run commands quickly for current buffer"
+  "Run commands quickly for current buffer.
+
+With universal prefix argument, run in compile-only mode."
   (interactive)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
                                        (plist-get plist :source)))
         (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
-                                      quickrun-timeout-seconds)))
+                                      quickrun-timeout-seconds))
+        (quickrun/compile-only-flag (or quickrun/compile-only-flag
+                                        (consp current-prefix-arg))))
     (let ((has-error (catch 'quickrun
                        (quickrun/common beg end)
                        nil)))
