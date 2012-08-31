@@ -1,5 +1,10 @@
 Revision history for quickrun.el
 
+Version 1.7 2012/08/31 syohex
+  Thanks to rolandwalker
+  - add autoload pragma to interactive functions
+  - quickrun with C-u C-u prefix behaves same as quickrun-compile-only
+
 Version 1.6 2012/08/13 syohex
   - Implement quickrun-shell(Thanks to sza1991 for nice idea)
   - Deprecated quickrun-with-input-file(use quickrun shell instead of it)
