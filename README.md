@@ -65,6 +65,7 @@ which reads input from STDIN.
     M-x quickrun-shell
 
 Compile current buffer with compile.el framework, not execute.
+quickrun with C-u C-u prefix behaves same as quickrun-compile-only.
 
     M-x quickrun-compile-only
 
