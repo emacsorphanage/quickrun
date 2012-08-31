@@ -762,12 +762,14 @@ by quickrun.el. But you can register your own command for some languages")
 (defvar quickrun/command-key-table
   (make-hash-table :test #'equal))
 
+;;;###autoload
 (defun quickrun-set-default (lang key)
   "Set `key' as default key in programing language `lang'"
   (unless (assoc key quickrun/language-alist)
     (error "%s is not registered." key))
   (puthash lang key quickrun/command-key-table))
 
+;;;###autoload
 (defun* quickrun-add-command (key alist &key default mode)
   (cond ((not key) (error "undefined 1st argument 'key'"))
         ((not alist) (error "undefined 2nd argument 'command alist'"))
