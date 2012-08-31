@@ -764,7 +764,6 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun-set-default (lang key)
   "Set `key' as default key in programing language `lang'"
-  (interactive)
   (unless (assoc key quickrun/language-alist)
     (error "%s is not registered." key))
   (puthash lang key quickrun/command-key-table))
@@ -845,6 +844,7 @@ by quickrun.el. But you can register your own command for some languages")
         (message "%s" has-error)
         (quickrun/remove-temp-files)))))
 
+;;;###autoload
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
   (interactive
@@ -864,6 +864,7 @@ by quickrun.el. But you can register your own command for some languages")
                      quickrun/language-alist
                      nil nil nil nil default-value)))
 
+;;;###autoload
 (defun quickrun-region (start end)
   "Run commands with specified region"
   (interactive "r")
@@ -871,12 +872,14 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defvar quickrun/compile-only-flag nil)
 
+;;;###autoload
 (defun quickrun-compile-only ()
   "Exec only compilation"
   (interactive)
   (let ((quickrun/compile-only-flag t))
     (quickrun)))
 
+;;;###autoload
 (defun quickrun-shell ()
   "Run commands in shell for interactive programs"
   (interactive)
