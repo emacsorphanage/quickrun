@@ -503,6 +503,7 @@ if you set your own language configuration.
       (setq quickrun-option-outputter outputter
             quickrun-option-default-directory default-dir))))
 
+;;;###autoload
 (defun quickrun/delete-window ()
   (interactive)
   (let ((win (get-buffer-window quickrun/buffer-name)))
