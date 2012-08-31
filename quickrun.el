@@ -825,14 +825,19 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 ;;;###autoload
 (defun quickrun (&rest plist)
-  "Run commands quickly for current buffer"
+  "Run commands quickly for current buffer
+   With universal prefix argument(C-u), select command-key,
+   With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
                                        (plist-get plist :source)))
         (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
-                                      quickrun-timeout-seconds)))
+                                      quickrun-timeout-seconds))
+        (quickrun/compile-only-flag (or quickrun/compile-only-flag
+                                        (and (consp current-prefix-arg)
+                                             (= (car current-prefix-arg) 16)))))
     (let ((has-error (catch 'quickrun
                        (quickrun/common beg end)
                        nil)))
@@ -896,7 +901,8 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/command-key (src)
   (let ((file-type (quickrun/decide-file-type src)))
-    (or (and current-prefix-arg (quickrun/prompt))
+    (or (and (and (consp current-prefix-arg) (= (car current-prefix-arg) 4))
+             (quickrun/prompt))
         (and quickrun-option-cmd-alist "_user_defined") ;; setting dummy value
         quickrun-option-cmdkey
         (gethash file-type quickrun/command-key-table)
