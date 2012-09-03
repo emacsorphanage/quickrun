@@ -226,6 +226,7 @@
     ("groovy" . ((:command . "groovy")
                  (:description . "Run Groovy")))
     ("scala" . ((:command . "scala")
+                (:cmdopt . "-Dfile.encoding=UTF-8")
                 (:description . "Run Scala file with scala command")))
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")
