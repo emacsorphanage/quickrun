@@ -107,7 +107,7 @@ as default. But you can register your own command and apply other languages.
 * Io(io)
 * Lua(lua)
 * Groovy(groovy)
-* Scala(scala)
+* Scala(scala) *Please use UTF-8 encoding*
 * SASS(sass)
 * LESS(lessc)
 * Erlang(escript)
