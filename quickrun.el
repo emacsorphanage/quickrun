@@ -217,7 +217,8 @@
     ("go/gccgo"  .  ((:command . "gccgo")
                      (:exec    . ("%c -static-libgcc %o -o %e %s"
                                   "%e %a"))
-                     (:remove  . ("%e"))))
+                     (:remove  . ("%e"))
+                     (:description . "Compile Go file with GCC GO compiler")))
 
     ("io" . ((:command . "io")
              (:description . "Run IO Language script")))
