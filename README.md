@@ -24,8 +24,7 @@ Windows7 64bit(NTEmacs 23.3), Windows7 Cygwin.
 Installation
 ------------
 
-You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) or [Marmalade](http://marmalade-repo.org/)
-with package.el.
+You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with package.el.
 
 Install directly:
 
