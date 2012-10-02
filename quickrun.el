@@ -179,6 +179,12 @@
               (:compile-only . "%c %o %s %s")
               (:description . "Run Coffee script")))
 
+    ("typescript" . ((:command . "tsc")
+                     (:exec . "%c --exec %o %s %a")
+                     (:compile-only . "%c %o %s %s")
+                     (:remove  . ("%n.js"))
+                     (:description . "Run TypeScript script")))
+
     ("markdown/Markdown.pl" . ((:command . "Markdown.pl")
                                (:description . "Convert Markdown to HTML with Markdown.pl")))
     ("markdown/bluecloth"   . ((:command . "bluecloth")
@@ -309,6 +315,7 @@ if you set your own language configuration.
     ("\\.\\(md\\|markdown\\|mdown\\|mkdn\\)$" . "markdown")
     ("\\.coffee$" . "coffee")
     ("\\.jsx$" . "jsx")
+    ("\\.ts$" . "typescript")
     ("\\.scala$" . "scala")
     ("\\.groovy$". "groovy")
     ("\\.sass$" . "sass")
@@ -345,6 +352,7 @@ if you set your own language configuration.
     (markdown-mode . "markdown")
     (coffee-mode . "coffee")
     (jsx-mode . "jsx")
+    (typescript-mode . "typescript")
     (scala-mode . "scala")
     (groove-mode . "groovy")
     (sass-mode . "sass")
@@ -757,7 +765,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart" "elixir" "jsx" "fortran")
+    "lua" "rust" "dart" "elixir" "jsx" "typescript" "fortran")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
