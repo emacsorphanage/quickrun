@@ -177,7 +177,7 @@
     ("jsx" . ((:command . "jsx")
               (:exec . "%c --run %o %s %a")
               (:compile-only . "%c %o %s %s")
-              (:description . "Run Coffee script")))
+              (:description . "Run JSX script")))
 
     ("typescript" . ((:command . "tsc")
                      (:exec . "%c --exec %o %s %a")
