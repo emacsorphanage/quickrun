@@ -26,12 +26,12 @@ Installation
 
 You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with package.el.
 
-Install directly:
+Or install directly:
 
     $ cd load-path-dir
     $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
 
-After Installation
+After Installation add following to your configuration file(~/.emacs.d/init.el, ~/.emacs etc)
 
     (require 'quickrun)
 
@@ -116,6 +116,7 @@ as default. But you can register your own command and apply other languages.
 * Rust(rustc)
 * Dart(dart)
 * Elixir(elixir)
+* TypeScript(tsc)
 
 
 See also `quickrun/support-languages` global variable.
