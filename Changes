@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.7.1 2012/10/12 syohex
+  - Support HAML
+
 Version 1.7.1 2012/10/02 syohex
   - Support TypeScript
 
