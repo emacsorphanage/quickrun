@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.7.1
+;; Version: 1.7.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -235,6 +235,10 @@
     ("scala" . ((:command . "scala")
                 (:cmdopt . "-Dfile.encoding=UTF-8")
                 (:description . "Run Scala file with scala command")))
+
+    ("haml" . ((:command . "haml")
+               (:exec    . "%c %o %s")
+               (:description . "Convert HAML to HTML")))
     ("sass" . ((:command . "sass")
                (:exec    . "%c %o --no-cache %s")
                (:description . "Convert SASS to CSS")))
@@ -318,6 +322,7 @@ if you set your own language configuration.
     ("\\.ts$" . "typescript")
     ("\\.scala$" . "scala")
     ("\\.groovy$". "groovy")
+    ("\\.haml$" . "haml")
     ("\\.sass$" . "sass")
     ("\\.less$" . "less")
     ("\\.\\(sh\\|bash\\|zsh\\|csh\\|csh\\)$" . "shellscript")
@@ -355,6 +360,7 @@ if you set your own language configuration.
     (typescript-mode . "typescript")
     (scala-mode . "scala")
     (groove-mode . "groovy")
+    (haml-mode . "haml")
     (sass-mode . "sass")
     ((less-mode less-css-mode) . "less")
     (sh-mode . "shellscript")
@@ -765,7 +771,7 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart" "elixir" "jsx" "typescript" "fortran")
+    "lua" "rust" "dart" "elixir" "jsx" "typescript" "fortran" "haml")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
