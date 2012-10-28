@@ -785,13 +785,25 @@ by quickrun.el. But you can register your own command for some languages")
     (error "%s is not registered." key))
   (puthash lang key quickrun/command-key-table))
 
+(defun quickrun/override-command (cmdkey cmd-alist)
+  (let ((registerd (assoc-default cmdkey quickrun/language-alist)))
+    (unless registerd
+      (error (message "'%s' is not registerd" cmdkey)))
+    (loop for old-param in registerd
+          do
+          (let ((new-value (assoc-default (car old-param) cmd-alist)))
+            (if new-value
+                (setcdr old-param new-value))))))
+
 ;;;###autoload
-(defun* quickrun-add-command (key alist &key default mode)
+(defun* quickrun-add-command (key alist &key default mode override)
   (cond ((not key) (error "undefined 1st argument 'key'"))
-        ((not alist) (error "undefined 2nd argument 'command alist'"))
-        ((not (assoc :command alist))
-         (error "not found :command parameter in language alist")))
-  (push (cons key (copy-alist alist)) quickrun/language-alist)
+        ((not alist) (error "undefined 2nd argument 'command alist'")))
+  (if override
+      (quickrun/override-command key (copy-alist alist))
+    (if (not (assoc :command alist))
+        (error "not found :command parameter in language alist")
+      (push (cons key (copy-alist alist)) quickrun/language-alist)))
   (let ((cmd-key (or default key)))
     (if default
         (puthash cmd-key key quickrun/command-key-table))
