@@ -127,17 +127,25 @@ User Defined Command
 --------------------
 `quickrun-add-command` define new command.
 
-    (quickrun-add-command "c++/c11"
-                           '((:command . "g++")
-                             (:exec    . ("%c -std=c++0x %o -o %n %s"
-                                          "%n %a"))
-                             (:remove  . ("%n")))
-                           :default "c++")
+```` elisp
+(quickrun-add-command "c++/c11"
+                      '((:command . "g++")
+                        (:exec    . ("%c -std=c++0x %o -o %e %s"
+                                     "%e %a"))
+                        (:remove  . ("%e")))
+                      :default "c++")
 
-    (quickrun-add-command "pod"
-                           '((:command . "perldoc")
-                             (:exec    . "%c -T -F %s"))
-                           :mode 'pod-mode)
+(quickrun-add-command "pod"
+                      '((:command . "perldoc")
+                        (:exec    . "%c -T -F %s"))
+                      :mode 'pod-mode)
+
+;; You can override existing command
+(quickrun-add-command "c/gcc"
+                      '((:exec . ("%c -std=c++0x %o -o %e %s"
+                                  "%e %a")))
+                       :override t)
+````
 
 quickrun-add-command has key parameters, ':default', ':mode'.
 
@@ -148,6 +156,8 @@ quickrun-add-command has key parameters, ':default', ':mode'.
 * `:mode` parameter means that which major-mode use this command-key.
 
 `:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
+
+* Override existing command if `:override` parameter is true
 
 
 Add new Language setting

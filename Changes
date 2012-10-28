@@ -1,6 +1,9 @@
 Revision history for quickrun.el
 
-Version 1.7.1 2012/10/12 syohex
+Version 1.7.3 2012/10/28 syohex
+  - Support override existing command
+
+Version 1.7.2 2012/10/12 syohex
   - Support HAML
 
 Version 1.7.1 2012/10/02 syohex
