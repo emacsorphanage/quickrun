@@ -927,15 +927,18 @@ by quickrun.el. But you can register your own command for some languages")
     (setq quickrun/remove-files (append abs-paths quickrun/remove-files))))
 
 (defun quickrun/temp-name (src)
-  (let* ((extension (file-name-extension src))
+  (let* ((extension (if src
+                        (file-name-extension src)
+                      ""))
          (suffix (or (and extension (concat "." extension)) ""))
          (dir (quickrun/default-directory)))
     (expand-file-name (concat dir (make-temp-name "qr_") suffix))))
 
 (defun quickrun/command-key (src)
-  (let ((file-type (quickrun/decide-file-type src)))
-    (or (and (and (consp current-prefix-arg) (= (car current-prefix-arg) 4))
-             (quickrun/prompt))
+  (let ((file-type (and src (quickrun/decide-file-type src)))
+        (use-prefix-p (and (consp current-prefix-arg)
+                           (= (car current-prefix-arg) 4))))
+    (or (and (or (not src) use-prefix-p) (quickrun/prompt))
         (and quickrun-option-cmd-alist "_user_defined") ;; setting dummy value
         quickrun-option-cmdkey
         (gethash file-type quickrun/command-key-table)
@@ -954,7 +957,9 @@ by quickrun.el. But you can register your own command for some languages")
       (kill-buffer quickrun/buffer-name)))
 
 (defun quickrun/common (start end)
-  (let* ((orig-src (file-name-nondirectory (buffer-file-name)))
+  (let* ((file (buffer-file-name))
+         (orig-src (if file
+                       (file-name-nondirectory file)))
          (cmd-key (quickrun/command-key orig-src)))
     (quickrun/set-default-directory cmd-key)
     (quickrun/kill-quickrun-buffer)
