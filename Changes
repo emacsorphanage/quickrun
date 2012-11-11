@@ -1,5 +1,9 @@
 Revision history for quickrun.el
 
+Version 1.7.4 2012/11/11 syohex
+  - Support buffer execution
+    Which has no relationship with file, such as *scratch* buffer
+
 Version 1.7.3 2012/10/28 syohex
   - Support override existing command
 
