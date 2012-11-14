@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.7.5 2012/11/14 syohex
+  - Speficy compiling language for GCC, Clang, Visual C++
+
 Version 1.7.4 2012/11/11 syohex
   - Support buffer execution
     Which has no relationship with file, such as *scratch* buffer
