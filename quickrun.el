@@ -938,9 +938,10 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((file-type (and src (quickrun/decide-file-type src)))
         (use-prefix-p (and (consp current-prefix-arg)
                            (= (car current-prefix-arg) 4))))
-    (or (and (or (not src) use-prefix-p) (quickrun/prompt))
+    (or (and use-prefix-p (quickrun/prompt))
         (and quickrun-option-cmd-alist "_user_defined") ;; setting dummy value
         quickrun-option-cmdkey
+        (and (not src) (quickrun/prompt))
         (gethash file-type quickrun/command-key-table)
         file-type
         (quickrun/prompt))))
