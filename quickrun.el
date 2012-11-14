@@ -66,38 +66,38 @@
 
 (defvar quickrun/language-alist
   '(("c/gcc" . ((:command . "gcc")
-                (:exec    . ("%c %o -o %e %s" "%e %a"))
+                (:exec    . ("%c -x c %o -o %e %s" "%e %a"))
                 (:compile-only . "%c -Wall -Werror %o -o %e %s")
                 (:remove . ("%e"))
                 (:description . "Compile C file with gcc and execute")))
 
     ("c/clang" . ((:command . "clang")
-                  (:exec    . ("%c %o -o %e %s" "%e %a"))
+                  (:exec    . ("%c -x c %o -o %e %s" "%e %a"))
                   (:compile-only . "%c -Wall -Werror %o -o %e %s")
                   (:remove  . ("%e"))
                   (:description . "Compile C file with llvm/clang and execute")))
 
     ("c/cl" . ((:command . "cl")
-               (:exec    . ("%c %o %s /nologo /Fo%n.obj /Fe%n.exe"
+               (:exec    . ("%c /Tc %o %s /nologo /Fo%n.obj /Fe%n.exe"
                             "%n %a"))
                (:compile-only . "%c %o %s /Wall /nologo /Fo%n.obj /Fe%n.exe")
                (:remove  . ("%n.obj" "%n.exe"))
                (:description . "Compile C file with VC++/cl and execute")))
 
     ("c++/g++" . ((:command . "g++")
-                  (:exec    . ("%c %o -o %e %s" "%e %a"))
+                  (:exec    . ("%c -x c++ %o -o %e %s" "%e %a"))
                   (:compile-only . "%c -Wall -Werror %o -o %e %s")
                   (:remove  . ("%e"))
                   (:description . "Compile C++ file with g++ and execute")))
 
     ("c++/clang++" . ((:command . "clang++")
-                      (:exec    . ("%c %o -o %e %s" "%e %a"))
+                      (:exec    . ("%c -x c++ %o -o %e %s" "%e %a"))
                       (:compile-only . "%c -Wall -Werror %o -o %e %s")
                       (:remove  . ("%e"))
                       (:description . "Compile C++ file with llvm/clang++ and execute")))
 
     ("c++/cl" . ((:command . "cl")
-                 (:exec    . ("%c %o %s /nologo /Fo%n.obj /Fe%n.exe"
+                 (:exec    . ("%c /Tp %o %s /nologo /Fo%n.obj /Fe%n.exe"
                               "%n %a"))
                  (:compile-only . "%c %o %s /Wall /nologo /Fo%n.obj /Fe%n.exe")
                  (:remove  . ("%n.obj" "%n.exe"))
@@ -105,9 +105,9 @@
 
     ("objc" . ((:command . "gcc")
                (:exec    . ((lambda ()
-                              (cond ((string= system-type "darwin")
-                                     "%c %o -o %e %s -framework foundation")
-                                    (t "%c %o -o %e %s -lobjc")))
+                              (if (string= system-type "darwin")
+                                  "%c -x objective-c %o -o %e %s -framework foundation"
+                                "%c -x objective-c %o -o %e %s -lobjc"))
                             "%e %a"))
                (:remove  . ("%e"))
                (:description . "Compile Objective-C file with gcc and execute")))
