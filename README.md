@@ -16,9 +16,7 @@ Requirements
 ------------
 Emacs 22.1 or higher.
 
-
-I test `quickrun.el` on Ubuntu 12.04(Emacs 24.1, 23.3), MacOSX(Emacs 23.3, 22.1),
-Windows7 64bit(NTEmacs 23.3), Windows7 Cygwin.
+I usually test `quickrun.el` with Emacs 24.
 
 
 Installation
@@ -102,7 +100,7 @@ as default. But you can register your own command and apply other languages.
 * JSX(jsx)
 * Markdown(Markdown.pl or bluecloth or kramdown or pandoc or redcarpet)
 * Haskell(runghc)
-* Go Language(8g or 6g or 5g or gccgo)
+* Go Language(go or gccgo)
 * Io(io)
 * Lua(lua)
 * Groovy(groovy)
@@ -273,6 +271,14 @@ And quickrun execute with command.
     /home/bob/sample/sample apple orange melon
 
 
+Hooks
+-----
+
+Run hooks after execute all commands.
+
+    quickrun-after-run-hook
+
+
 Command-Alist
 -------------
 Command alist has ':command', ':exec', ':remove', ':outputter', ':description'
@@ -375,14 +381,16 @@ Using quickrun as function from other functions
 You can pass configuration by `:source` argument.
 Sample is following:
 
-    (defun test-perl ()
-      (interactive)
-      (let* ((cmd "git rev-parse --show-toplevel")
-             (topdir (with-temp-buffer
-                       (call-process-shell-command cmd nil t nil)
-                       (goto-char (point-min))
-                       (if (re-search-forward "^\\(.+\\)$" nil t)
-                           (match-string 1)))))
-        (quickrun :source `((:command . "prove")
-                            (:default-directory . ,topdir)
-                            (:exec . ("%c -bv --color %s"))))))
+```` elisp
+(defun test-perl ()
+  (interactive)
+  (let* ((cmd "git rev-parse --show-toplevel")
+         (topdir (with-temp-buffer
+                   (call-process-shell-command cmd nil t nil)
+                   (goto-char (point-min))
+                   (if (re-search-forward "^\\(.+\\)$" nil t)
+                       (match-string 1)))))
+    (quickrun :source `((:command . "prove")
+                        (:default-directory . ,topdir)
+                        (:exec . ("%c -bv --color %s"))))))
+````

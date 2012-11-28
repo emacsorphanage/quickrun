@@ -60,6 +60,10 @@
 
 (defconst quickrun/buffer-name "*quickrun*")
 
+;; hooks
+(defvar quickrun-after-run-hook nil
+  "Run hook after execute quickrun")
+
 ;;
 ;; language command parameters
 ;;
@@ -201,30 +205,14 @@
     ("haskell" . ((:command . "runghc")
                   (:description . "Run Haskell file with runghc(GHC)")))
 
-    ("go/8g"  .  ((:command . "8g")
-                  (:exec    . ("%c %o -o %n.8 %s"
-                               "8l -o %e %n.8"
-                               "%e %a"))
-                  (:remove  . ("%e" "%n.8"))
-                  (:description . "Compile Go file with 8g(x86) and execute")))
-    ("go/6g"  .  ((:command . "6g")
-                  (:exec    . ("%c %o -o %n.6 %s"
-                               "6l -o %e %n.6"
-                               "%e %a"))
-                  (:remove  . ("%e" "%n.6"))
-                  (:description . "Compile Go file with 6g(x64) and execute")))
-    ("go/5g"  .  ((:command . "5g")
-                  (:exec    . ("%c %o -o %n.5 %s"
-                               "5l -o %e %n.5"
-                               "%e %a"))
-                  (:remove  . ("%e" "%n.5"))
-                  (:description . "Compile Go file with 5g(ARM) and execute")))
-
+    ("go/go"  .  ((:command . "go")
+                  (:exec    . ("%c run %o %s %a"))
+                  (:description . "Compile go file and execute with 'go'")))
     ("go/gccgo"  .  ((:command . "gccgo")
                      (:exec    . ("%c -static-libgcc %o -o %e %s"
                                   "%e %a"))
                      (:remove  . ("%e"))
-                     (:description . "Compile Go file with GCC GO compiler")))
+                     (:description . "Compile Go file with 'gccgo'")))
 
     ("io" . ((:command . "io")
              (:description . "Run IO Language script")))
@@ -625,20 +613,20 @@ if you set your own language configuration.
   (lexical-let ((rest-commands cmds)
                 (outputter-func outputter))
     (lambda (process state)
-      (let ((status (process-status process))
-            (exit-status (process-exit-status process))
-            (buf (process-buffer process)))
-        (cond ((eq status 'exit)
-               (if quickrun/timeout-timer
-                   (cancel-timer quickrun/timeout-timer))
-               (delete-process process)
-               (cond ((and (= exit-status 0) rest-commands)
-                      (quickrun/exec rest-commands))
-                     (t
-                      (quickrun/apply-outputter outputter-func)
-                      (if (> scroll-conservatively 0)
-                          (recenter))
-                      (quickrun/remove-temp-files)))))))))
+      (let ((exit-status (process-exit-status process)))
+        (when (eq (process-status process) 'exit)
+          (if quickrun/timeout-timer
+              (cancel-timer quickrun/timeout-timer))
+          (delete-process process)
+          (cond ((and (= exit-status 0) rest-commands)
+                 (quickrun/exec rest-commands))
+                (t
+                 (quickrun/apply-outputter outputter-func)
+                 (when (= exit-status 0)
+                   (run-hooks 'quickrun-after-run-hook))
+                 (when (> scroll-conservatively 0)
+                   (recenter))
+                 (quickrun/remove-temp-files))))))))
 
 ;;
 ;; Composing command
@@ -836,7 +824,7 @@ by quickrun.el. But you can register your own command for some languages")
     ("scheme" . ("gosh"))
     ("markdown" . ("Markdown.pl" "kramdown" "bluecloth" "redcarpet" "pandoc"))
     ("clojure" . ("jark" "clj-env-dir"))
-    ("go" . ("gccgo" "8g" "6g" "5g")))
+    ("go" . ("go" "gccgo")))
   "Candidates of language which has some compilers or interpreters")
 
 (defun quickrun/init-command-key-table ()
