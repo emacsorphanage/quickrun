@@ -1,7 +1,11 @@
 Revision history for quickrun.el
 
+Version 1.7.6 2012/11/28 syohex
+  - Remove all 'go' command configuration and add new one
+  - Add hook 'quickrun-after-run-hook'
+
 Version 1.7.5 2012/11/14 syohex
-  - Speficy compiling language for GCC, Clang, Visual C++
+  - Specify compiling language for GCC, Clang, Visual C++
   - Fix problem of buffer execution
 
 Version 1.7.4 2012/11/11 syohex
