@@ -60,6 +60,10 @@
 
 (defconst quickrun/buffer-name "*quickrun*")
 
+;; hooks
+(defvar quickrun-after-run-hook nil
+  "Run hook after execute quickrun")
+
 ;;
 ;; language command parameters
 ;;
@@ -609,20 +613,20 @@ if you set your own language configuration.
   (lexical-let ((rest-commands cmds)
                 (outputter-func outputter))
     (lambda (process state)
-      (let ((status (process-status process))
-            (exit-status (process-exit-status process))
-            (buf (process-buffer process)))
-        (cond ((eq status 'exit)
-               (if quickrun/timeout-timer
-                   (cancel-timer quickrun/timeout-timer))
-               (delete-process process)
-               (cond ((and (= exit-status 0) rest-commands)
-                      (quickrun/exec rest-commands))
-                     (t
-                      (quickrun/apply-outputter outputter-func)
-                      (if (> scroll-conservatively 0)
-                          (recenter))
-                      (quickrun/remove-temp-files)))))))))
+      (let ((exit-status (process-exit-status process)))
+        (when (eq (process-status process) 'exit)
+          (if quickrun/timeout-timer
+              (cancel-timer quickrun/timeout-timer))
+          (delete-process process)
+          (cond ((and (= exit-status 0) rest-commands)
+                 (quickrun/exec rest-commands))
+                (t
+                 (quickrun/apply-outputter outputter-func)
+                 (when (= exit-status 0)
+                   (run-hooks 'quickrun-after-run-hook))
+                 (when (> scroll-conservatively 0)
+                   (recenter))
+                 (quickrun/remove-temp-files))))))))
 
 ;;
 ;; Composing command
