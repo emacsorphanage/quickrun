@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.7.7 2013/02/01 syohex
+  - Fixed for warnings of byte-compile
+
 Version 1.7.6 2012/11/28 syohex
   - Remove all 'go' command configuration and add new one
   - Add hook 'quickrun-after-run-hook'
