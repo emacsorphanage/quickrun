@@ -43,6 +43,10 @@
 (require 'em-banner)
 (require 'eshell)
 
+;; for warnings of byte-compile
+(declare-function anything "anything")
+(declare-function helm "helm")
+
 (defgroup quickrun nil
   "Execute buffer quickly"
   :group 'processes
@@ -59,6 +63,62 @@
   :group 'quickrun)
 
 (defconst quickrun/buffer-name "*quickrun*")
+(defvar quickrun/remove-files nil)
+(defvar quickrun/compile-only-flag nil)
+
+;;
+;; file local variable
+;; Based on shadow.el. https://raw.github.com/mooz/shadow.el/master/shadow.el
+;;
+(defmacro quickrun/defvar (name &optional value safep doc)
+  "Define buffer-local and safe-local variable."
+  (declare (indent defun))
+  `(progn
+     (defvar ,name ,value ,doc)
+     (make-variable-buffer-local (quote ,name))
+     ;; Suppress file local variable warning
+     ,(when safep
+        `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
+
+(quickrun/defvar quickrun-option-cmd-alist
+                 nil listp
+                 "Specify command alist directly as file local variable")
+
+(quickrun/defvar quickrun-option-command
+                 nil stringp
+                 "Specify command directly as file local variable")
+
+(quickrun/defvar quickrun-option-cmdkey
+                 nil stringp
+                 "Specify language key directly as file local variable")
+
+(quickrun/defvar quickrun-option-cmdopt
+                 nil stringp
+                 "Specify command option directly as file local variable")
+
+(quickrun/defvar quickrun-option-args
+                 nil stringp
+                 "Specify command argument directly as file local variable")
+
+(defun quickrun/outputter-p (x)
+  (lambda (x) (or (functionp x) (symbolp x) (stringp x)
+                  (quickrun/outputter-multi-p x))))
+
+(quickrun/defvar quickrun-option-outputter
+                 nil quickrun/outputter-p
+                 "Specify format function output buffer as file local variable")
+
+(quickrun/defvar quickrun-option-shebang
+                 t booleanp
+                 "Select using command from schebang as file local variable")
+
+(quickrun/defvar quickrun-option-timeout-seconds
+                 nil integerp
+                 "Timeout seconds as file local variable")
+
+(quickrun/defvar quickrun-option-default-directory
+                 nil file-directory-p
+                 "Default directory where command is executed")
 
 ;; hooks
 (defvar quickrun-after-run-hook nil
@@ -888,8 +948,6 @@ by quickrun.el. But you can register your own command for some languages")
   (interactive "r")
   (quickrun :start start :end end))
 
-(defvar quickrun/compile-only-flag nil)
-
 ;;;###autoload
 (defun quickrun-compile-only ()
   "Exec only compilation"
@@ -904,8 +962,6 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun/run-in-shell t)
         (quickrun-timeout-seconds nil))
     (quickrun)))
-
-(defvar quickrun/remove-files nil)
 
 (defun quickrun/add-remove-files (removed-files)
   (let* ((files (if (listp removed-files)
@@ -1014,60 +1070,6 @@ by quickrun.el. But you can register your own command for some languages")
     (error "helm is not installed."))
   (let ((buf (get-buffer-create "*helm quickrun*")))
     (helm :sources anything-c-source-quickrun :buffer buf)))
-
-;;
-;; file local variable
-;; Based on shadow.el. https://raw.github.com/mooz/shadow.el/master/shadow.el
-;;
-(defmacro quickrun/defvar (name &optional value safep doc)
-  "Define buffer-local and safe-local variable."
-  (declare (indent defun))
-  `(progn
-     (defvar ,name ,value ,doc)
-     (make-variable-buffer-local (quote ,name))
-     ;; Suppress file local variable warning
-     ,(when safep
-        `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
-
-(quickrun/defvar quickrun-option-cmd-alist
-                 nil listp
-                 "Specify command alist directly as file local variable")
-
-(quickrun/defvar quickrun-option-command
-                 nil stringp
-                 "Specify command directly as file local variable")
-
-(quickrun/defvar quickrun-option-cmdkey
-                 nil stringp
-                 "Specify language key directly as file local variable")
-
-(quickrun/defvar quickrun-option-cmdopt
-                 nil stringp
-                 "Specify command option directly as file local variable")
-
-(quickrun/defvar quickrun-option-args
-                 nil stringp
-                 "Specify command argument directly as file local variable")
-
-(defun quickrun/outputter-p (x)
-  (lambda (x) (or (functionp x) (symbolp x) (stringp x)
-                  (quickrun/outputter-multi-p x))))
-
-(quickrun/defvar quickrun-option-outputter
-                 nil quickrun/outputter-p
-                 "Specify format function output buffer as file local variable")
-
-(quickrun/defvar quickrun-option-shebang
-                 t booleanp
-                 "Select using command from schebang as file local variable")
-
-(quickrun/defvar quickrun-option-timeout-seconds
-                 nil integerp
-                 "Timeout seconds as file local variable")
-
-(quickrun/defvar quickrun-option-default-directory
-                 nil file-directory-p
-                 "Default directory where command is executed")
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
