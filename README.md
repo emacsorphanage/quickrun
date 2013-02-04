@@ -1,8 +1,7 @@
-quickrun.el
-==================
+# quickrun.el
 
-Introduction
-------------
+## Introduction
+
 **quickrun.el** is emacs version of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
 
@@ -12,15 +11,15 @@ commands. `quickrun.el` execute not only script languages(Perl, Ruby, Python etc
 compiling languages(C, C++, Go, Java etc).
 
 
-Requirements
-------------
+## Requirements
+
 Emacs 22.1 or higher.
 
 I usually test `quickrun.el` with Emacs 24.
 
 
-Installation
-------------
+## Installation
+
 
 You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with package.el.
 
@@ -34,8 +33,7 @@ After Installation add following to your configuration file(~/.emacs.d/init.el, 
     (require 'quickrun)
 
 
-Basic Usage
------------
+## Basic Usage
 
 Execute current buffer. If `quickrun.el` does not find command-key,
 then `quickrun.el` asks you command-key.
@@ -74,8 +72,8 @@ quickrun with C-u C-u prefix behaves same as quickrun-compile-only.
 
     M-x helm-quickrun
 
-Support Programming Languages
------------------------------
+## Support Programming Languages
+
 `quickrun.el` supports following programming languages and markup languages
 as default. But you can register your own command and apply other languages.
 
@@ -121,8 +119,8 @@ as default. But you can register your own command and apply other languages.
 See also `quickrun/support-languages` global variable.
 
 
-User Defined Command
---------------------
+## User Defined Command
+
 `quickrun-add-command` define new command.
 
 ```` elisp
@@ -158,8 +156,8 @@ quickrun-add-command has key parameters, ':default', ':mode'.
 * Override existing command if `:override` parameter is true
 
 
-Add new Language setting
-------------------------
+## Add new Language setting
+
 Alist of **filename patterns** vs corresponding **command-key**.
 
     (quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
@@ -175,8 +173,8 @@ quickrun-file-alist is similar to `auto-mode-alist`, car of list is
 regexp, cdr of list is "command-key".
 
 
-Change Default Command
-----------------------
+## Change Default Command
+
 `quickrun-set-default` changes default command in some language.
 
     (quickrun-set-default "c" "c/clang")
@@ -185,16 +183,16 @@ Change Default Command
 This means that quickrun uses "c/clang" command in C files.
 
 
-Timeout Second
---------------
+## Timeout Second
+
 `quickrun.el` makes program kill 10 seconds later as default,
 for avoiding infinite loop. You can change this value through
 *quickrun-timeout-seconds*. If this variable is set negative integer,
 time-out does not occur.
 
 
-File Local Variables
---------------------
+## File Local Variables
+
 File local variables is priority to other parameter.
 
     quickrun-option-cmd-alist
@@ -227,8 +225,8 @@ the following string is treated as ":command".
 Outputter function.
 
 
-User Defined Command with file local variables
-----------------------------
+## User Defined Command with file local variables
+
 `quickrun.el` has some file local variable.
 
 For example, C11 C++ program file.
@@ -271,16 +269,15 @@ And quickrun execute with command.
     /home/bob/sample/sample apple orange melon
 
 
-Hooks
------
+## Hooks
 
 Run hooks after execute all commands.
 
     quickrun-after-run-hook
 
 
-Command-Alist
--------------
+## Command-Alist
+
 Command alist has ':command', ':exec', ':remove', ':outputter', ':description'
 parameters.
 
@@ -317,8 +314,8 @@ Description of this command. This parameter is used in
 `anything-quickrun` or `helm-quickrun`
 
 
-Format of Command-Alist
------------------------
+## Format of Command-Alist
+
 You can use following placeholders in command-alist.
 
 | Placeholder | Result                                        |
@@ -338,8 +335,8 @@ You can use following placeholders in command-alist.
 so name of source file is at random.
 
 
-Outputter
----------
+## Outputter
+
 Outputter is a function for processing output buffer, enable some major-mode,
 output other buffer or file, open it with browser etc. Default outputter is
 to output to \*quickrun\* buffer and processing ANSI Color sequence.
@@ -375,8 +372,8 @@ Use multiple outputters.  [outputter *multi* sample](emacs-quickrun/tree/master/
 No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_outputter_null.pl)
 
 
-Using quickrun as function from other functions
------------------------------------------------
+## Using quickrun as function from other functions
+
 `quickrun' can be used as function from other functions.
 You can pass configuration by `:source` argument.
 Sample is following:
