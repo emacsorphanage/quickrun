@@ -13,9 +13,9 @@ compiling languages(C, C++, Go, Java etc).
 
 ## Requirements
 
-Emacs 22.1 or higher.
+Emacs 23 or higher.
 
-I usually test `quickrun.el` with Emacs 24.
+I usually test `quickrun.el` with Emacs 24. I recommend Emacs 24.
 
 
 ## Installation
