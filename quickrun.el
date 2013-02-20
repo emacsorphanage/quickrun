@@ -518,14 +518,13 @@ if you set your own language configuration.
   (or quickrun-option-default-directory default-directory))
 
 (defun quickrun/set-default-directory (cmd-key)
-  (let* ((cmd-info (quickrun/command-info cmd-key))
-         (dir (assoc-default :default-directory cmd-info)))
-    (when dir
-      (let ((formatted-dir (file-name-as-directory dir)))
-        (if (file-directory-p formatted-dir)
-            (setq quickrun-option-default-directory formatted-dir)
+  (let ((cmd-info (quickrun/command-info cmd-key)))
+    (quickrun/awhen (assoc-default :default-directory cmd-info)
+      (let ((formatted (file-name-as-directory it)))
+        (unless (file-directory-p formatted)
           (throw 'quickrun
-                 (format "'%s' is not existed directory" dir)))))))
+                 (format "'%s' is not existed directory" it)))
+        (setq quickrun-option-default-directory formatted)))))
 
 (defun quickrun/exec-cmd (cmd)
   (let ((program (car (split-string cmd)))
@@ -635,9 +634,9 @@ if you set your own language configuration.
   (browse-url-of-region (point-min) (point-max)))
 
 (defun quickrun/defined-outputter-null ()
-  (let (buf (get-buffer quickrun/buffer-name))
-    (delete-region (point-min) (point-max))
-    (kill-buffer buf)))
+  (delete-region (point-min) (point-max))
+  (kill-buffer (get-buffer quickrun/buffer-name)))
+
 
 (defun quickrun/defined-outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
@@ -646,32 +645,31 @@ if you set your own language configuration.
       (insert str))))
 
 (defun quickrun/defined-outputter-variable (varname)
-  (let ((symbol (intern varname))
-        (value (buffer-substring (point-min) (point-max))))
-    (set symbol value)))
+  (let ((symbol (intern varname)))
+    (set symbol (buffer-substring (point-min) (point-max)))))
 
 (defun quickrun/apply-outputter (op)
   (let ((buf (get-buffer quickrun/buffer-name))
         (outputters (or (and (quickrun/outputter-multi-p op) (cdr op))
-                        (list op))))
+                        (list op)))
+        (outputter-func nil))
     (dolist (outputter outputters)
-      (let ((outputter-func outputter))
-        (when (symbolp outputter)
-          (lexical-let* ((name (symbol-name outputter))
-                         (func (assoc-default outputter
-                                              quickrun/defined-outputter-symbol))
-                         (func-with-arg
-                          (assoc-default name
-                                         quickrun/defined-outputter-symbol-with-arg
-                                         'string-match)))
-            (cond (func (setq outputter-func func))
-                  (func-with-arg
-                   (when (string-match ":\\(.*\\)$" name)
-                     (setq outputter-func
-                           (lambda ()
-                             (funcall func-with-arg
-                                      (match-string 1 name)))))))))
-        (with-current-buffer buf
+      (setq outputter-func outputter)
+      (when (symbolp outputter)
+        (lexical-let* ((name (symbol-name outputter))
+                       (func (assoc-default outputter
+                                            quickrun/defined-outputter-symbol))
+                       (func-with-arg
+                        (assoc-default name
+                                       quickrun/defined-outputter-symbol-with-arg
+                                       'string-match)))
+          (cond (func (setq outputter-func func))
+                (func-with-arg
+                 (when (string-match ":\\(.*\\)\\'" name)
+                   (setq outputter-func
+                         (lambda ()
+                           (funcall func-with-arg
+                                    (match-string 1 name)))))))))
           (funcall outputter-func))))))
 
 (defun quickrun/make-sentinel (cmds outputter)
@@ -760,17 +758,15 @@ Place holders are beginning with '%' and replaced by:
     (unless (executable-find program)
       (throw 'quickrun (format "'%s' not found" program)))))
 
-(defun quickrun/get-shebang (src)
-  (with-temp-buffer
-    (insert-file-contents src)
+(defun quickrun/get-shebang ()
+  (save-excursion
     (goto-char (point-min))
     (when (looking-at "#![ \t]*\\(.*\\)$")
-      (buffer-substring-no-properties (match-beginning 1)
-                                      (match-end 1)))))
+      (match-string-no-properties 1))))
 
 (defun quickrun/template-argument (cmd-info src)
   (let ((cmd (or quickrun-option-command
-                 (and quickrun-option-shebang (quickrun/get-shebang src))
+                 (and quickrun-option-shebang (quickrun/get-shebang))
                  (quickrun/eval-parameter (assoc-default :command cmd-info))
                  (throw 'quickrun "Not found :command parameter")))
         (cmd-opt (or quickrun-option-cmdopt
