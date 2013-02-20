@@ -689,12 +689,14 @@ if you set your own language configuration.
           (when quickrun/timeout-timer
             (cancel-timer quickrun/timeout-timer))
           (delete-process process)
-          (cond ((and (= exit-status 0) rest-commands)
+          (cond ((and (zerop exit-status) rest-commands)
                  (quickrun/exec rest-commands))
                 (t
-                 (when (= exit-status 0)
-                   (quickrun/apply-outputter outputter-func)
-                   (run-hooks 'quickrun-after-run-hook))
+                 (if (zerop exit-status)
+                     (progn
+                       (quickrun/apply-outputter outputter-func)
+                       (run-hooks 'quickrun-after-run-hook))
+                   (pop-to-buffer (get-buffer quickrun/buffer-name)))
                  (when (> scroll-conservatively 0)
                    (recenter))
                  (quickrun/remove-temp-files))))))))
