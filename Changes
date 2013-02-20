@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.8.1 2013/02/20 syohex
+  - Improve error handling
+
 Version 1.8.0 2013/02/20 syohex
   - Implement quickrun-replace-region
   - Refactoring
