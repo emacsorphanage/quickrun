@@ -529,7 +529,7 @@ if you set your own language configuration.
 
 (defun quickrun/exec-cmd (cmd)
   (let ((program (car (split-string cmd)))
-        (buf (get-buffer-create quickrun/buffer-name)))
+        (buf (get-buffer quickrun/buffer-name)))
     (quickrun/check-command-installed program)
     (with-current-buffer buf
       (setq buffer-read-only nil)
@@ -549,7 +549,7 @@ if you set your own language configuration.
 (defun quickrun/kill-process (process)
   (when (eq (process-status process) 'run)
     (kill-process process))
-  (let ((buf (get-buffer-create quickrun/buffer-name)))
+  (let ((buf (get-buffer quickrun/buffer-name)))
     (with-current-buffer buf
       (insert (format "\nTime out %s(running over %d second)"
                       (process-name process)
