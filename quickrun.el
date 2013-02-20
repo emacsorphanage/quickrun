@@ -561,7 +561,8 @@ if you set your own language configuration.
   (dolist (file quickrun/remove-files)
     (cond
      ((file-directory-p file) (delete-directory file t))
-     ((file-exists-p file) (delete-file file)))))
+     ((file-exists-p file) (delete-file file))))
+  (setq quickrun/remove-files nil))
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
