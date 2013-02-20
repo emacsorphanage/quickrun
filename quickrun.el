@@ -451,7 +451,7 @@ if you set your own language configuration.
 (defun quickrun/compilation-start (cmd)
   (let ((program (car (split-string cmd))))
     (quickrun/check-command-installed program)
-    (setq compilation-finish-functions #'quickrun/compilation-finish-func)
+    (setq compilation-finish-functions 'quickrun/compilation-finish-func)
     (compilation-start cmd t (lambda (x) quickrun/buffer-name))))
 
 (defun quickrun/compilation-finish-func (buffer str)
@@ -464,7 +464,7 @@ if you set your own language configuration.
 (defvar quickrun/run-in-shell nil)
 
 (defun quickrun/concat-commands (cmd-lst)
-  (mapconcat #'identity cmd-lst " && "))
+  (mapconcat 'identity cmd-lst " && "))
 
 (defun quickrun/exec (cmd-lst)
   (if quickrun/run-in-shell
@@ -474,7 +474,7 @@ if you set your own language configuration.
              (rest-cmds (cdr cmd-lst))
              (process (quickrun/exec-cmd next-cmd))
              (outputter (or quickrun-option-outputter
-                            #'quickrun/default-outputter)))
+                            'quickrun/default-outputter)))
         (set-process-sentinel process
                               (quickrun/make-sentinel rest-cmds outputter))))))
 
@@ -543,7 +543,7 @@ if you set your own language configuration.
         (when (>= quickrun-timeout-seconds 0)
           (setq quickrun/timeout-timer
                 (run-at-time quickrun-timeout-seconds nil
-                             #'quickrun/kill-process process)))
+                             'quickrun/kill-process process)))
         process))))
 
 (defun quickrun/kill-process (process)
@@ -593,17 +593,18 @@ if you set your own language configuration.
 ;;
 
 (defvar quickrun/defined-outputter-symbol
-  `(
-    (message  . ,#'quickrun/defined-outputter-message)
-    (browser  . ,#'quickrun/defined-outputter-browser)
-    (null     . ,#'quickrun/defined-outputter-null)
+  '(
+    (message  . quickrun/defined-outputter-message)
+    (browser  . quickrun/defined-outputter-browser)
+    (null     . quickrun/defined-outputter-null)
+    (replace  . quickrun/defined-outputter-replace-region)
     ))
 
 (defvar quickrun/defined-outputter-symbol-with-arg
-  `(
-    ("^file:"     . ,#'quickrun/defined-outputter-file)
-    ("^buffer:"   . ,#'quickrun/defined-outputter-buffer)
-    ("^variable:" . ,#'quickrun/defined-outputter-variable)
+  '(
+    ("^file:"     . quickrun/defined-outputter-file)
+    ("^buffer:"   . quickrun/defined-outputter-buffer)
+    ("^variable:" . quickrun/defined-outputter-variable)
     ))
 
 (defun quickrun/default-outputter ()
@@ -739,8 +740,7 @@ Place holders are beginning with '%' and replaced by:
                   (assoc-default key quickrun/default-tmpl-alist))))
     (when tmpl
       (cond (take-list
-             (mapcar (lambda (x)
-                       (quickrun/eval-parameter x)) (quickrun/mklist tmpl)))
+             (mapcar 'quickrun/eval-parameter (quickrun/mklist tmpl)))
             (t
              (quickrun/eval-parameter tmpl))))))
 
@@ -825,7 +825,7 @@ Place holders are beginning with '%' and replaced by:
 by quickrun.el. But you can register your own command for some languages")
 
 (defvar quickrun/command-key-table
-  (make-hash-table :test #'equal))
+  (make-hash-table :test 'equal))
 
 ;;;###autoload
 (defun quickrun-set-default (lang key)
@@ -960,8 +960,7 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun)))
 
 (defun quickrun/add-remove-files (removed-files)
-  (let* ((files (quickrun/mklist removed-files))
-         (abs-paths (mapcar (lambda (f) (expand-file-name f)) files)))
+  (let ((abs-paths (mapcar 'expand-file-name (quickrun/mklist removed-files))))
     (setq quickrun/remove-files (append abs-paths quickrun/remove-files))))
 
 (defun quickrun/temp-name (src)
