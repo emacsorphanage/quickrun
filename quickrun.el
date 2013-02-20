@@ -685,8 +685,8 @@ if you set your own language configuration.
           (cond ((and (= exit-status 0) rest-commands)
                  (quickrun/exec rest-commands))
                 (t
-                 (quickrun/apply-outputter outputter-func)
                  (when (= exit-status 0)
+                   (quickrun/apply-outputter outputter-func)
                    (run-hooks 'quickrun-after-run-hook))
                  (when (> scroll-conservatively 0)
                    (recenter))
