@@ -567,13 +567,9 @@ if you set your own language configuration.
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name))
-        (outputter quickrun-option-outputter)
-        (default-dir (quickrun/default-directory)))
+        (outputter quickrun-option-outputter))
     (unless (quickrun/defined-outputter-p outputter)
-      (pop-to-buffer buf)
-      ;; Copy buffer local variable
-      (setq quickrun-option-outputter outputter
-            quickrun-option-default-directory default-dir))))
+      (pop-to-buffer buf))))
 
 (defun quickrun/delete-window ()
   (interactive)
@@ -686,6 +682,8 @@ if you set your own language configuration.
   (lexical-let ((rest-commands cmds)
                 (outputter-func outputter))
     (lambda (process state)
+      ;; XXX Why reset `quickrun-option-outputter' ??
+      (setq quickrun-option-outputter outputter-func)
       (let ((exit-status (process-exit-status process)))
         (when (eq (process-status process) 'exit)
           (when quickrun/timeout-timer
@@ -1005,6 +1003,11 @@ by quickrun.el. But you can register your own command for some languages")
   (when (get-buffer quickrun/buffer-name)
     (kill-buffer quickrun/buffer-name)))
 
+(defun quickrun/setup-exec-buffer ()
+  (let ((default-dir (quickrun/default-directory)))
+    (with-current-buffer (get-buffer-create quickrun/buffer-name)
+      (setq quickrun-option-default-directory default-dir))))
+
 (defun quickrun/common (start end)
   (let* ((orig-src (quickrun/awhen (buffer-file-name)
                      (file-name-nondirectory it)))
@@ -1031,6 +1034,7 @@ by quickrun.el. But you can register your own command for some languages")
                                   cmd-key)))
                  (quickrun/compilation-start cmd)))
               (t
+               (quickrun/setup-exec-buffer)
                (when (quickrun/exec (gethash :exec cmd-info-hash))
                  (quickrun/popup-output-buffer))))))))
 
