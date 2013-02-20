@@ -65,6 +65,7 @@
 (defconst quickrun/buffer-name "*quickrun*")
 (defvar quickrun/remove-files nil)
 (defvar quickrun/compile-only-flag nil)
+(defvar quickrun/original-buffer nil)
 
 (defmacro quickrun/awhen (test &rest body)
   (declare (indent 1))
@@ -638,6 +639,11 @@ if you set your own language configuration.
   (delete-region (point-min) (point-max))
   (kill-buffer (get-buffer quickrun/buffer-name)))
 
+(defun quickrun/defined-outputter-replace-region ()
+  (let ((output (buffer-substring-no-properties (point-min) (point-max))))
+    (with-current-buffer quickrun/original-buffer
+      (delete-region (region-beginning) (region-end))
+      (insert output))))
 
 (defun quickrun/defined-outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
@@ -651,6 +657,7 @@ if you set your own language configuration.
 
 (defun quickrun/apply-outputter (op)
   (let ((buf (get-buffer quickrun/buffer-name))
+        (origbuf (current-buffer))
         (outputters (or (and (quickrun/outputter-multi-p op) (cdr op))
                         (list op)))
         (outputter-func nil))
@@ -671,6 +678,8 @@ if you set your own language configuration.
                          (lambda ()
                            (funcall func-with-arg
                                     (match-string 1 name)))))))))
+      (with-current-buffer buf
+        (let ((quickrun/original-buffer origbuf))
           (funcall outputter-func))))))
 
 (defun quickrun/make-sentinel (cmds outputter)
@@ -940,6 +949,13 @@ by quickrun.el. But you can register your own command for some languages")
   "Run commands with specified region"
   (interactive "r")
   (quickrun :start start :end end))
+
+;;;###autoload
+(defun quickrun-replace-region (start end)
+  "Run commands with specified region and replace"
+  (interactive "r")
+  (let ((quickrun-option-outputter 'replace))
+    (quickrun :start start :end end)))
 
 ;;;###autoload
 (defun quickrun-compile-only ()
