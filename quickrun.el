@@ -591,17 +591,17 @@ if you set your own language configuration.
 
 (defvar quickrun/defined-outputter-symbol
   '(
-    (message  . quickrun/defined-outputter-message)
-    (browser  . quickrun/defined-outputter-browser)
-    (null     . quickrun/defined-outputter-null)
-    (replace  . quickrun/defined-outputter-replace-region)
+    (message  . quickrun/outputter-message)
+    (browser  . quickrun/outputter-browser)
+    (null     . quickrun/outputter-null)
+    (replace  . quickrun/outputter-replace-region)
     ))
 
 (defvar quickrun/defined-outputter-symbol-with-arg
   '(
-    ("^file:"     . quickrun/defined-outputter-file)
-    ("^buffer:"   . quickrun/defined-outputter-buffer)
-    ("^variable:" . quickrun/defined-outputter-variable)
+    ("^file:"     . quickrun/outputter-file)
+    ("^buffer:"   . quickrun/outputter-buffer)
+    ("^variable:" . quickrun/outputter-variable)
     ))
 
 (defun quickrun/default-outputter ()
@@ -622,32 +622,32 @@ if you set your own language configuration.
                               quickrun/defined-outputter-symbol-with-arg
                               'string-match))))))
 
-(defun quickrun/defined-outputter-file (file)
+(defun quickrun/outputter-file (file)
   (write-region (point-min) (point-max) file))
 
-(defun quickrun/defined-outputter-message ()
+(defun quickrun/outputter-message ()
   (message "%s" (buffer-substring-no-properties (point-min) (point-max))))
 
-(defun quickrun/defined-outputter-browser ()
+(defun quickrun/outputter-browser ()
   (browse-url-of-region (point-min) (point-max)))
 
-(defun quickrun/defined-outputter-null ()
+(defun quickrun/outputter-null ()
   (delete-region (point-min) (point-max))
   (kill-buffer (get-buffer quickrun/buffer-name)))
 
-(defun quickrun/defined-outputter-replace-region ()
+(defun quickrun/outputter-replace-region ()
   (let ((output (buffer-substring-no-properties (point-min) (point-max))))
     (with-current-buffer quickrun/original-buffer
       (delete-region (region-beginning) (region-end))
       (insert output))))
 
-(defun quickrun/defined-outputter-buffer (bufname)
+(defun quickrun/outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
     (with-current-buffer (get-buffer-create bufname)
       (erase-buffer)
       (insert str))))
 
-(defun quickrun/defined-outputter-variable (varname)
+(defun quickrun/outputter-variable (varname)
   (let ((symbol (intern varname)))
     (set symbol (buffer-substring (point-min) (point-max)))))
 
