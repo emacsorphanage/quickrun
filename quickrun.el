@@ -1044,29 +1044,44 @@ by quickrun.el. But you can register your own command for some languages")
 ;; helm/anything interface
 ;;
 
-(defvar anything-c-source-quickrun
+(defvar helm-c-source-quickrun
   '((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
                     (loop for (cmd-key . cmd-info) in quickrun/language-alist
-                          collect (quickrun/anything-candidate cmd-key cmd-info))))
-    (action . (("Run this cmd-key" . quickrun/anything-action-default))))
-  "anything source of `quickrun'")
+                          collect (quickrun/helm-candidate cmd-key cmd-info))))
+    (action . (("Run this cmd-key" . quickrun/helm-action-default)
+               ("Compile only" . quickrun/helm-compile-only)
+               ("Run with shell" . quickrun/helm-action-shell)
+               ("Replace region" . quickrun/helm-action-replace-region))))
+  "helm/anything source of `quickrun'")
 
-(defun quickrun/anything-candidate (cmd-key cmd-info)
+(defun quickrun/helm-candidate (cmd-key cmd-info)
   (let ((description (or (assoc-default :description cmd-info) "")))
     (cons (format "%-25s %s" cmd-key description) cmd-key)))
 
-(defun quickrun/anything-action-default (cmd-key)
+(defun quickrun/helm-action-default (cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun)))
+
+(defun quickrun/helm-action-shell (cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun-shell)))
+
+(defun quickrun/helm-compile-only (cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun-compile-only)))
+
+(defun quickrun/helm-action-replace-region (cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun-replace-region (region-beginning) (region-end))))
 
 ;;;###autoload
 (defun anything-quickrun ()
   (interactive)
   (unless (featurep 'anything)
     (error "anything is not installed."))
-  (anything anything-c-source-quickrun))
+  (anything helm-c-source-quickrun))
 
 ;;;###autoload
 (defun helm-quickrun ()
@@ -1074,7 +1089,7 @@ by quickrun.el. But you can register your own command for some languages")
   (unless (featurep 'helm)
     (error "helm is not installed."))
   (let ((buf (get-buffer-create "*helm quickrun*")))
-    (helm :sources anything-c-source-quickrun :buffer buf)))
+    (helm :sources helm-c-source-quickrun :buffer buf)))
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
