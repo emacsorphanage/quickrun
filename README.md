@@ -64,6 +64,10 @@ quickrun with C-u C-u prefix behaves same as quickrun-compile-only.
 
     M-x quickrun-compile-only
 
+Replace region of code with its output.
+
+    M-x quickrun-replace-region
+
 `M-x quickrun` with anything interaface
 
     M-x anything-quickrun
