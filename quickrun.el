@@ -696,7 +696,8 @@ if you set your own language configuration.
                      (progn
                        (quickrun/apply-outputter outputter-func)
                        (run-hooks 'quickrun-after-run-hook))
-                   (pop-to-buffer (get-buffer quickrun/buffer-name)))
+                   (pop-to-buffer (get-buffer quickrun/buffer-name))
+                   (quickrun/mode))
                  (when (> scroll-conservatively 0)
                    (recenter))
                  (quickrun/remove-temp-files))))))))
