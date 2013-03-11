@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.8.3 2013/03/11 syohex
+  - Enable quickrun/mode if command is failed
+
 Version 1.8.2 2013/02/24 syohex
   - Add actions of helm source
   - refactoring for function naming
