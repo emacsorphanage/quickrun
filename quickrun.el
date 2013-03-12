@@ -579,9 +579,18 @@ if you set your own language configuration.
   (interactive)
   (delete-window (get-buffer-window quickrun/buffer-name)))
 
+(defun quickrun/kill-running-process ()
+  (interactive)
+  (let ((proc (get-buffer-process (current-buffer))))
+    (if (not proc)
+        (message "No Process!!")
+      (message "Kill process: %s" (process-name proc))
+      (kill-process proc))))
+
 (defvar quickrun/mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") 'quickrun/delete-window)
+    (define-key map (kbd "C-c C-c") 'quickrun/kill-running-process)
     map))
 
 (define-derived-mode quickrun/mode nil "Quickrun"
@@ -688,20 +697,18 @@ if you set your own language configuration.
     (lambda (process state)
       ;; XXX Why reset `quickrun-option-outputter' ??
       (setq quickrun-option-outputter outputter-func)
-      (let ((exit-status (process-exit-status process)))
-        (when (eq (process-status process) 'exit)
-          (when quickrun/timeout-timer
-            (cancel-timer quickrun/timeout-timer))
-          (delete-process process)
-          (cond ((and (zerop exit-status) rest-commands)
+      (when (memq (process-status process) '(exit signal))
+        (and quickrun/timeout-timer (cancel-timer quickrun/timeout-timer))
+        (delete-process process)
+        (let ((is-success (zerop (process-exit-status process))))
+          (cond ((and is-success rest-commands)
                  (quickrun/exec rest-commands))
                 (t
-                 (if (zerop exit-status)
+                 (if is-success
                      (progn
                        (quickrun/apply-outputter outputter-func)
                        (run-hooks 'quickrun-after-run-hook))
-                   (pop-to-buffer (get-buffer quickrun/buffer-name))
-                   (quickrun/mode))
+                   (quickrun/popup-output-buffer))
                  (when (> scroll-conservatively 0)
                    (recenter))
                  (quickrun/remove-temp-files))))))))
