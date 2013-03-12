@@ -1,5 +1,9 @@
 Revision history for quickrun.el
 
+Version 1.8.4 2013/03/12 syohex
+  - Fix for setting process-connection-type
+  - Implement command which kills process
+
 Version 1.8.3 2013/03/11 syohex
   - Enable quickrun/mode if command is failed
 

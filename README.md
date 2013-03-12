@@ -127,7 +127,7 @@ See also `quickrun/support-languages` global variable.
 
 `quickrun-add-command` define new command.
 
-```` elisp
+````elisp
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
                         (:exec    . ("%c -std=c++0x %o -o %e %s"
@@ -164,8 +164,10 @@ quickrun-add-command has key parameters, ':default', ':mode'.
 
 Alist of **filename patterns** vs corresponding **command-key**.
 
-    (quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
-    (add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
+````elisp
+(quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
+(add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
+````
 
 
 If file name is matched to regexp "\\.t$", then quickrun.el uses "prove"
@@ -193,6 +195,19 @@ This means that quickrun uses "c/clang" command in C files.
 for avoiding infinite loop. You can change this value through
 *quickrun-timeout-seconds*. If this variable is set negative integer,
 time-out does not occur.
+
+
+## Kill process
+
+You can kill quickrun process by `C-c C-c` in quickrun buffer.
+
+
+## Key bindings in quickrun buffer
+
+| Key       | Command                |
+|:---------:|:-----------------------|
+|  q        | Close quickrun window  |
+|  C-c C-c  | Kill quickrun process  |
 
 
 ## File Local Variables
@@ -235,33 +250,35 @@ Outputter function.
 
 For example, C11 C++ program file.
 
-    #include <iostream>
-    #include <vector>
-    #include <string>
+````c++
+#include <iostream>
+#include <vector>
+#include <string>
 
-    int main (int argc, char *argv[])
-    {
-        std::vector <std::string> lst = { "a", "b", "c", "d" };
+int main (int argc, char *argv[])
+{
+    std::vector <std::string> lst = { "a", "b", "c", "d" };
 
-        for (auto x : lst){
-            std::cout << "[" << x << "]" << std::endl;
-        }
-
-        for (auto i = 1; i < argc; i++){
-            std::cout << "[" << argv[i] << "]" << std::endl;
-        }
-
-        return 0;
+    for (auto x : lst){
+        std::cout << "[" << x << "]" << std::endl;
     }
 
-    /*
-      Local Variables:
-      quickrun-option-cmd-alist: ((:command . "g++")
-                                  (:exec    . ("%c -std=c++0x -o %n %s"
-                                               "%n apple orange melon"))
-                                  (:remove  . ("%n")))
-      End:
-    */
+    for (auto i = 1; i < argc; i++){
+        std::cout << "[" << argv[i] << "]" << std::endl;
+    }
+
+    return 0;
+}
+
+/*
+  Local Variables:
+  quickrun-option-cmd-alist: ((:command . "g++")
+                              (:exec    . ("%c -std=c++0x -o %n %s"
+                                           "%n apple orange melon"))
+                              (:remove  . ("%n")))
+  End:
+*/
+````
 
 In this case, quickrun compiles this file with following command
 (source file is /home/bob/sample/sample.cpp)
@@ -315,7 +332,7 @@ Directory where commands are executed.
 :description
 
 Description of this command. This parameter is used in
-`anything-quickrun` or `helm-quickrun`
+`helm-quickrun` or `anything-quickrun`
 
 
 ## Format of Command-Alist
@@ -382,7 +399,7 @@ No output. [outputter *null* sample](emacs-quickrun/tree/master/sample/sample_ou
 You can pass configuration by `:source` argument.
 Sample is following:
 
-```` elisp
+````elisp
 (defun test-perl ()
   (interactive)
   (let* ((cmd "git rev-parse --show-toplevel")

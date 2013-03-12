@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.8.3
+;; Version: 1.8.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -75,6 +75,10 @@
   (if (listp obj)
       obj
     (list obj)))
+
+(defsubst quickrun/log (fmt &rest args)
+  (when quickrun-debug
+    (apply 'message fmt args)))
 
 ;;
 ;; file local variable
@@ -541,8 +545,7 @@ if you set your own language configuration.
     (let ((proc-name (format "quickrun-process-%s" program))
           (process-connection-type (quickrun/process-connection-type program))
           (default-directory (quickrun/default-directory)))
-      (and quickrun-debug
-           (message "Quickrun Execute: %s at %s" cmd default-directory))
+      (quickrun/log "Quickrun Execute: %s at %s" cmd default-directory)
       (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
         (when (>= quickrun-timeout-seconds 0)
           (setq quickrun/timeout-timer
@@ -570,10 +573,9 @@ if you set your own language configuration.
   (setq quickrun/remove-files nil))
 
 (defun quickrun/popup-output-buffer ()
-  (let ((buf (get-buffer quickrun/buffer-name))
-        (outputter quickrun-option-outputter))
-    (unless (quickrun/defined-outputter-p outputter)
-      (pop-to-buffer buf))))
+  (let ((buf (get-buffer quickrun/buffer-name)))
+    (pop-to-buffer buf)
+    (quickrun/mode)))
 
 (defun quickrun/delete-window ()
   (interactive)
@@ -618,7 +620,6 @@ if you set your own language configuration.
     ))
 
 (defun quickrun/default-outputter ()
-  (quickrun/mode)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
 (defun quickrun/outputter-multi-p (outputter)
@@ -1049,7 +1050,8 @@ by quickrun.el. But you can register your own command for some languages")
                  (quickrun/compilation-start cmd)))
               (t
                (quickrun/setup-exec-buffer)
-               (when (quickrun/exec (gethash :exec cmd-info-hash))
+               (quickrun/exec (gethash :exec cmd-info-hash))
+               (unless (quickrun/defined-outputter-p quickrun-option-outputter)
                  (quickrun/popup-output-buffer))))))))
 
 ;;
