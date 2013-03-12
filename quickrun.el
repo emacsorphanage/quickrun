@@ -527,6 +527,10 @@ if you set your own language configuration.
                  (format "'%s' is not existed directory" it)))
         (setq quickrun-option-default-directory formatted)))))
 
+(defsubst quickrun/process-connection-type (cmd)
+  ;; for suppressing 'carriage return'(^M)
+  (not (string-match "\\`php" cmd)))
+
 (defun quickrun/exec-cmd (cmd)
   (let ((program (car (split-string cmd)))
         (buf (get-buffer quickrun/buffer-name)))
@@ -535,7 +539,7 @@ if you set your own language configuration.
       (setq buffer-read-only nil)
       (erase-buffer))
     (let ((proc-name (format "quickrun-process-%s" program))
-          (process-connection-type nil)
+          (process-connection-type (quickrun/process-connection-type program))
           (default-directory (quickrun/default-directory)))
       (and quickrun-debug
            (message "Quickrun Execute: %s at %s" cmd default-directory))
