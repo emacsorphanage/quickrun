@@ -358,8 +358,7 @@ so name of source file is at random.
 
 ## Outputter
 
-Outputter is a function for processing output buffer, enable some major-mode,
-output other buffer or file, open it with browser etc. Default outputter is
+Outputter is a function for processing command output. Default outputter is
 to output to \*quickrun\* buffer and processing ANSI Color sequence.
 
 `quickrun.el` defines following functions as default.
