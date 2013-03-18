@@ -344,7 +344,7 @@ You can use following placeholders in command-alist.
 |  %c         |  Command                                      |
 |  %o         |  Command line option                          |
 |  %s         |  Source(absolute path)                        |
-|  %a         |  Script's argumetns                           |
+|  %a         |  Script's arguments                           |
 |  %n         |  Source without extension(absolute path)      |
 |  %N         |  Source without extension(nondirectory)       |
 |  %d         |  Directory name of Source(absolute path)      |
