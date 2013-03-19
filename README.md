@@ -20,7 +20,6 @@ I usually test `quickrun.el` with Emacs 24. I recommend Emacs 24.
 
 ## Installation
 
-
 You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with package.el.
 
 Or install directly:
@@ -35,46 +34,43 @@ After Installation add following to your configuration file(~/.emacs.d/init.el, 
 
 ## Basic Usage
 
+#### quickrun
+
 Execute current buffer. If `quickrun.el` does not find command-key,
-then `quickrun.el` asks you command-key.
+then `quickrun.el` asks you command-key(You always input command
+if you use `C-u` prefix key)
 
-    M-x quickrun
-
-Execute current buffer with specified command.
-`quickrun.el` asks you command-key.
-
-    C-u M-x quickrun
+#### quickrun-region
 
 Execute region. (Java is not supported)
 
-    M-x quickrun-region
+#### quickrun-with-arg
 
 Execute current buffer with arguments.
 `quickrun.el` asks you command line argument
 
-    M-x quickrun-with-arg
+#### quickrun-shell
 
 Execute current buffer in eshell for interactive command such as program
 which reads input from STDIN.
 
-    M-x quickrun-shell
+#### quickrun-compile-only
 
 Compile current buffer with compile.el framework, not execute.
-quickrun with C-u C-u prefix behaves same as quickrun-compile-only.
+quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
 
-    M-x quickrun-compile-only
+#### quickrun-replace-region
 
 Replace region of code with its output.
 
-    M-x quickrun-replace-region
-
-`M-x quickrun` with anything interaface
-
-    M-x anything-quickrun
+#### helm-quickrun
 
 `M-x quickrun` with helm interaface
 
-    M-x helm-quickrun
+#### anything-quickrun
+
+`M-x quickrun` with anything interaface
+
 
 ## Support Programming Languages
 
@@ -183,7 +179,9 @@ regexp, cdr of list is "command-key".
 
 `quickrun-set-default` changes default command in some language.
 
-    (quickrun-set-default "c" "c/clang")
+````elisp
+(quickrun-set-default "c" "c/clang")
+````
 
 
 This means that quickrun uses "c/clang" command in C files.
@@ -212,34 +210,33 @@ You can kill quickrun process by `C-c C-c` in quickrun buffer.
 
 ## File Local Variables
 
+#### quickrun-option-cmd-alist
+
 File local variables is priority to other parameter.
 
-    quickrun-option-cmd-alist
+#### quickrun-option-command
 
 Command alist.
 
-    quickrun-option-command
+#### quickrun-option-cmdkey
 
-String expanded to %c.
+Command key(String expanded to %c.)
 
-    quickrun-option-cmdkey
 
-Command key
+#### quickrun-option-cmdopt
 
-    quickrun-option-cmdopt
+Command option(String expanded to %o)
 
-String expanded to %o
+#### quickrun-option-args
 
-    quickrun-option-args
+Program argument(String expanded to %a.)
 
-String expanded to %a.
+#### quickrun-option-shebang
 
-    quickrun-option-shebang
-
-If this value is not 0, and first line of source file is stated "#!",
+If this value is `non-nil`, and first line of source file is stated "#!",
 the following string is treated as ":command".
 
-    quickrun-option-outputter
+#### quickrun-option-outputter
 
 Outputter function.
 
@@ -283,18 +280,21 @@ int main (int argc, char *argv[])
 In this case, quickrun compiles this file with following command
 (source file is /home/bob/sample/sample.cpp)
 
-    g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
+````
+g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
+````
 
 And quickrun execute with command.
 
-    /home/bob/sample/sample apple orange melon
-
+````
+/home/bob/sample/sample apple orange melon
+````
 
 ## Hooks
 
-Run hooks after execute all commands.
+#### quickrun-after-run-hook
 
-    quickrun-after-run-hook
+Run hooks after execute all commands.
 
 
 ## Command-Alist
