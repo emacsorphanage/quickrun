@@ -13,9 +13,7 @@ compiling languages(C, C++, Go, Java etc).
 
 ## Requirements
 
-Emacs 23 or higher.
-
-I usually test `quickrun.el` with Emacs 24. I recommend Emacs 24.
+* Emacs 23 or higher.
 
 
 ## Installation
@@ -363,31 +361,31 @@ to output to \*quickrun\* buffer and processing ANSI Color sequence.
 
 `quickrun.el` defines following functions as default.
 
-* buffer:buffername
+#### buffer:buffername
 
 Output to buffer. [outputter *buffer* sample](sample/sample_outputter_buffer.pl)
 
-* file:filename
+#### file:filename
 
 Output to file. [outputter *file* sample](sample/sample_outputter_file.pl)
 
-* variable:varname
+#### variable:varname
 
 Output to variable. [outputter *variable* sample](sample/sample_outputter_variable.pl)
 
-* browser
+#### browser
 
 Output to Web browser(using function *browse-url*) [outputter *browser* sample](sample/sample_outputter_browser.pl)
 
-* message
+#### message
 
 Output to \*Message\* buffer(using function *message*) [outputter *message* sample](sample/sample_outputter_message.pl)
 
-* multi
+#### multi
 
 Use multiple outputters. [outputter *multi* sample](sample/sample_outputter_multi.pl)
 
-* null
+#### null
 
 No output. [outputter *null* sample](sample/sample_outputter_null.pl)
 
