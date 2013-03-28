@@ -22,12 +22,16 @@ You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with packa
 
 Or install directly:
 
-    $ cd load-path-dir
-    $ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
+```
+$ cd load-path-dir
+$ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
+```
 
 After Installation add following to your configuration file(~/.emacs.d/init.el, ~/.emacs etc)
 
-    (require 'quickrun)
+```elisp
+(require 'quickrun)
+```
 
 
 ## Basic Usage
@@ -121,7 +125,7 @@ See also `quickrun/support-languages` global variable.
 
 `quickrun-add-command` define new command.
 
-````elisp
+```elisp
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
                         (:exec    . ("%c -std=c++0x %o -o %e %s"
@@ -139,7 +143,7 @@ See also `quickrun/support-languages` global variable.
                       '((:exec . ("%c -std=c++0x %o -o %e %s"
                                   "%e %a")))
                        :override t)
-````
+```
 
 quickrun-add-command has key parameters, ':default', ':mode'.
 
@@ -158,10 +162,10 @@ quickrun-add-command has key parameters, ':default', ':mode'.
 
 Alist of **filename patterns** vs corresponding **command-key**.
 
-````elisp
+```elisp
 (quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
 (add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
-````
+```
 
 
 If file name is matched to regexp "\\.t$", then quickrun.el uses "prove"
@@ -177,9 +181,9 @@ regexp, cdr of list is "command-key".
 
 `quickrun-set-default` changes default command in some language.
 
-````elisp
+```elisp
 (quickrun-set-default "c" "c/clang")
-````
+```
 
 
 This means that quickrun uses "c/clang" command in C files.
@@ -245,7 +249,7 @@ Outputter function.
 
 For example, C11 C++ program file.
 
-````c++
+```c++
 #include <iostream>
 #include <vector>
 #include <string>
@@ -273,20 +277,20 @@ int main (int argc, char *argv[])
                               (:remove  . ("%n")))
   End:
 */
-````
+```
 
 In this case, quickrun compiles this file with following command
 (source file is /home/bob/sample/sample.cpp)
 
-````
+```
 g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
-````
+```
 
 And quickrun execute with command.
 
-````
+```
 /home/bob/sample/sample apple orange melon
-````
+```
 
 ## Hooks
 
@@ -396,7 +400,7 @@ No output. [outputter *null* sample](sample/sample_outputter_null.pl)
 You can pass configuration by `:source` argument.
 Sample is following:
 
-````elisp
+```elisp
 (defun test-perl ()
   (interactive)
   (let* ((cmd "git rev-parse --show-toplevel")
@@ -408,4 +412,4 @@ Sample is following:
     (quickrun :source `((:command . "prove")
                         (:default-directory . ,topdir)
                         (:exec . ("%c -bv --color %s"))))))
-````
+```
