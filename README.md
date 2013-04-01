@@ -36,40 +36,40 @@ After Installation add following to your configuration file(~/.emacs.d/init.el, 
 
 ## Basic Usage
 
-#### quickrun
+#### `quickrun`
 
 Execute current buffer. If `quickrun.el` does not find command-key,
 then `quickrun.el` asks you command-key(You always input command
 if you use `C-u` prefix key)
 
-#### quickrun-region
+#### `quickrun-region`
 
 Execute region. (Java is not supported)
 
-#### quickrun-with-arg
+#### `quickrun-with-arg`
 
 Execute current buffer with arguments.
 `quickrun.el` asks you command line argument
 
-#### quickrun-shell
+#### `quickrun-shell`
 
 Execute current buffer in eshell for interactive command such as program
 which reads input from STDIN.
 
-#### quickrun-compile-only
+#### `quickrun-compile-only`
 
 Compile current buffer with compile.el framework, not execute.
 quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
 
-#### quickrun-replace-region
+#### `quickrun-replace-region`
 
 Replace region of code with its output.
 
-#### helm-quickrun
+#### `helm-quickrun`
 
 `M-x quickrun` with helm interaface
 
-#### anything-quickrun
+#### `anything-quickrun`
 
 `M-x quickrun` with anything interaface
 
@@ -212,33 +212,33 @@ You can kill quickrun process by `C-c C-c` in quickrun buffer.
 
 ## File Local Variables
 
-#### quickrun-option-cmd-alist
+#### `quickrun-option-cmd-alist`
 
 File local variables is priority to other parameter.
 
-#### quickrun-option-command
+#### `quickrun-option-command`
 
 Command alist.
 
-#### quickrun-option-cmdkey
+#### `quickrun-option-cmdkey`
 
 Command key(String expanded to %c.)
 
 
-#### quickrun-option-cmdopt
+#### `quickrun-option-cmdopt`
 
 Command option(String expanded to %o)
 
-#### quickrun-option-args
+#### `quickrun-option-args`
 
 Program argument(String expanded to %a.)
 
-#### quickrun-option-shebang
+#### `quickrun-option-shebang`
 
 If this value is `non-nil`, and first line of source file is stated "#!",
 the following string is treated as ":command".
 
-#### quickrun-option-outputter
+#### `quickrun-option-outputter`
 
 Outputter function.
 
@@ -294,7 +294,7 @@ And quickrun execute with command.
 
 ## Hooks
 
-#### quickrun-after-run-hook
+#### `quickrun-after-run-hook`
 
 Run hooks after execute all commands.
 
@@ -304,11 +304,11 @@ Run hooks after execute all commands.
 Command alist has ':command', ':exec', ':remove', ':outputter', ':description'
 parameters.
 
-:command
+#### `:command`
 
 `:command` paramter is mandatory parameter.
 
-:execute
+#### `:execute`
 
 Execute command templates. This parameter can take list.
 If you set list parameter, `quickrun.el` executes command
@@ -317,21 +317,21 @@ list in order.
 If this parameter is omitted, `quickrun.el` use default execute
 command template "%c %o %s %a".
 
-:remove
+#### `:remove`
 
 Remove files after executing.
 If command create some intermediate files, you should set this
 parameter. :remove value is atom or list.
 
-:outputter
+#### `:outputter`
 
 Please see Outputter section.
 
-:default-directory
+#### `:default-directory`
 
 Directory where commands are executed.
 
-:description
+#### `:description`
 
 Description of this command. This parameter is used in
 `helm-quickrun` or `anything-quickrun`
@@ -365,31 +365,31 @@ to output to \*quickrun\* buffer and processing ANSI Color sequence.
 
 `quickrun.el` defines following functions as default.
 
-#### buffer:buffername
+#### `buffer:buffername`
 
 Output to buffer. [outputter *buffer* sample](sample/sample_outputter_buffer.pl)
 
-#### file:filename
+#### `file:filename`
 
 Output to file. [outputter *file* sample](sample/sample_outputter_file.pl)
 
-#### variable:varname
+#### `variable:varname`
 
 Output to variable. [outputter *variable* sample](sample/sample_outputter_variable.pl)
 
-#### browser
+#### `browser`
 
 Output to Web browser(using function *browse-url*) [outputter *browser* sample](sample/sample_outputter_browser.pl)
 
-#### message
+#### `message`
 
 Output to \*Message\* buffer(using function *message*) [outputter *message* sample](sample/sample_outputter_message.pl)
 
-#### multi
+#### `multi`
 
 Use multiple outputters. [outputter *multi* sample](sample/sample_outputter_multi.pl)
 
-#### null
+#### `null`
 
 No output. [outputter *null* sample](sample/sample_outputter_null.pl)
 
