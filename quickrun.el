@@ -832,7 +832,7 @@ Place holders are beginning with '%' and replaced by:
 ;;
 ;; initialize
 ;;
-(defun quickrun/windows-p ()
+(defsubst quickrun/windows-p ()
   (memq system-type '(ms-dos windows-nt cygwin)))
 
 (defconst quickrun/support-languages
