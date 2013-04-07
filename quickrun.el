@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.8.5
+;; Version: 1.8.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -79,6 +79,9 @@
 (defsubst quickrun/log (fmt &rest args)
   (when quickrun-debug
     (apply 'message fmt args)))
+
+(defsubst quickrun/windows-p ()
+  (memq system-type '(ms-dos windows-nt cygwin)))
 
 ;;
 ;; file local variable
@@ -832,8 +835,6 @@ Place holders are beginning with '%' and replaced by:
 ;;
 ;; initialize
 ;;
-(defsubst quickrun/windows-p ()
-  (memq system-type '(ms-dos windows-nt cygwin)))
 
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"

@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.8.6 2013/04/07 syohex
+  - Fix for warnings of byte compile
+
 Version 1.8.5 2013/04/06 syohex
   - Change order of c and c++ compiler on MacOSX
 
