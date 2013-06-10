@@ -763,10 +763,9 @@ Place holders are beginning with '%' and replaced by:
   (let ((tmpl (or (assoc-default key cmd-info)
                   (assoc-default key quickrun/default-tmpl-alist))))
     (when tmpl
-      (cond (take-list
-             (mapcar 'quickrun/eval-parameter (quickrun/mklist tmpl)))
-            (t
-             (quickrun/eval-parameter tmpl))))))
+      (if take-list
+          (mapcar 'quickrun/eval-parameter (quickrun/mklist tmpl))
+        (quickrun/eval-parameter tmpl)))))
 
 (defun quickrun/eval-parameter (param)
   (cond ((functionp param)
