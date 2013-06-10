@@ -301,12 +301,12 @@ Run hooks after execute all commands.
 
 ## Command-Alist
 
-Command alist has ':command', ':exec', ':remove', ':outputter', ':description'
-parameters.
+Command alist has parameters, `:command`, `:exec`, `:compile-only`, `:remove`,
+`:outputter`, `:description`.
 
 #### `:command`
 
-`:command` paramter is mandatory parameter.
+Command name. `:command` paramter is mandatory parameter.
 
 #### `:execute`
 
@@ -316,6 +316,15 @@ list in order.
 
 If this parameter is omitted, `quickrun.el` use default execute
 command template "%c %o %s %a".
+
+
+#### `:compile-only`
+
+Command exected by `quickrun-compile-only`.
+
+### `compile-conf`
+
+Configuration of `quickrun-compile-only`. This parameter must be alist.
 
 #### `:remove`
 
