@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.8.7 2013/06/10 syohex
+  - Support :compile-conf parameter
+
 Version 1.8.6 2013/04/07 syohex
   - Fix for warnings of byte compile
 
