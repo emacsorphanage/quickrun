@@ -818,7 +818,7 @@ Place holders are beginning with '%' and replaced by:
                                       it)))
             (puthash key filled-tmpls info)))
     ;; function parameter
-    (dolist (key `(:outputter))
+    (dolist (key '(:outputter))
       (let ((func (assoc-default :outputter cmd-info)))
         (when (and func (or (functionp func) (symbolp func)))
           (puthash key func info))))
