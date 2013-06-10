@@ -254,16 +254,20 @@
                              (:description . "Run Javascript file with cscript")))
 
     ("coffee" . ((:command . "coffee")
+                 (:compile-only . "coffee --print %s")
+                 (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
                  (:description . "Run Coffee script")))
 
     ("jsx" . ((:command . "jsx")
               (:exec . "%c --run %o %s %a")
               (:compile-only . "%c %o %s %s")
+              (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
               (:description . "Run JSX script")))
 
     ("typescript" . ((:command . "tsc")
                      (:exec . "%c --exec %o %s %a")
                      (:compile-only . "%c %o %s %s")
+                     (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
                      (:remove  . ("%n.js"))
                      (:description . "Run TypeScript script")))
 
