@@ -456,11 +456,32 @@ if you set your own language configuration.
 ;;
 ;; Compile Only
 ;;
-(defun quickrun/compilation-start (cmd)
-  (let ((program (car (split-string cmd))))
+(defun quickrun/check-using-compilation-mode (compile-conf)
+  (if (not compile-conf)
+      t
+    (let ((compilation-mode (assoc :compilation-mode compile-conf)))
+      (if (not compilation-mode)
+          t
+        (cdr compilation-mode)))))
+
+(defun quickrun/compilation-start (cmd compile-conf)
+  (let ((program (car (split-string cmd)))
+        (use-compile (quickrun/check-using-compilation-mode compile-conf)))
     (quickrun/check-command-installed program)
-    (setq compilation-finish-functions 'quickrun/compilation-finish-func)
-    (compilation-start cmd t (lambda (x) quickrun/buffer-name))))
+    (cond (use-compile
+           (setq compilation-finish-functions 'quickrun/compilation-finish-func)
+           (compilation-start cmd t (lambda (x) quickrun/buffer-name)))
+          (t
+           (with-current-buffer (get-buffer-create quickrun/buffer-name)
+             (setq buffer-read-only nil)
+             (erase-buffer)
+             (call-process-shell-command cmd nil t)
+             (goto-char (point-min))
+             (quickrun/awhen (assoc-default :mode compile-conf)
+               (funcall it)
+               (pop-to-buffer (current-buffer))
+               (setq buffer-read-only t)))
+           (quickrun/remove-temp-files)))))
 
 (defun quickrun/compilation-finish-func (buffer str)
   (quickrun/remove-temp-files))
@@ -1047,12 +1068,14 @@ by quickrun.el. But you can register your own command for some languages")
         (unless quickrun-option-outputter
           (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
         (cond (quickrun/compile-only-flag
-               (let ((cmd (gethash :compile-only cmd-info-hash)))
+               (let* ((cmd (gethash :compile-only cmd-info-hash))
+                      (cmd-info (quickrun/command-info cmd-key))
+                      (compile-conf (assoc-default :compile-conf cmd-info)))
                  (unless cmd
                    (throw 'quickrun
                           (format "%s does not support quickrun-compile-only"
                                   cmd-key)))
-                 (quickrun/compilation-start cmd)))
+                 (quickrun/compilation-start cmd compile-conf)))
               (t
                (quickrun/setup-exec-buffer)
                (quickrun/exec (gethash :exec cmd-info-hash))
