@@ -123,9 +123,10 @@ See also `quickrun/support-languages` global variable.
 
 ## User Defined Command
 
-`quickrun-add-command` define new command.
+You can add your own command or override existsing command  by `quickrun-add-command` as below.
 
 ```elisp
+;; Use this parameter as C++ default
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
                         (:exec    . ("%c -std=c++0x %o -o %e %s"
@@ -133,6 +134,7 @@ See also `quickrun/support-languages` global variable.
                         (:remove  . ("%e")))
                       :default "c++")
 
+;; Use this parameter in pod-mode
 (quickrun-add-command "pod"
                       '((:command . "perldoc")
                         (:exec    . "%c -T -F %s"))
@@ -145,17 +147,85 @@ See also `quickrun/support-languages` global variable.
                        :override t)
 ```
 
-quickrun-add-command has key parameters, ':default', ':mode'.
+First argument of `quickrun-add-command` is command key. Second argument of it is
+command parameter, which is described laster. `quickrun-add-command` also takes
+key parameters, `:default`, `:mode`, `:override`.
 
-* `:default` parameter overwrites command-key used of default support language.
+| Argument         | Description                                                 |
+|:----------------:|:------------------------------------------------------------|
+| `:default` lang  | Use this command parameter as default in specified language |
+| `:mode` mode     | this command parameter in specified mode                    |
+| `:override` bool | Override existing parameter with specified parameter        |
 
-`:default "c++"` means that quickrun uses this command to C++ files as default.
 
-* `:mode` parameter means that which major-mode use this command-key.
+### Command Parameter
 
-`:mode 'pod-mode` means that quickrun uses this command when major-mode is pod-mode.
+Command alist has following parameters,
 
-* Override existing command if `:override` parameter is true
+#### `:command`(mandatory parameter)
+
+Command name. `%c` is expanded into this value.
+
+#### `:cmdopt`(optional)
+
+Command(`:command`) option. `%o` is expanded into this value.
+
+#### `:execute`
+
+Executed commands. You can also set command list parameter.
+If you set list parameter, `quickrun.el` executes command
+list in order.
+
+If this parameter is omitted, `quickrun.el` use default execute
+command template "%c %o %s %a".
+
+
+#### `:compile-only`
+
+Command exected by `quickrun-compile-only`.
+
+### `:compile-conf`
+
+Configuration of `quickrun-compile-only`. This parameter must be alist.
+
+#### `:remove`
+
+Remove files after executing.
+If command create some intermediate files, you should set this
+parameter. :remove value is atom or list.
+
+#### `:outputter`
+
+Please see Outputter section.
+
+#### `:default-directory`
+
+Directory where commands are executed.
+
+#### `:description`
+
+Description of this command. This parameter is used in
+`helm-quickrun` or `anything-quickrun`
+
+
+### Placeholders
+
+You can use following placeholders in command parameter
+
+| Placeholder | Expanded                                      |
+|:-----------:|:----------------------------------------------|
+|  %c         |  Command                                      |
+|  %o         |  Command line option                          |
+|  %s         |  Source(absolute path)                        |
+|  %a         |  Script's arguments                           |
+|  %n         |  Source without extension(absolute path)      |
+|  %N         |  Source without extension(nondirectory)       |
+|  %d         |  Directory name of Source(absolute path)      |
+|  %e         |  Source with executable suffix(absolute path) |
+|  %E         |  Source with executable suffix(nondirectory)  |
+
+`quickrun.el` copys source file to temporary file firstly,
+so name of source file is at random except Java language.
 
 
 ## Add new Language setting
@@ -297,74 +367,6 @@ And quickrun execute with command.
 #### `quickrun-after-run-hook`
 
 Run hooks after execute all commands.
-
-
-## Command-Alist
-
-Command alist has parameters, `:command`, `:exec`, `:compile-only`, `:remove`,
-`:outputter`, `:description`.
-
-#### `:command`
-
-Command name. `:command` paramter is mandatory parameter.
-
-#### `:execute`
-
-Execute command templates. This parameter can take list.
-If you set list parameter, `quickrun.el` executes command
-list in order.
-
-If this parameter is omitted, `quickrun.el` use default execute
-command template "%c %o %s %a".
-
-
-#### `:compile-only`
-
-Command exected by `quickrun-compile-only`.
-
-### `compile-conf`
-
-Configuration of `quickrun-compile-only`. This parameter must be alist.
-
-#### `:remove`
-
-Remove files after executing.
-If command create some intermediate files, you should set this
-parameter. :remove value is atom or list.
-
-#### `:outputter`
-
-Please see Outputter section.
-
-#### `:default-directory`
-
-Directory where commands are executed.
-
-#### `:description`
-
-Description of this command. This parameter is used in
-`helm-quickrun` or `anything-quickrun`
-
-
-## Format of Command-Alist
-
-You can use following placeholders in command-alist.
-
-| Placeholder | Result                                        |
-|:-----------:|:----------------------------------------------|
-|  %c         |  Command                                      |
-|  %o         |  Command line option                          |
-|  %s         |  Source(absolute path)                        |
-|  %a         |  Script's arguments                           |
-|  %n         |  Source without extension(absolute path)      |
-|  %N         |  Source without extension(nondirectory)       |
-|  %d         |  Directory name of Source(absolute path)      |
-|  %e         |  Source with executable suffix(absolute path) |
-|  %E         |  Source with executable suffix(nondirectory)  |
-
-
-`quickrun.el` copys source file to temporary file firstly,
-so name of source file is at random.
 
 
 ## Outputter
