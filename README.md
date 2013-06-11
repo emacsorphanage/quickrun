@@ -67,11 +67,11 @@ Replace region of code with its output.
 
 #### `helm-quickrun`
 
-`M-x quickrun` with helm interaface
+`M-x quickrun` with helm interface
 
 #### `anything-quickrun`
 
-`M-x quickrun` with anything interaface
+`M-x quickrun` with anything interface
 
 
 ## Support Programming Languages
@@ -152,7 +152,7 @@ command parameter, which is described laster. `quickrun-add-command` also takes
 key parameters, `:default`, `:mode`, `:override`.
 
 | Argument         | Description                                                 |
-|:----------------:|:------------------------------------------------------------|
+|:-----------------|:------------------------------------------------------------|
 | `:default` lang  | Use this command parameter as default in specified language |
 | `:mode` mode     | this command parameter in specified mode                    |
 | `:override` bool | Override existing parameter with specified parameter        |
