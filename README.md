@@ -305,11 +305,11 @@ int main (int argc, char *argv[])
 {
     std::vector <std::string> lst = { "a", "b", "c", "d" };
 
-    for (auto x : lst){
+    for (auto x : lst) {
         std::cout << "[" << x << "]" << std::endl;
     }
 
-    for (auto i = 1; i < argc; i++){
+    for (auto i = 1; i < argc; i++) {
         std::cout << "[" << argv[i] << "]" << std::endl;
     }
 
@@ -372,7 +372,7 @@ No output. [outputter *null* sample](sample/sample_outputter_null.pl)
 
 ## Using quickrun as function from other functions
 
-`quickrun' can be used as function from other functions.
+`quickrun` can be used as function from other functions.
 You can pass configuration by `:source` argument.
 Sample is following:
 
