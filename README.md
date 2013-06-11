@@ -2,13 +2,13 @@
 
 ## Introduction
 
-**quickrun.el** is emacs version of [quickrun.vim](https://github.com/thinca/vim-quickrun).
+**quickrun.el** is Emacs port of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
 
 `quickrun.el` is a extension to execute editing buffer.
 `quickrun.el` is similar to executable-interpret, but `quickrun.el` provides more convenient
 commands. `quickrun.el` execute not only script languages(Perl, Ruby, Python etc), but also
-compiling languages(C, C++, Go, Java etc).
+compiling languages(C, C++, Go, Java etc) and markup language.
 
 
 ## Requirements
@@ -224,52 +224,30 @@ You can use following placeholders in command parameter
 |  %e         |  Source with executable suffix(absolute path) |
 |  %E         |  Source with executable suffix(nondirectory)  |
 
-`quickrun.el` copys source file to temporary file firstly,
-so name of source file is at random except Java language.
-
-
-## Add new Language setting
-
-Alist of **filename patterns** vs corresponding **command-key**.
-
-```elisp
-(quickrun-add-command "prove" '((:command . "prove") (:exec . "%c -bv %s")))
-(add-to-list 'quickrun-file-alist '("\\.t$" . "prove"))
-```
-
-
-If file name is matched to regexp "\\.t$", then quickrun.el uses "prove"
-command set for that file. `quickrun-file-alist` is a higher priority
-to select command-key than major-mode.
-
-
-quickrun-file-alist is similar to `auto-mode-alist`, car of list is
-regexp, cdr of list is "command-key".
+Source file name(`%s`, `%n` etc) is not original file name except
+Java language. Because `quickrun.el` copys source file to temporary
+file firstly.
 
 
 ## Change Default Command
 
-`quickrun-set-default` changes default command in some language.
+`quickrun-set-default` changes default command in language that is registerd
+multiple command parameters(like c, c++,Javascript).
 
 ```elisp
 (quickrun-set-default "c" "c/clang")
 ```
 
-
-This means that quickrun uses "c/clang" command in C files.
-
-
-## Timeout Second
-
-`quickrun.el` makes program kill 10 seconds later as default,
-for avoiding infinite loop. You can change this value through
-*quickrun-timeout-seconds*. If this variable is set negative integer,
-time-out does not occur.
+This means that quickrun uses "c/clang" for C files.
 
 
-## Kill process
+## Timeout Seconds
 
-You can kill quickrun process by `C-c C-c` in quickrun buffer.
+`quickrun.el` kills process if program run over 10 seconds as default.
+This avoids infinite loop program or endless program by some mistakes.
+You control timeout second to set `quickrun-timeout-seconds`.
+This feature is disabled if `quickrun-timeout-seconds` is `nil`.
+(You can also kill process by `C-c C-c` in quickrun buffer)
 
 
 ## Key bindings in quickrun buffer
@@ -280,44 +258,43 @@ You can kill quickrun process by `C-c C-c` in quickrun buffer.
 |  C-c C-c  | Kill quickrun process  |
 
 
-## File Local Variables
+## Buffer Local Variables
+
+Buffer local variables is priority to default parameters.
 
 #### `quickrun-option-cmd-alist`
 
-File local variables is priority to other parameter.
+Command alist.
 
 #### `quickrun-option-command`
 
-Command alist.
+Command key(Expanded to %c)
 
 #### `quickrun-option-cmdkey`
 
-Command key(String expanded to %c.)
-
+Command key of command parameter.
 
 #### `quickrun-option-cmdopt`
 
-Command option(String expanded to %o)
+Command option(Expanded to %o)
 
 #### `quickrun-option-args`
 
-Program argument(String expanded to %a.)
+Program argument(Expanded to %a.)
 
 #### `quickrun-option-shebang`
 
-If this value is `non-nil`, and first line of source file is stated "#!",
+If this value is `non-nil` and first line of source file is started "#!",
 the following string is treated as ":command".
 
 #### `quickrun-option-outputter`
 
-Outputter function.
+Outputter function. See *Outputter* section
 
 
-## User Defined Command with file local variables
+### Example of buffer local variable
 
-`quickrun.el` has some file local variable.
-
-For example, C11 C++ program file.
+Setting C++11.
 
 ```c++
 #include <iostream>
@@ -349,18 +326,6 @@ int main (int argc, char *argv[])
 */
 ```
 
-In this case, quickrun compiles this file with following command
-(source file is /home/bob/sample/sample.cpp)
-
-```
-g++ -std=c++0x -o /home/bob/sample/sample /home/bob/sample/sample.cpp
-```
-
-And quickrun execute with command.
-
-```
-/home/bob/sample/sample apple orange melon
-```
 
 ## Hooks
 
