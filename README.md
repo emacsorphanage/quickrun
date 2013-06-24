@@ -88,7 +88,7 @@ as default. But you can register your own command and apply other languages.
 * Fortran(gfortran)
 * Java(javac and java)
 * Perl(perl)
-* Ruby(ruby)
+* Ruby(ruby or mruby)
 * Python(python)
 * PHP(php)
 * Emacs Lisp(emacs)
@@ -182,7 +182,8 @@ command template "%c %o %s %a".
 
 #### `:compile-only`
 
-Command exected by `quickrun-compile-only`.
+Command exected by `quickrun-compile-only`. This option is used for
+syntax check or converting another language(e.g. CoffeeScript => JavaScript).
 
 ### `:compile-conf`
 
