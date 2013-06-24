@@ -216,7 +216,7 @@
                (:description . "Run Ruby script")))
     ("ruby/mruby" . ((:command . "mruby")
 		(:exec . ("mrbc %s" "mruby -b %N.mrb"))
-		(:compile-only . "mrbc %s")
+		(:compile-only . "mrbc -c %s")
 		(:remove  . ("%n.mrb"))
 		(:description . "Run mruby script")))
     ("python" . ((:command . "python") (:compile-only . "pyflakes %s")
