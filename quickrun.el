@@ -999,6 +999,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun-region (start end)
   "Run commands with specified region"
   (interactive "r")
+  (deactivate-mark)
   (quickrun :start start :end end))
 
 ;;;###autoload
