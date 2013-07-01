@@ -66,6 +66,7 @@
 (defvar quickrun/remove-files nil)
 (defvar quickrun/compile-only-flag nil)
 (defvar quickrun/original-buffer nil)
+(defvar quickrun/original-outputter nil)
 
 (defmacro quickrun/awhen (test &rest body)
   (declare (indent 1))
@@ -686,7 +687,8 @@ if you set your own language configuration.
   (let ((output (buffer-substring-no-properties (point-min) (point-max))))
     (with-current-buffer quickrun/original-buffer
       (delete-region (region-beginning) (region-end))
-      (insert output))))
+      (insert output)
+      (setq quickrun-option-outputter quickrun/original-outputter))))
 
 (defun quickrun/outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
@@ -1003,6 +1005,8 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun-replace-region (start end)
   "Run commands with specified region and replace"
   (interactive "r")
+  (deactivate-mark)
+  (setq quickrun/original-outputter quickrun-option-outputter)
   (let ((quickrun-option-outputter 'replace))
     (quickrun :start start :end end)))
 
