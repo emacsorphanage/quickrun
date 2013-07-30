@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.9.0 2013/07/30 syohex
+  - Support quickrun-compile-only for Go language
+
 Version 1.8.9 2013/07/02 syohex
   - Fix overwriting outputter issue
   - deactive-mark after quickrun-region

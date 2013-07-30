@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.8.9
+;; Version: 1.9.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -295,6 +295,7 @@
 
     ("go/go"  .  ((:command . "go")
                   (:exec    . ("%c run %o %s %a"))
+                  (:compile-only . "%c build -o /dev/null %s %o %a")
                   (:description . "Compile go file and execute with 'go'")))
     ("go/gccgo"  .  ((:command . "gccgo")
                      (:exec    . ("%c -static-libgcc %o -o %e %s"
