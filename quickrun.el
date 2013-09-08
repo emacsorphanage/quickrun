@@ -612,9 +612,9 @@ if you set your own language configuration.
     (pop-to-buffer buf)
     (quickrun/mode)))
 
-(defun quickrun/delete-window ()
+(defun quickrun/restore-window-configuration ()
   (interactive)
-  (delete-window (get-buffer-window quickrun/buffer-name)))
+  (jump-to-register :quickrun))
 
 (defun quickrun/kill-running-process ()
   (interactive)
@@ -626,7 +626,7 @@ if you set your own language configuration.
 
 (defvar quickrun/mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "q") 'quickrun/delete-window)
+    (define-key map (kbd "q") 'quickrun/restore-window-configuration)
     (define-key map (kbd "C-c C-c") 'quickrun/kill-running-process)
     map))
 
@@ -963,6 +963,7 @@ by quickrun.el. But you can register your own command for some languages")
    With universal prefix argument(C-u), select command-key,
    With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
+  (window-configuration-to-register :quickrun)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
