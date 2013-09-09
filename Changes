@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.9.2 2013/09/09 syohex
+  - Add history variable for 'quickrun-with-arg'
+
 Version 1.9.1 2013/09/08 syohex
   - Improve 'q' behavior on quickrun buffer
 
