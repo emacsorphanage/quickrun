@@ -980,11 +980,13 @@ by quickrun.el. But you can register your own command for some languages")
         (message "%s" has-error)
         (quickrun/remove-temp-files)))))
 
+(defvar quickrun--with-arg--history nil)
+
 ;;;###autoload
 (defun quickrun-with-arg (arg)
   "Run commands quickly for current buffer with arguments"
   (interactive
-   (list (read-string "QuickRun Arg: ")))
+   (list (read-string "QuickRun Arg: " nil 'quickrun--with-arg--history)))
   (let ((quickrun-option-args arg))
     (quickrun)))
 
