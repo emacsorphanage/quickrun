@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.9.2
+;; Version: 1.9.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -612,10 +612,6 @@ if you set your own language configuration.
     (pop-to-buffer buf)
     (quickrun/mode)))
 
-(defun quickrun/restore-window-configuration ()
-  (interactive)
-  (jump-to-register :quickrun))
-
 (defun quickrun/kill-running-process ()
   (interactive)
   (let ((proc (get-buffer-process (current-buffer))))
@@ -626,7 +622,7 @@ if you set your own language configuration.
 
 (defvar quickrun/mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "q") 'quickrun/restore-window-configuration)
+    (define-key map (kbd "q") 'quit-window)
     (define-key map (kbd "C-c C-c") 'quickrun/kill-running-process)
     map))
 
@@ -963,7 +959,6 @@ by quickrun.el. But you can register your own command for some languages")
    With universal prefix argument(C-u), select command-key,
    With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
-  (window-configuration-to-register :quickrun)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
