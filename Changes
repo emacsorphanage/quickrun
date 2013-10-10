@@ -1,5 +1,9 @@
 Revision history for quickrun.el
 
+Version 1.9.4 2013/10/10 syohex
+  - Set proper file encoding for temporary file
+    (Thanks Dewdrops !!)
+
 Version 1.9.3 2013/09/15 syohex
   - Improve 'q' behavior in quickrun buffer
     Don't use register function
