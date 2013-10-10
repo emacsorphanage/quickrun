@@ -1049,8 +1049,10 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/copy-region-to-tempfile (start end dst)
   ;; Suppress write file message
-  (let ((str (buffer-substring-no-properties start end)))
+  (let ((str (buffer-substring-no-properties start end))
+        (codec buffer-file-coding-system))
     (with-temp-file dst
+      (set-buffer-file-coding-system codec)
       (insert str))
     (quickrun/add-remove-files dst)))
 
