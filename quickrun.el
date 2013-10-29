@@ -1102,7 +1102,7 @@ by quickrun.el. But you can register your own command for some languages")
 ;; helm/anything interface
 ;;
 
-(defvar helm-c-source-quickrun
+(defvar helm-quickrun-source
   '((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
@@ -1114,23 +1114,39 @@ by quickrun.el. But you can register your own command for some languages")
                ("Replace region" . quickrun/helm-action-replace-region))))
   "helm/anything source of `quickrun'")
 
+(defvar quickrun--helm-history nil)
+
+(defvar helm-quickrun-history-source
+  '((name . "Helm Quickrun History")
+    (volatile)
+    (candidates . quickrun--helm-history)
+    (action . (("Run this cmd-key" . quickrun/helm-action-default)
+               ("Compile only" . quickrun/helm-compile-only)
+               ("Run with shell" . quickrun/helm-action-shell)
+               ("Replace region" . quickrun/helm-action-replace-region))))
+  "helm source of `quickrun' history")
+
 (defun quickrun/helm-candidate (cmd-key cmd-info)
   (let ((description (or (assoc-default :description cmd-info) "")))
     (cons (format "%-25s %s" cmd-key description) cmd-key)))
 
 (defun quickrun/helm-action-default (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun)))
 
 (defun quickrun/helm-action-shell (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-shell)))
 
 (defun quickrun/helm-compile-only (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-compile-only)))
 
 (defun quickrun/helm-action-replace-region (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-replace-region (region-beginning) (region-end))))
 
@@ -1139,15 +1155,18 @@ by quickrun.el. But you can register your own command for some languages")
   (interactive)
   (unless (featurep 'anything)
     (error "anything is not installed."))
-  (anything helm-c-source-quickrun))
+  (anything helm-quickrun-source))
 
 ;;;###autoload
 (defun helm-quickrun ()
   (interactive)
   (unless (featurep 'helm)
     (error "helm is not installed."))
-  (let ((buf (get-buffer-create "*helm quickrun*")))
-    (helm :sources helm-c-source-quickrun :buffer buf)))
+  (let ((buf (get-buffer-create "*helm quickrun*"))
+        (sources (if quickrun--helm-history
+                     '(helm-quickrun-history-source helm-quickrun-source)
+                   '(helm-quickrun-source))))
+    (helm :sources sources :buffer buf)))
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
