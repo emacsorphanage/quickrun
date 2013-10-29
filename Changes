@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.9.5 2013/10/29 syohex
+  - Add history feature for helm-quickrun
+
 Version 1.9.4 2013/10/10 syohex
   - Set proper file encoding for temporary file
     (Thanks Dewdrops !!)
