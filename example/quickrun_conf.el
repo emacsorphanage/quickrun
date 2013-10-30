@@ -9,7 +9,7 @@
 (global-set-key (kbd "<f5>") 'quickrun)
 (global-set-key (kbd "M-<f5>") 'quickrun-compile-only)
 
-;; I recomment you set popwin for quickrun.el
+;; I recommend you set popwin for quickrun.el
 ;; See also http://www.emacswiki.org/emacs/PopWin
 (push '("*quickrun*") popwin:special-display-config)
 
