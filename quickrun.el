@@ -737,11 +737,9 @@ if you set your own language configuration.
           (cond ((and is-success rest-commands)
                  (quickrun/exec rest-commands))
                 (t
-                 (if is-success
-                     (progn
-                       (quickrun/apply-outputter outputter-func)
-                       (run-hooks 'quickrun-after-run-hook))
-                   (quickrun/popup-output-buffer))
+                 (when is-success
+                   (quickrun/apply-outputter outputter-func)
+                   (run-hooks 'quickrun-after-run-hook))
                  (when (> scroll-conservatively 0)
                    (recenter))
                  (quickrun/remove-temp-files))))))))
