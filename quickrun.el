@@ -294,7 +294,10 @@
                   (:description . "Run Haskell file with runghc(GHC)")))
 
     ("go/go"  .  ((:command . "go")
-                  (:exec    . ("%c run %o %s %a"))
+                  (:exec    .   (lambda ()
+                                  (if (string-match-p "_test\\.go\\'" (buffer-name))
+                                      "%c test %o"
+                                    "%c run %o %s %a")))
                   (:compile-only . "%c build -o /dev/null %s %o %a")
                   (:description . "Compile go file and execute with 'go'")))
     ("go/gccgo"  .  ((:command . "gccgo")
@@ -1065,6 +1068,9 @@ by quickrun.el. But you can register your own command for some languages")
     (with-current-buffer (get-buffer-create quickrun/buffer-name)
       (setq quickrun-option-default-directory default-dir))))
 
+(defsubst quickrun/use-tempfile-p (cmd-key)
+  (not (or (member cmd-key '("java" "go/go")) quickrun/compile-only-flag)))
+
 (defun quickrun/common (start end)
   (let* ((orig-src (quickrun/awhen (buffer-file-name)
                      (file-name-nondirectory it)))
@@ -1076,9 +1082,9 @@ by quickrun.el. But you can register your own command for some languages")
     (setq quickrun/last-cmd-key cmd-key)
 
     (let ((src (quickrun/temp-name (or orig-src ""))))
-      (if (or (string= cmd-key "java") quickrun/compile-only-flag)
-          (setq src orig-src)
-        (quickrun/copy-region-to-tempfile start end src))
+      (if (quickrun/use-tempfile-p cmd-key)
+          (quickrun/copy-region-to-tempfile start end src)
+        (setq src orig-src))
       (let ((cmd-info-hash (quickrun/fill-templates cmd-key src)))
         (quickrun/add-remove-files (gethash :remove cmd-info-hash))
         (unless quickrun-option-outputter
