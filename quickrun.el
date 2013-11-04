@@ -722,7 +722,9 @@ if you set your own language configuration.
                                     (match-string 1 name)))))))))
       (with-current-buffer buf
         (let ((quickrun/original-buffer origbuf))
-          (funcall outputter-func))))))
+          (setq buffer-read-only nil)
+          (funcall outputter-func)
+          (setq buffer-read-only t))))))
 
 (defun quickrun/make-sentinel (cmds outputter)
   (lexical-let ((rest-commands cmds)
