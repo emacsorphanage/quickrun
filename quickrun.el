@@ -294,10 +294,10 @@
                   (:description . "Run Haskell file with runghc(GHC)")))
 
     ("go/go"  .  ((:command . "go")
-                  (:exec    .   (lambda ()
-                                  (if (string-match-p "_test\\.go\\'" (buffer-name))
-                                      "%c test %o"
-                                    "%c run %o %s %a")))
+                  (:exec    . ((lambda ()
+                                 (if (string-match-p "_test\\.go\\'" (buffer-name))
+                                     "%c test %o"
+                                   "%c run %o %s %a"))))
                   (:compile-only . "%c build -o /dev/null %s %o %a")
                   (:description . "Compile go file and execute with 'go'")))
     ("go/gccgo"  .  ((:command . "gccgo")
