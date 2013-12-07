@@ -729,6 +729,11 @@ if you set your own language configuration.
           (funcall outputter-func)
           (setq buffer-read-only t))))))
 
+(defun quickrun/apply-colorizing ()
+  (setq buffer-read-only nil)
+  (quickrun/default-outputter)
+  (setq buffer-read-only t))
+
 (defun quickrun/make-sentinel (cmds outputter)
   (lexical-let ((rest-commands cmds)
                 (outputter-func outputter))
@@ -742,7 +747,8 @@ if you set your own language configuration.
           (cond ((and is-success rest-commands)
                  (quickrun/exec rest-commands))
                 (t
-                 (when is-success
+                 (if (not is-success)
+                     (quickrun/apply-colorizing)
                    (quickrun/apply-outputter outputter-func)
                    (run-hooks 'quickrun-after-run-hook))
                  (when (> scroll-conservatively 0)
