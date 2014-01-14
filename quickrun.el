@@ -521,7 +521,7 @@ if you set your own language configuration.
 
 (defun quickrun/send-file-as-stdin (process file)
   (when (file-exists-p file)
-    (quickrun/log "Send file '%s' as stdin" file)
+    (quickrun/log "Send file '%s' to STDIN" file)
     (with-current-buffer (find-file-noselect file)
       (process-send-region process (point-min) (point-max))
       (process-send-eof process))))
