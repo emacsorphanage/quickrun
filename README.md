@@ -121,11 +121,18 @@ as default. But you can register your own command and apply other languages.
 See also `quickrun/support-languages` global variable.
 
 
+## Send File to STDIN
+
+If `executed_file.qrinput`(like `foo.c.qrinput`) is existed in directory same as executed
+buffer file, `quickrun.el` sends its content to stdin of executed program. Please set
+`quickrun-input-file-extension` to `nil` If you want to disable this feature.
+
+
 ## User Defined Command
 
 You can add your own command or override existsing command  by `quickrun-add-command` as below.
 
-```elisp
+```lisp
 ;; Use this parameter as C++ default
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
@@ -215,15 +222,15 @@ You can use following placeholders in command parameter
 
 | Placeholder | Expanded                                      |
 |:-----------:|:----------------------------------------------|
-|  %c         |  Command                                      |
-|  %o         |  Command line option                          |
-|  %s         |  Source(absolute path)                        |
-|  %a         |  Script's arguments                           |
-|  %n         |  Source without extension(absolute path)      |
-|  %N         |  Source without extension(nondirectory)       |
-|  %d         |  Directory name of Source(absolute path)      |
-|  %e         |  Source with executable suffix(absolute path) |
-|  %E         |  Source with executable suffix(nondirectory)  |
+|  `%c`       |  Command                                      |
+|  `%o`       |  Command line option                          |
+|  `%s`       |  Source(absolute path)                        |
+|  `%a`       |  Script's arguments                           |
+|  `%n`       |  Source without extension(absolute path)      |
+|  `%N`       |  Source without extension(nondirectory)       |
+|  `%d`       |  Directory name of Source(absolute path)      |
+|  `%e`       |  Source with executable suffix(absolute path) |
+|  `%E`       |  Source with executable suffix(nondirectory)  |
 
 Source file name(`%s`, `%n` etc) is not original file name except
 Java language. Because `quickrun.el` copys source file to temporary
@@ -235,7 +242,7 @@ file firstly.
 `quickrun-set-default` changes default command in language that is registerd
 multiple command parameters(like c, c++,Javascript).
 
-```elisp
+```lisp
 (quickrun-set-default "c" "c/clang")
 ```
 
@@ -255,8 +262,8 @@ This feature is disabled if `quickrun-timeout-seconds` is `nil`.
 
 | Key       | Command                |
 |:---------:|:-----------------------|
-|  q        | Close quickrun window  |
-|  C-c C-c  | Kill quickrun process  |
+| `q`       | Close quickrun window  |
+| `C-c C-c` | Kill quickrun process  |
 
 
 ## Buffer Local Variables
@@ -377,7 +384,7 @@ No output. [outputter *null* sample](sample/sample_outputter_null.pl)
 You can pass configuration by `:source` argument.
 Sample is following:
 
-```elisp
+```lisp
 (defun test-perl ()
   (interactive)
   (let* ((cmd "git rev-parse --show-toplevel")
