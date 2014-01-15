@@ -57,12 +57,19 @@
   :type 'integer
   :group 'quickrun)
 
+(defcustom quickrun-input-file-extension ".qrinput"
+  "Extension of input file name"
+  :type '(choice (string :tag "Extension of quickrun input file")
+                 (boolean :tag "Not use input file" nil))
+  :group 'quickrun)
+
 (defcustom quickrun-debug nil
   "Enable debug message"
   :type 'boolean
   :group 'quickrun)
 
 (defconst quickrun/buffer-name "*quickrun*")
+(defvar quickrun/executed-file nil)
 (defvar quickrun/remove-files nil)
 (defvar quickrun/compile-only-flag nil)
 (defvar quickrun/original-buffer nil)
@@ -506,8 +513,18 @@ if you set your own language configuration.
 (defvar quickrun/timeout-timer nil)
 (defvar quickrun/run-in-shell nil)
 
-(defun quickrun/concat-commands (cmd-lst)
+(defsubst quickrun/concat-commands (cmd-lst)
   (mapconcat 'identity cmd-lst " && "))
+
+(defsubst quickrun/stdin-file-name ()
+  (concat quickrun/executed-file quickrun-input-file-extension))
+
+(defun quickrun/send-file-as-stdin (process file)
+  (when (file-exists-p file)
+    (quickrun/log "Send file '%s' to STDIN" file)
+    (with-current-buffer (find-file-noselect file)
+      (process-send-region process (point-min) (point-max))
+      (process-send-eof process))))
 
 (defun quickrun/exec (cmd-lst)
   (if quickrun/run-in-shell
@@ -518,6 +535,9 @@ if you set your own language configuration.
              (process (quickrun/exec-cmd next-cmd))
              (outputter (or quickrun-option-outputter
                             'quickrun/default-outputter)))
+        (when (and (null rest-cmds) quickrun-input-file-extension)
+          (let ((file (quickrun/stdin-file-name)))
+            (quickrun/send-file-as-stdin process file)))
         (set-process-sentinel process
                               (quickrun/make-sentinel rest-cmds outputter))))))
 
@@ -557,7 +577,7 @@ if you set your own language configuration.
     (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
     (quickrun/insert-command cmd-str)))
 
-(defun quickrun/default-directory ()
+(defsubst quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
 
 (defun quickrun/set-default-directory (cmd-key)
@@ -968,6 +988,7 @@ by quickrun.el. But you can register your own command for some languages")
    With universal prefix argument(C-u), select command-key,
    With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
+  (setq quickrun/executed-file (file-name-nondirectory (buffer-file-name)))
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
