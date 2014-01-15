@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.9.8 2014/01/15 syohex
+  - Support stdin file
+
 Version 1.9.7 2013/12/07 syohex
   - Apply colorizing if command is failed
     This is useful for color error message such as coffee-script
