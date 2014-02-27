@@ -116,6 +116,7 @@ as default. But you can register your own command and apply other languages.
 * Dart(dart)
 * Elixir(elixir)
 * TypeScript(tsc)
+* Tcl(tclsh)
 
 
 See also `quickrun/support-languages` global variable.
