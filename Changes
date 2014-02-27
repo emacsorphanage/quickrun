@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 1.9.9 2014/02/28 syohex
+  - Support Tcl
+
 Version 1.9.8 2014/01/15 syohex
   - Support stdin file
 
