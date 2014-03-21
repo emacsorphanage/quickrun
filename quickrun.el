@@ -202,6 +202,11 @@
                (:remove  . ("%e"))
                (:description . "Compile Objective-C file with gcc and execute")))
 
+    ("c#/mono" . ((:command . "mono")
+                  (:exec    . ("mcs %o %s" "%c %n.exe %a"))
+                  (:remove  . ("%n.exe"))
+                  (:description . "Compile C# and execute with mono(mcs)")))
+
     ("d" . ((:command . "dmd")
             (:exec    . ("%c %o -of%e %s" "%e %a"))
             (:remove  . ("%e" "%n.o"))
@@ -388,6 +393,7 @@ if you set your own language configuration.
   '(("\\.c\\'" . "c")
     ("\\.\\(cpp\\|cxx\\|C\\|cc\\)\\'" . "c++")
     ("\\.m\\'" . "objc")
+    ("\\.cs\\'" . "c#")
     ("\\.\\(pl\\|pm\\)\\'" . "perl")
     ("\\.rb\\'" . "ruby")
     ("\\.py\\'" . "python")
@@ -427,6 +433,7 @@ if you set your own language configuration.
   '((c-mode . "c")
     (c++-mode . "c++")
     (objc-mode . "objc")
+    (csharp-mode . "c#")
     ((perl-mode cperl-mode) . "perl")
     (ruby-mode . "ruby")
     (python-mode . "python")
@@ -899,7 +906,7 @@ Place holders are beginning with '%' and replaced by:
 ;;
 
 (defconst quickrun/support-languages
-  '("c" "c++" "objc" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
+  '("c" "c++" "objc" "c#" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml")
@@ -964,6 +971,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defconst quicklang/lang-candidates
   `(("c" . ,(quickrun/c-compiler))
     ("c++" . ,(quickrun/c++-compiler))
+    ("c#" . ("mono"))
     ("fortran" . ("gfortran"))
     ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
     ("ruby" . ("ruby" "mruby"))
