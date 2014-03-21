@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.0.0 2014/03/21 syohex
+  - Support C#(mono)
+
 Version 1.9.9 2014/02/28 syohex
   - Support Tcl
 

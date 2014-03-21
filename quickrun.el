@@ -1,10 +1,10 @@
 ;;; quickrun.el --- Run commands quickly
 
-;; Copyright (C) 2013 by Syohei YOSHIDA
+;; Copyright (C) 2014 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
-;; Version: 1.9.9
+;; Version: 2.0.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
