@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.0.1 2014/04/09 syohex
+  - Fix typescript for version 1.0
+
 Version 2.0.0 2014/03/21 syohex
   - Support C#(mono)
 
