@@ -283,7 +283,7 @@
               (:description . "Run JSX script")))
 
     ("typescript" . ((:command . "tsc")
-                     (:exec . "%c --exec %o %s %a")
+                     (:exec . ("%c --target es5 --module commonjs %o %s %a" "node %n.js"))
                      (:compile-only . "%c %o %s %s")
                      (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
                      (:remove  . ("%n.js"))
