@@ -992,6 +992,19 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/init-command-key-table)
 
+(defun quickrun/set-executed-file ()
+  (if (not (buffer-file-name))
+      (setq quickrun/executed-file nil)
+    (let ((curfile (file-name-nondirectory (buffer-file-name)))
+          (regexp (concat "\\(.+\\)" quickrun-input-file-extension "\\'")))
+      (setq quickrun/executed-file
+            (if (string-match regexp curfile)
+                (let ((file (match-string 1 curfile)))
+                  (if (not (file-exists-p file))
+                      (error "Can't find %s" file)
+                    file))
+              curfile)))))
+
 ;;
 ;; main
 ;;
@@ -1001,7 +1014,7 @@ by quickrun.el. But you can register your own command for some languages")
    With universal prefix argument(C-u), select command-key,
    With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
-  (setq quickrun/executed-file (file-name-nondirectory (buffer-file-name)))
+  (quickrun/set-executed-file)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
@@ -1090,13 +1103,21 @@ by quickrun.el. But you can register your own command for some languages")
         file-type
         (quickrun/prompt))))
 
+(defun quickrun/get-content (start end)
+  (if (and quickrun/executed-file
+           (not (string= quickrun/executed-file
+                         (file-name-nondirectory (buffer-file-name)))))
+      (with-current-buffer (find-file-noselect quickrun/executed-file)
+        (buffer-substring-no-properties (point-min) (point-max)))
+    (buffer-substring-no-properties start end)))
+
 (defun quickrun/copy-region-to-tempfile (start end dst)
   ;; Suppress write file message
-  (let ((str (buffer-substring-no-properties start end))
+  (let ((content (quickrun/get-content start end))
         (codec buffer-file-coding-system))
     (with-temp-file dst
       (set-buffer-file-coding-system codec)
-      (insert str))
+      (insert content))
     (quickrun/add-remove-files dst)))
 
 (defun quickrun/kill-quickrun-buffer ()
@@ -1112,8 +1133,7 @@ by quickrun.el. But you can register your own command for some languages")
   (not (or (member cmd-key '("java" "go/go")) quickrun/compile-only-flag)))
 
 (defun quickrun/common (start end)
-  (let* ((orig-src (quickrun/awhen (buffer-file-name)
-                     (file-name-nondirectory it)))
+  (let* ((orig-src quickrun/executed-file)
          (cmd-key (quickrun/command-key orig-src)))
     (quickrun/set-default-directory cmd-key)
     (quickrun/kill-quickrun-buffer)
