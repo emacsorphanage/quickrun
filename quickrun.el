@@ -531,12 +531,21 @@ if you set your own language configuration.
 (defsubst quickrun/stdin-file-name ()
   (concat quickrun/executed-file quickrun-input-file-extension))
 
+(defsubst quickrun/stdin-file-regexp ()
+  (concat quickrun-input-file-extension "\\'"))
+
+(defsubst quickrun/use-stdin-file-p ()
+  (string-match-p (quickrun/stdin-file-regexp)
+                  (or (buffer-file-name) (buffer-name))))
+
 (defun quickrun/send-file-as-stdin (process file)
-  (when (file-exists-p file)
-    (quickrun/log "Send file '%s' to STDIN" file)
-    (with-current-buffer (find-file-noselect file)
-      (process-send-region process (point-min) (point-max))
-      (process-send-eof process))))
+  (let ((open-buf-func (cond ((file-exists-p file) 'find-file-noselect)
+                             ((get-buffer file) 'get-buffer))))
+    (when open-buf-func
+      (quickrun/log "Send '%s' to STDIN of %s" file (process-name process))
+      (with-current-buffer (funcall open-buf-func file)
+        (process-send-region process (point-min) (point-max))
+        (process-send-eof process)))))
 
 (defun quickrun/exec (cmd-lst)
   (if quickrun/run-in-shell
@@ -992,6 +1001,22 @@ by quickrun.el. But you can register your own command for some languages")
 
 (quickrun/init-command-key-table)
 
+(defun quickrun/set-executed-file ()
+  (let* ((buffer-file (buffer-file-name))
+         (name (or buffer-file (buffer-name)))
+         (use-stdin-file-p (quickrun/use-stdin-file-p))
+         orig-file)
+    (when (string-match (concat "\\(.+\\)" (quickrun/stdin-file-regexp)) name)
+      (setq orig-file (match-string 1 name)))
+    (if (and (not buffer-file) (not use-stdin-file-p))
+        (setq quickrun/executed-file nil)
+      (setq quickrun/executed-file
+            (if use-stdin-file-p
+                (if (not (file-exists-p orig-file))
+                    (error "Can't find %s" orig-file)
+                  orig-file)
+              (file-name-nondirectory buffer-file))))))
+
 ;;
 ;; main
 ;;
@@ -1001,7 +1026,7 @@ by quickrun.el. But you can register your own command for some languages")
    With universal prefix argument(C-u), select command-key,
    With double prefix argument(C-u C-u), run in compile-only-mode"
   (interactive)
-  (setq quickrun/executed-file (file-name-nondirectory (buffer-file-name)))
+  (quickrun/set-executed-file)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
@@ -1090,13 +1115,19 @@ by quickrun.el. But you can register your own command for some languages")
         file-type
         (quickrun/prompt))))
 
+(defun quickrun/get-content (start end)
+  (if (quickrun/use-stdin-file-p)
+      (with-current-buffer (find-file-noselect quickrun/executed-file)
+        (buffer-substring-no-properties (point-min) (point-max)))
+    (buffer-substring-no-properties start end)))
+
 (defun quickrun/copy-region-to-tempfile (start end dst)
   ;; Suppress write file message
-  (let ((str (buffer-substring-no-properties start end))
+  (let ((content (quickrun/get-content start end))
         (codec buffer-file-coding-system))
     (with-temp-file dst
       (set-buffer-file-coding-system codec)
-      (insert str))
+      (insert content))
     (quickrun/add-remove-files dst)))
 
 (defun quickrun/kill-quickrun-buffer ()
@@ -1112,8 +1143,7 @@ by quickrun.el. But you can register your own command for some languages")
   (not (or (member cmd-key '("java" "go/go")) quickrun/compile-only-flag)))
 
 (defun quickrun/common (start end)
-  (let* ((orig-src (quickrun/awhen (buffer-file-name)
-                     (file-name-nondirectory it)))
+  (let* ((orig-src quickrun/executed-file)
          (cmd-key (quickrun/command-key orig-src)))
     (quickrun/set-default-directory cmd-key)
     (quickrun/kill-quickrun-buffer)
