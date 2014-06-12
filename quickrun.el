@@ -368,6 +368,11 @@
 
     ("tcl" . ((:command . "tclsh")
               (:description . "Run Tcl script")))
+
+    ("swift" . ((:command . "xcrun")
+                (:exec    . ("%c swift -i %s" "%n %a"))
+                (:remove  . ("%n"))
+                (:description . "Compile swift and execute")))
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -426,7 +431,8 @@ if you set your own language configuration.
     ("\\.rs\\'" . "rust")
     ("\\.dart\\'" . "dart/checked")
     ("\\.exs?\\'" . "elixir")
-    ("\\.tcl\\'" . "tcl"))
+    ("\\.tcl\\'" . "tcl")
+    ("\\.swift\\'" . "swift"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -466,7 +472,8 @@ if you set your own language configuration.
     (rust-mode . "rust")
     (dart-mode . "dart/checked")
     (elixir-mode . "elixir")
-    (tcl-mode . "tcl"))
+    (tcl-mode . "tcl")
+    (swift-mode . "swift"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -918,7 +925,8 @@ Place holders are beginning with '%' and replaced by:
   '("c" "c++" "objc" "c#" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
-    "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml")
+    "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
+    "swift")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
