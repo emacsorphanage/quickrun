@@ -117,6 +117,7 @@ as default. But you can register your own command and apply other languages.
 * Elixir(elixir)
 * TypeScript(tsc)
 * Tcl(tclsh)
+* Swift(swift, xcrun)
 
 
 See also `quickrun/support-languages` global variable.
