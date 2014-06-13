@@ -109,7 +109,7 @@ as default. But you can register your own command and apply other languages.
 * SASS(sass)
 * LESS(lessc)
 * Erlang(escript)
-* Ocaml(ocamlc)
+* OCaml(ocamlc)
 * ShellScript(sheban's shell)
 * AWK(awk)
 * Rust(rustc)
