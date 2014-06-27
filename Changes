@@ -1,5 +1,10 @@
 Revision history for quickrun.el
 
+Version 2.0.4 2014/06/27 syohex
+  - Add helm actions
+    - run-with-arg
+    - region execution
+
 Version 2.0.3 2014/06/13 syohex
   - Improve using stdin input
   - Fix documentation
