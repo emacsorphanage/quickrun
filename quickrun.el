@@ -125,7 +125,7 @@
                  nil stringp
                  "Specify command argument directly as file local variable")
 
-(defun quickrun/outputter-p (x)
+(defun quickrun/outputter-p (_x)
   (lambda (x)
     (or (functionp x) (symbolp x) (stringp x)
         (quickrun/outputter-multi-p x))))
@@ -510,7 +510,7 @@ if you set your own language configuration.
     (quickrun/check-command-installed program)
     (cond (use-compile
            (setq compilation-finish-functions 'quickrun/compilation-finish-func)
-           (compilation-start cmd t (lambda (x) quickrun/buffer-name)))
+           (compilation-start cmd t (lambda (_x) quickrun/buffer-name)))
           (t
            (with-current-buffer (get-buffer-create quickrun/buffer-name)
              (setq buffer-read-only nil)
@@ -523,7 +523,7 @@ if you set your own language configuration.
                (setq buffer-read-only t)))
            (quickrun/remove-temp-files)))))
 
-(defun quickrun/compilation-finish-func (buffer str)
+(defun quickrun/compilation-finish-func (_buffer _str)
   (quickrun/remove-temp-files))
 
 ;;
