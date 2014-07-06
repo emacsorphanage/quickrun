@@ -46,6 +46,7 @@
 ;; for warnings of byte-compile
 (declare-function anything "anything")
 (declare-function helm "helm")
+(declare-function tramp-dissect-file-name "tramp")
 
 (defgroup quickrun nil
   "Execute buffer quickly"
