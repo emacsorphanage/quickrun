@@ -840,9 +840,10 @@ Place holders are beginning with '%' and replaced by:
         (t ".out")))
 
 (defun quickrun/real-file-name (src)
-  (if (not (file-remote-p (buffer-file-name)))
-      src
-    (aref (tramp-dissect-file-name (buffer-file-name)) 3)))
+  (let ((buffile (buffer-file-name)))
+    (if (not (and buffile (file-remote-p buffile)))
+        src
+      (aref (tramp-dissect-file-name (buffer-file-name)) 3))))
 
 (defun quickrun/place-holder-info (cmd cmdopt source args)
   (let* ((src (quickrun/real-file-name source))
