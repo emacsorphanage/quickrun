@@ -125,7 +125,7 @@
                  nil stringp
                  "Specify command argument directly as file local variable")
 
-(defun quickrun/outputter-p (x)
+(defun quickrun/outputter-p (_x)
   (lambda (x)
     (or (functionp x) (symbolp x) (stringp x)
         (quickrun/outputter-multi-p x))))
@@ -510,7 +510,7 @@ if you set your own language configuration.
     (quickrun/check-command-installed program)
     (cond (use-compile
            (setq compilation-finish-functions 'quickrun/compilation-finish-func)
-           (compilation-start cmd t (lambda (x) quickrun/buffer-name)))
+           (compilation-start cmd t (lambda (_x) quickrun/buffer-name)))
           (t
            (with-current-buffer (get-buffer-create quickrun/buffer-name)
              (setq buffer-read-only nil)
@@ -523,7 +523,7 @@ if you set your own language configuration.
                (setq buffer-read-only t)))
            (quickrun/remove-temp-files)))))
 
-(defun quickrun/compilation-finish-func (buffer str)
+(defun quickrun/compilation-finish-func (_buffer _str)
   (quickrun/remove-temp-files))
 
 ;;
@@ -554,7 +554,7 @@ if you set your own language configuration.
         (process-send-region process (point-min) (point-max))
         (process-send-eof process)))))
 
-(defun quickrun/exec (cmd-lst)
+(defun quickrun/exec (cmd-lst src mode)
   (if quickrun/run-in-shell
       (quickrun/send-to-shell cmd-lst)
     (ignore-errors
@@ -567,7 +567,7 @@ if you set your own language configuration.
           (let ((file (quickrun/stdin-file-name)))
             (quickrun/send-file-as-stdin process file)))
         (set-process-sentinel process
-                              (quickrun/make-sentinel rest-cmds outputter))))))
+                              (quickrun/make-sentinel rest-cmds outputter src mode))))))
 
 (defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
 (defvar quickrun/shell-last-command)
@@ -777,15 +777,29 @@ if you set your own language configuration.
           (funcall outputter-func)
           (setq buffer-read-only t))))))
 
-(defun quickrun/apply-colorizing ()
+(defun quickrun/apply-compilation-mode (input-file mode)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((case-fold-search nil))
+      (while (search-forward input-file nil t)
+        (replace-match quickrun/executed-file)))
+    (compilation-mode mode)))
+
+(defun quickrun/apply-colorizing (input-file mode)
   (setq buffer-read-only nil)
+  (when (and quickrun/executed-file input-file
+             (not (string= input-file quickrun/executed-file)))
+    (quickrun/apply-compilation-mode input-file mode))
   (quickrun/default-outputter)
+  (goto-char (point-min))
   (setq buffer-read-only t))
 
-(defun quickrun/make-sentinel (cmds outputter)
+(defun quickrun/make-sentinel (cmds outputter src mode)
   (lexical-let ((rest-commands cmds)
-                (outputter-func outputter))
-    (lambda (process state)
+                (outputter-func outputter)
+                (input src)
+                (orig-mode mode))
+    (lambda (process _event)
       ;; XXX Why reset `quickrun-option-outputter' ??
       (setq quickrun-option-outputter outputter-func)
       (when (memq (process-status process) '(exit signal))
@@ -793,10 +807,10 @@ if you set your own language configuration.
         (delete-process process)
         (let ((is-success (zerop (process-exit-status process))))
           (cond ((and is-success rest-commands)
-                 (quickrun/exec rest-commands))
+                 (quickrun/exec rest-commands input orig-mode))
                 (t
                  (if (not is-success)
-                     (quickrun/apply-colorizing)
+                     (quickrun/apply-colorizing input orig-mode)
                    (quickrun/apply-outputter outputter-func)
                    (run-hooks 'quickrun-after-run-hook))
                  (when (> scroll-conservatively 0)
@@ -1178,7 +1192,8 @@ by quickrun.el. But you can register your own command for some languages")
                  (quickrun/compilation-start cmd compile-conf)))
               (t
                (quickrun/setup-exec-buffer)
-               (quickrun/exec (gethash :exec cmd-info-hash))
+               (quickrun/exec (gethash :exec cmd-info-hash)
+                              (file-name-nondirectory src) major-mode)
                (unless (quickrun/defined-outputter-p quickrun-option-outputter)
                  (quickrun/popup-output-buffer))))))))
 
