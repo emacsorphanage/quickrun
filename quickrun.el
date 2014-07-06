@@ -507,7 +507,6 @@ if you set your own language configuration.
 (defun quickrun/compilation-start (cmd compile-conf)
   (let ((program (car (split-string cmd)))
         (use-compile (quickrun/check-using-compilation-mode compile-conf)))
-    (quickrun/check-command-installed program)
     (cond (use-compile
            (setq compilation-finish-functions 'quickrun/compilation-finish-func)
            (compilation-start cmd t (lambda (_x) quickrun/buffer-name)))
@@ -624,7 +623,6 @@ if you set your own language configuration.
 (defun quickrun/exec-cmd (cmd)
   (let ((program (car (split-string cmd)))
         (buf (get-buffer quickrun/buffer-name)))
-    (quickrun/check-command-installed program)
     (with-current-buffer buf
       (setq buffer-read-only nil)
       (erase-buffer))
@@ -632,7 +630,7 @@ if you set your own language configuration.
           (process-connection-type (quickrun/process-connection-type program))
           (default-directory (quickrun/default-directory)))
       (quickrun/log "Quickrun Execute: %s at %s" cmd default-directory)
-      (lexical-let ((process (start-process-shell-command proc-name buf cmd)))
+      (lexical-let ((process (start-file-process-shell-command proc-name buf cmd)))
         (when (>= quickrun-timeout-seconds 0)
           (setq quickrun/timeout-timer
                 (run-at-time quickrun-timeout-seconds nil
@@ -840,8 +838,14 @@ Place holders are beginning with '%' and replaced by:
         ((quickrun/windows-p) ".exe")
         (t ".out")))
 
-(defun quickrun/place-holder-info (cmd cmdopt src args)
-  (let* ((without-extension (file-name-sans-extension src))
+(defun quickrun/real-file-name (src)
+  (if (not (file-remote-p (buffer-file-name)))
+      src
+    (aref (tramp-dissect-file-name (buffer-file-name)) 3)))
+
+(defun quickrun/place-holder-info (cmd cmdopt source args)
+  (let* ((src (quickrun/real-file-name source))
+         (without-extension (file-name-sans-extension src))
          (dirname (file-name-directory (expand-file-name src)))
          (directory (substring dirname 0 (- (length dirname) 1)))
          (executable-suffix (quickrun/executable-suffix cmd))
@@ -877,11 +881,6 @@ Place holders are beginning with '%' and replaced by:
                   (throw 'quickrun
                          "template function should return symbol or string")))))
         (t param)))
-
-(defun quickrun/check-command-installed (cmd)
-  (let ((program (car (split-string cmd)))) ; for "/usr/bin/env prog"
-    (unless (executable-find program)
-      (throw 'quickrun (format "'%s' not found" program)))))
 
 (defun quickrun/get-shebang ()
   (save-excursion
@@ -1162,7 +1161,10 @@ by quickrun.el. But you can register your own command for some languages")
       (setq quickrun-option-default-directory default-dir))))
 
 (defsubst quickrun/use-tempfile-p (cmd-key)
-  (not (or (member cmd-key '("java" "go/go")) quickrun/compile-only-flag)))
+  (let ((buffile (buffer-file-name)))
+    (not (or (member cmd-key '("java" "go/go"))
+             quickrun/compile-only-flag
+             (and buffile (file-remote-p buffile))))))
 
 (defun quickrun/common (start end)
   (let* ((orig-src quickrun/executed-file)
