@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "quickrun" "0" "0")
+(package "quickrun" "2.05" "Run commands quickly")
 
 (development
  (depends-on "helm")

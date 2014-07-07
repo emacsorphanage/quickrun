@@ -1,5 +1,9 @@
 Revision history for quickrun.el
 
+Version 2.0.5 2014/07/07 syohex
+  - Enable compilation-mode if errors are occurred
+  - Support Tramp
+
 Version 2.0.4 2014/06/27 syohex
   - Add helm actions
     - run-with-arg
