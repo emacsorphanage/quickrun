@@ -777,17 +777,17 @@ if you set your own language configuration.
           (setq buffer-read-only t))))))
 
 (defun quickrun/apply-compilation-mode (input-file mode)
-  (save-excursion
-    (goto-char (point-min))
-    (let ((case-fold-search nil))
-      (while (search-forward input-file nil t)
-        (replace-match quickrun/executed-file)))
-    (compilation-mode mode)))
+  (when (not (string= input-file quickrun/executed-file))
+    (save-excursion
+      (goto-char (point-min))
+      (let ((case-fold-search nil))
+        (while (search-forward input-file nil t)
+          (replace-match quickrun/executed-file)))))
+  (compilation-mode mode))
 
 (defun quickrun/apply-colorizing (input-file mode)
   (setq buffer-read-only nil)
-  (when (and quickrun/executed-file input-file
-             (not (string= input-file quickrun/executed-file)))
+  (when (and quickrun/executed-file input-file)
     (quickrun/apply-compilation-mode input-file mode))
   (quickrun/default-outputter)
   (goto-char (point-min))
