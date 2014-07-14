@@ -827,9 +827,9 @@ Place holders are beginning with '%' and replaced by:
 %s: source code
 %a: program argument
 %d: directory name
-%n: abosolute path of source code without extension
+%n: absolute path of source code without extension
 %N: source code name without extension
-%e: abosolute path of source code with exeutable extension(.exe, .out, .class)
+%e: absolute path of source code with executable extension(.exe, .out, .class)
 %E: source code name with executable extension
 ")
 
