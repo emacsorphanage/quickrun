@@ -371,8 +371,7 @@
               (:description . "Run Tcl script")))
 
     ("swift" . ((:command . "xcrun")
-                (:exec    . ("%c swift -i %s" "%n %a"))
-                (:remove  . ("%n"))
+                (:exec    . ("%c swift -i %s"))
                 (:description . "Compile swift and execute")))
     )
   "List of each programming languages information.
