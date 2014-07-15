@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.0.6 2014/07/15 syohex
+  - Fix for Apple Swift language
+
 Version 2.0.5 2014/07/07 syohex
   - Enable compilation-mode if errors are occurred
   - Support Tramp
