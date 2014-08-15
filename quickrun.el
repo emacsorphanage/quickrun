@@ -373,6 +373,12 @@
     ("swift" . ((:command . "xcrun")
                 (:exec    . ("%c swift -i %s"))
                 (:description . "Compile swift and execute")))
+
+    ("ats" . ((:command . "patscc")
+               (:exec    . ("%c -DATS_MEMALLOC_LIBC %o -o %e %s" "%e %a"))
+               (:compile-only . "patsopt -o %n_dats.c --dynamic %s")
+               (:remove  . ("%e" "%n_dats.c"))
+               (:description . "Compile ATS2 and execute")))
     )
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -432,7 +438,8 @@ if you set your own language configuration.
     ("\\.dart\\'" . "dart/checked")
     ("\\.exs?\\'" . "elixir")
     ("\\.tcl\\'" . "tcl")
-    ("\\.swift\\'" . "swift"))
+    ("\\.swift\\'" . "swift")
+    ("\\.dats\\'" . "ats"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist

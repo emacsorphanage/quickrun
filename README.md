@@ -118,6 +118,7 @@ as default. But you can register your own command and apply other languages.
 * TypeScript(tsc)
 * Tcl(tclsh)
 * Swift(swift, xcrun)
+* ATS2(patscc)
 
 
 See also `quickrun/support-languages` global variable.
