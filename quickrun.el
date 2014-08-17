@@ -480,7 +480,8 @@ if you set your own language configuration.
     (dart-mode . "dart/checked")
     (elixir-mode . "elixir")
     (tcl-mode . "tcl")
-    (swift-mode . "swift"))
+    (swift-mode . "swift")
+    (ats-mode . "ats"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -947,7 +948,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
     "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift")
+    "swift" "ats")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
