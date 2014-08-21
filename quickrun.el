@@ -346,6 +346,10 @@
                 (:remove  . ("%e" "%n.cmi" "%n.cmo"))
                 (:description . "Compile Ocaml file with ocamlc and execute")))
 
+    ("fsharp" . ((:command . "fsharpi")
+                 (:exec . "%c %o --nologo %s %a")
+                 (:description . "Compile F# file with fsharpc and execute")))
+
     ("shellscript" . ((:command . (lambda () sh-shell))
                       (:description . "Run Shellscript file")))
     ("awk" . ((:command . "awk")
@@ -416,6 +420,7 @@ if you set your own language configuration.
     ("\\.clj\\'" . "clojure")
     ("\\.erl\\'" . "erlang")
     ("\\.ml\\'" . "ocaml")
+    ("\\.\\(fsx\\|fscript\\)\\'" . "fsharp")
     ("\\.go\\'" . "go")
     ("\\.io\\'" . "io")
     ("\\.lua\\'" . "lua")
@@ -458,6 +463,7 @@ if you set your own language configuration.
     (clojure-mode . "clojure")
     (erlang-mode . "erlang")
     ((ocaml-mode tuareg-mode) . "ocaml")
+    (fsharp-mode . "fsharp")
     (go-mode . "go")
     (io-mode . "io")
     (lua-mode . "lua")
@@ -658,6 +664,7 @@ if you set your own language configuration.
     (setq buffer-read-only t)))
 
 (defun quickrun/remove-temp-files ()
+  (quickrun/log "Quickrun remove %s" quickrun/remove-files)
   (dolist (file quickrun/remove-files)
     (cond
      ((file-directory-p file) (delete-directory file t))
@@ -945,8 +952,8 @@ Place holders are beginning with '%' and replaced by:
 
 (defconst quickrun/support-languages
   '("c" "c++" "objc" "c#" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
-    "javascript" "clojure" "erlang" "ocaml" "go" "io" "haskell" "java" "d"
-    "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
+    "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
+    "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
     "swift" "ats")
   "Programming languages and Markup languages supported as default
