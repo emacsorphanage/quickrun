@@ -15,6 +15,7 @@ compiling languages(C, C++, Go, Java etc) and markup language.
 
 * Emacs 23 or higher.
 
+I will drop Emacs 23 support when Emacs 24.4 is released.
 
 ## Installation
 
