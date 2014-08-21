@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.0.8 2014/08/21 syohex
+  - Support F# programming language
+
 Version 2.0.7 2014/08/17 syohex
   - Support ATS programming language
     (Thanks murasesyuka)
