@@ -104,12 +104,13 @@ as default. But you can register your own command and apply other languages.
 * Io(io)
 * Lua(lua)
 * Groovy(groovy)
-* Scala(scala) *Please use UTF-8 encoding*
+* Scala(scala) **Please use UTF-8 encoding**
 * HAML(haml)
 * SASS(sass)
 * LESS(lessc)
 * Erlang(escript)
 * OCaml(ocamlc)
+* F#(fsharpi) **File extention should be '.fsx' or 'fscript'**
 * ShellScript(sheban's shell)
 * AWK(awk)
 * Rust(rustc)
