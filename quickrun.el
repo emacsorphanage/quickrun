@@ -427,7 +427,7 @@ if you set your own language configuration.
     ("\\.hs\\'" . "haskell")
     ("\\.java\\'" . "java")
     ("\\.d\\'" . "d")
-    ("\\.\\(f\\|for\\|f90\\|f95\\)" . "fortran")
+    ("\\.\\(f\\|for\\|f90\\|f95\\)\\'" . "fortran")
     ("\\.\\(md\\|markdown\\|mdown\\|mkdn\\)\\'" . "markdown")
     ("\\.coffee\\'" . "coffee")
     ("\\.jsx\\'" . "jsx")
