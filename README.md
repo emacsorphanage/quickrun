@@ -111,7 +111,7 @@ as default. But you can register your own command and apply other languages.
 * LESS(lessc)
 * Erlang(escript)
 * OCaml(ocamlc)
-* F#(fsharpi) **File extention should be '.fsx' or 'fscript'**
+* F#(fsharpc)
 * ShellScript(sheban's shell)
 * AWK(awk)
 * Rust(rustc)
