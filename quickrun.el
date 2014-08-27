@@ -273,7 +273,8 @@
                              (:description . "Run Javascript file with cscript")))
 
     ("coffee" . ((:command . "coffee")
-                 (:compile-only . "coffee --print %s")
+                 (:exec . "%c %s")
+                 (:compile-only . "%c --print %s")
                  (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
                  (:description . "Run Coffee script")))
 
