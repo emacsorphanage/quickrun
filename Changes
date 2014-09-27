@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.1.0 2014/09/28 syohex
+  - Update swift configuration for newer Xcode
+
 Version 2.0.9 2014/08/24 syohex
   - Fix Fortran file extention regexp
   - Improve F#
