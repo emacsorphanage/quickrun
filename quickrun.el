@@ -376,7 +376,7 @@
               (:description . "Run Tcl script")))
 
     ("swift" . ((:command . "xcrun")
-                (:exec    . ("%c swift -i %s"))
+                (:exec    . ("%c swift %o %s %a"))
                 (:description . "Compile swift and execute")))
 
     ("ats" . ((:command . "patscc")
