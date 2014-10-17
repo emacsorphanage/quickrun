@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.1.1 2014/10/16 tmalsburg
+  - Support R programming language
+
 Version 2.1.0 2014/09/28 syohex
   - Update swift configuration for newer Xcode
 

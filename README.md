@@ -121,6 +121,7 @@ as default. But you can register your own command and apply other languages.
 * Tcl(tclsh)
 * Swift(swift, xcrun)
 * ATS2(patscc)
+* R(Rscript)
 
 
 See also `quickrun/support-languages` global variable.
