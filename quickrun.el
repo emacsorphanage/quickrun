@@ -384,7 +384,9 @@
                (:compile-only . "patsopt -o %n_dats.c --dynamic %s")
                (:remove  . ("%e" "%n_dats.c"))
                (:description . "Compile ATS2 and execute")))
-    )
+    ("r" . ((:command . "Rscript")
+            (:exec "Rscript --vanilla %s")
+    	    (:description . "Run an R script"))))
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
 5 keys and those values , :command, :exec, :remove.
@@ -445,7 +447,8 @@ if you set your own language configuration.
     ("\\.exs?\\'" . "elixir")
     ("\\.tcl\\'" . "tcl")
     ("\\.swift\\'" . "swift")
-    ("\\.dats\\'" . "ats"))
+    ("\\.dats\\'" . "ats")
+    ("\\.\\(r\\|R\\)\\'" . "r"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -488,7 +491,8 @@ if you set your own language configuration.
     (elixir-mode . "elixir")
     (tcl-mode . "tcl")
     (swift-mode . "swift")
-    (ats-mode . "ats"))
+    (ats-mode . "ats")
+    (ess-mode . "r"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -956,7 +960,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats")
+    "swift" "ats" "r")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
