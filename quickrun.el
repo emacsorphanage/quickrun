@@ -531,7 +531,7 @@ if you set your own language configuration.
            (with-current-buffer (get-buffer-create quickrun/buffer-name)
              (setq buffer-read-only nil)
              (erase-buffer)
-             (call-process-shell-command cmd nil t)
+             (process-file-shell-command cmd nil t)
              (goto-char (point-min))
              (quickrun/awhen (assoc-default :mode compile-conf)
                (funcall it)
