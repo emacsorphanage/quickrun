@@ -1,10 +1,11 @@
-;;; quickrun.el --- Run commands quickly
+;;; quickrun.el --- Run commands quickly -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
 ;; Version: 2.1.1
+;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -36,9 +37,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(require 'cl-lib)
 (require 'ansi-color)
 (require 'em-banner)
 (require 'eshell)
@@ -501,10 +500,10 @@ if you set your own language configuration.
       (quickrun/find-from-major-mode-alist)))
 
 (defun quickrun/find-from-major-mode-alist ()
-  (loop for (lang . lang-info) in quickrun/major-mode-alist
-        for lang-lst = (quickrun/mklist lang)
-        when (memq major-mode lang-lst)
-        return lang-info))
+  (cl-loop for (lang . lang-info) in quickrun/major-mode-alist
+           for lang-lst = (quickrun/mklist lang)
+           when (memq major-mode lang-lst)
+           return lang-info))
 
 (defun quickrun/command-info (lang)
   (or quickrun-option-cmd-alist
@@ -524,8 +523,7 @@ if you set your own language configuration.
         (cdr compilation-mode)))))
 
 (defun quickrun/compilation-start (cmd compile-conf)
-  (let ((program (car (split-string cmd)))
-        (use-compile (quickrun/check-using-compilation-mode compile-conf)))
+  (let ((use-compile (quickrun/check-using-compilation-mode compile-conf)))
     (cond (use-compile
            (setq compilation-finish-functions 'quickrun/compilation-finish-func)
            (compilation-start cmd t (lambda (_x) quickrun/buffer-name)))
@@ -649,7 +647,7 @@ if you set your own language configuration.
           (process-connection-type (quickrun/process-connection-type program))
           (default-directory (quickrun/default-directory)))
       (quickrun/log "Quickrun Execute: %s at %s" cmd default-directory)
-      (lexical-let ((process (start-file-process-shell-command proc-name buf cmd)))
+      (let ((process (start-file-process-shell-command proc-name buf cmd)))
         (when (>= quickrun-timeout-seconds 0)
           (setq quickrun/timeout-timer
                 (run-at-time quickrun-timeout-seconds nil
@@ -775,13 +773,13 @@ if you set your own language configuration.
     (dolist (outputter outputters)
       (setq outputter-func outputter)
       (when (symbolp outputter)
-        (lexical-let* ((name (symbol-name outputter))
-                       (func (assoc-default outputter
-                                            quickrun/defined-outputter-symbol))
-                       (func-with-arg
-                        (assoc-default name
-                                       quickrun/defined-outputter-symbol-with-arg
-                                       'string-match)))
+        (let* ((name (symbol-name outputter))
+               (func (assoc-default outputter
+                                    quickrun/defined-outputter-symbol))
+               (func-with-arg
+                (assoc-default name
+                               quickrun/defined-outputter-symbol-with-arg
+                               'string-match)))
           (cond (func (setq outputter-func func))
                 (func-with-arg
                  (when (string-match ":\\(.*\\)\\'" name)
@@ -812,28 +810,24 @@ if you set your own language configuration.
   (goto-char (point-min))
   (setq buffer-read-only t))
 
-(defun quickrun/make-sentinel (cmds outputter src mode)
-  (lexical-let ((rest-commands cmds)
-                (outputter-func outputter)
-                (input src)
-                (orig-mode mode))
-    (lambda (process _event)
-      ;; XXX Why reset `quickrun-option-outputter' ??
-      (setq quickrun-option-outputter outputter-func)
-      (when (memq (process-status process) '(exit signal))
-        (and quickrun/timeout-timer (cancel-timer quickrun/timeout-timer))
-        (delete-process process)
-        (let ((is-success (zerop (process-exit-status process))))
-          (cond ((and is-success rest-commands)
-                 (quickrun/exec rest-commands input orig-mode))
-                (t
-                 (if (not is-success)
-                     (quickrun/apply-colorizing input orig-mode)
-                   (quickrun/apply-outputter outputter-func)
-                   (run-hooks 'quickrun-after-run-hook))
-                 (when (> scroll-conservatively 0)
-                   (recenter))
-                 (quickrun/remove-temp-files))))))))
+(defun quickrun/make-sentinel (rest-commands outputter-func input orig-mode)
+  (lambda (process _event)
+    ;; XXX Why reset `quickrun-option-outputter' ??
+    (setq quickrun-option-outputter outputter-func)
+    (when (memq (process-status process) '(exit signal))
+      (and quickrun/timeout-timer (cancel-timer quickrun/timeout-timer))
+      (delete-process process)
+      (let ((is-success (zerop (process-exit-status process))))
+        (cond ((and is-success rest-commands)
+               (quickrun/exec rest-commands input orig-mode))
+              (t
+               (if (not is-success)
+                   (quickrun/apply-colorizing input orig-mode)
+                 (quickrun/apply-outputter outputter-func)
+                 (run-hooks 'quickrun-after-run-hook))
+               (when (> scroll-conservatively 0)
+                 (recenter))
+               (quickrun/remove-temp-files)))))))
 
 ;;
 ;; Composing command
@@ -925,17 +919,17 @@ Place holders are beginning with '%' and replaced by:
          (tmpl-arg (quickrun/template-argument cmd-info src))
          (info (make-hash-table)))
     ;; take one parameter
-    (loop for key in '(:compile-only)
-          when (quickrun/extract-template key cmd-info)
-          do (puthash key (quickrun/fill-template it tmpl-arg) info))
+    (cl-loop for key in '(:compile-only)
+             when (quickrun/extract-template key cmd-info)
+             do (puthash key (quickrun/fill-template it tmpl-arg) info))
     ;; take one or more parameters
-    (loop for key in '(:exec :remove)
-          when (quickrun/extract-template key cmd-info t)
-          do
-          (let ((filled-tmpls (mapcar (lambda (x)
-                                        (quickrun/fill-template x tmpl-arg))
-                                      it)))
-            (puthash key filled-tmpls info)))
+    (cl-loop for key in '(:exec :remove)
+             when (quickrun/extract-template key cmd-info t)
+             do
+             (let ((filled-tmpls (mapcar (lambda (x)
+                                           (quickrun/fill-template x tmpl-arg))
+                                         it)))
+               (puthash key filled-tmpls info)))
     ;; function parameter
     (dolist (key '(:outputter))
       (let ((func (assoc-default :outputter cmd-info)))
@@ -978,14 +972,14 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((registered (assoc-default cmdkey quickrun/language-alist)))
     (unless registered
       (error (format "'%s' is not registered" cmdkey)))
-    (loop for old-param in registered
-          do
-          (let ((new-value (assoc-default (car old-param) cmd-alist)))
-            (when new-value
-              (setcdr old-param new-value))))))
+    (cl-loop for old-param in registered
+             do
+             (let ((new-value (assoc-default (car old-param) cmd-alist)))
+               (when new-value
+                 (setcdr old-param new-value))))))
 
 ;;;###autoload
-(defun* quickrun-add-command (key alist &key default mode override)
+(cl-defun quickrun-add-command (key alist &key default mode override)
   (cond ((not key) (error "Undefined 1st argument 'key'"))
         ((not alist) (error "Undefined 2nd argument 'command alist'")))
   (if override
@@ -1001,9 +995,9 @@ by quickrun.el. But you can register your own command for some languages")
     key))
 
 (defun quickrun/find-executable (candidates)
-  (loop for candidate in candidates
-        when (executable-find candidate)
-        return candidate))
+  (cl-loop for candidate in candidates
+           when (executable-find candidate)
+           return candidate))
 
 (defun quickrun/set-command-key (lang candidates)
   (quickrun/awhen (quickrun/find-executable candidates)
@@ -1037,9 +1031,9 @@ by quickrun.el. But you can register your own command for some languages")
   "Decide command for programing language which has multiple candidates"
   (dolist (lang quickrun/support-languages)
     (puthash lang lang quickrun/command-key-table))
-  (loop for (lang . candidates) in quicklang/lang-candidates
-        do
-        (quickrun/set-command-key lang candidates)))
+  (cl-loop for (lang . candidates) in quicklang/lang-candidates
+           do
+           (quickrun/set-command-key lang candidates)))
 
 (quickrun/init-command-key-table)
 
@@ -1228,8 +1222,8 @@ by quickrun.el. But you can register your own command for some languages")
   '((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
-                    (loop for (cmd-key . cmd-info) in quickrun/language-alist
-                          collect (quickrun/helm-candidate cmd-key cmd-info))))
+                    (cl-loop for (cmd-key . cmd-info) in quickrun/language-alist
+                             collect (quickrun/helm-candidate cmd-key cmd-info))))
     (action . (("Run this cmd-key" . quickrun/helm-action-default)
                ("Compile only" . quickrun/helm-compile-only)
                ("Run with shell" . quickrun/helm-action-shell)
