@@ -1,4 +1,4 @@
-# quickrun.el
+# quickrun.el [![travis badge][travis-badge]][travis-link] [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
 
 ## Introduction
 
@@ -403,3 +403,10 @@ Sample is following:
                         (:default-directory . ,topdir)
                         (:exec . ("%c -bv --color %s"))))))
 ```
+
+[travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.png
+[travis-link]: https://travis-ci.org/syohex/emacs-quickrun
+[melpa-link]: http://melpa.milkbox.net/#/quickrun
+[melpa-stable-link]: http://melpa-stable.milkbox.net/#/quickrun
+[melpa-badge]: http://melpa.milkbox.net/packages/quickrun-badge.svg
+[melpa-stable-badge]: http://melpa-stable.milkbox.net/packages/quickrun-badge.svg
