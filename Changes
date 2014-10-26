@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.2.0 2014/10/16 tmalsburg
+  - Drop Emacs 23 support
+
 Version 2.1.1 2014/10/16 tmalsburg
   - Support R programming language
 
