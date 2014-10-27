@@ -405,7 +405,7 @@ Sample is following:
 
 [travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.png
 [travis-link]: https://travis-ci.org/syohex/emacs-quickrun
-[melpa-link]: http://melpa.milkbox.net/#/quickrun
-[melpa-stable-link]: http://melpa-stable.milkbox.net/#/quickrun
-[melpa-badge]: http://melpa.milkbox.net/packages/quickrun-badge.svg
-[melpa-stable-badge]: http://melpa-stable.milkbox.net/packages/quickrun-badge.svg
+[melpa-link]: http://melpa.org/#/quickrun
+[melpa-stable-link]: http://stable.melpa.org/#/quickrun
+[melpa-badge]: http://melpa.org/packages/quickrun-badge.svg
+[melpa-stable-badge]: http://stable.melpa.org/packages/quickrun-badge.svg
