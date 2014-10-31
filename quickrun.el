@@ -1289,11 +1289,10 @@ by quickrun.el. But you can register your own command for some languages")
   (interactive)
   (unless (featurep 'helm)
     (error "helm is not installed."))
-  (let ((buf (get-buffer-create "*helm quickrun*"))
-        (sources (if quickrun--helm-history
+  (let ((sources (if quickrun--helm-history
                      '(helm-quickrun-history-source helm-quickrun-source)
                    '(helm-quickrun-source))))
-    (helm :sources sources :buffer buf)))
+    (helm :sources sources :buffer "*helm quickrun*")))
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
