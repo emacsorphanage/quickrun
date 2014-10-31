@@ -708,6 +708,7 @@ if you set your own language configuration.
     (browser  . quickrun/outputter-browser)
     (null     . quickrun/outputter-null)
     (replace  . quickrun/outputter-replace-region)
+    (eval-print . quickrun/outputter-eval-print)
     ))
 
 (defvar quickrun/defined-outputter-symbol-with-arg
@@ -753,6 +754,15 @@ if you set your own language configuration.
       (delete-region (region-beginning) (region-end))
       (insert output)
       (setq quickrun-option-outputter quickrun/original-outputter))))
+
+(defun quickrun/outputter-eval-print ()
+  (let ((output (buffer-substring-no-properties (point-min) (point-max))))
+    (with-current-buffer quickrun/original-buffer
+      (forward-line 1)
+      (let ((start (point)))
+        (insert output)
+        (comment-region start (point))
+        (setq quickrun-option-outputter quickrun/original-outputter)))))
 
 (defun quickrun/outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
@@ -1098,21 +1108,31 @@ by quickrun.el. But you can register your own command for some languages")
                                               ""))))
     (completing-read prompt quickrun/language-alist nil nil nil nil default)))
 
+(defun quickrun--region-command-common (start end)
+  (deactivate-mark)
+  (quickrun :start start :end end))
+
 ;;;###autoload
 (defun quickrun-region (start end)
   "Run commands with specified region"
   (interactive "r")
-  (deactivate-mark)
-  (quickrun :start start :end end))
+  (quickrun--region-command-common start end))
 
 ;;;###autoload
 (defun quickrun-replace-region (start end)
   "Run commands with specified region and replace"
   (interactive "r")
-  (deactivate-mark)
   (setq quickrun/original-outputter quickrun-option-outputter)
   (let ((quickrun-option-outputter 'replace))
-    (quickrun :start start :end end)))
+    (quickrun--region-command-common start end)))
+
+;;;###autoload
+(defun quickrun-eval-print (start end)
+  "Run commands with specified region and replace"
+  (interactive "r")
+  (setq quickrun/original-outputter quickrun-option-outputter)
+  (let ((quickrun-option-outputter 'eval-print))
+    (quickrun--region-command-common start end)))
 
 ;;;###autoload
 (defun quickrun-compile-only ()
