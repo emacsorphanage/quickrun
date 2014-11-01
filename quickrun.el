@@ -1238,30 +1238,30 @@ by quickrun.el. But you can register your own command for some languages")
 ;; helm/anything interface
 ;;
 
+(defconst helm-quickrun--actions
+  '(("Run this cmd-key" . quickrun/helm-action-default)
+    ("Compile only" . quickrun/helm-compile-only)
+    ("Run with shell" . quickrun/helm-action-shell)
+    ("Run with argument" . quickrun/helm-run-with-arg)
+    ("Replace region" . quickrun/helm-action-replace-region)
+    ("Eval and insert as comment" . quickrun/helm-action-eval-print)))
+
 (defvar helm-quickrun-source
-  '((name . "Choose Command-Key")
+  `((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
                     (cl-loop for (cmd-key . cmd-info) in quickrun/language-alist
                              collect (quickrun/helm-candidate cmd-key cmd-info))))
-    (action . (("Run this cmd-key" . quickrun/helm-action-default)
-               ("Compile only" . quickrun/helm-compile-only)
-               ("Run with shell" . quickrun/helm-action-shell)
-               ("Run with argument" . quickrun/helm-run-with-arg)
-               ("Replace region" . quickrun/helm-action-replace-region))))
+    (action . ,helm-quickrun--actions))
   "helm/anything source of `quickrun'")
 
 (defvar quickrun--helm-history nil)
 
 (defvar helm-quickrun-history-source
-  '((name . "Helm Quickrun History")
+  `((name . "Helm Quickrun History")
     (volatile)
     (candidates . quickrun--helm-history)
-    (action . (("Run this cmd-key" . quickrun/helm-action-default)
-               ("Compile only" . quickrun/helm-compile-only)
-               ("Run with shell" . quickrun/helm-action-shell)
-               ("Run with argument" . quickrun/helm-run-with-arg)
-               ("Replace region" . quickrun/helm-action-replace-region))))
+    (action . ,helm-quickrun--actions))
   "helm source of `quickrun' history")
 
 (defun quickrun/helm-candidate (cmd-key cmd-info)
@@ -1296,6 +1296,11 @@ by quickrun.el. But you can register your own command for some languages")
   (add-to-list 'quickrun--helm-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-replace-region (region-beginning) (region-end))))
+
+(defun quickrun/helm-action-eval-print (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun-eval-print (region-beginning) (region-end))))
 
 ;;;###autoload
 (defun anything-quickrun ()
