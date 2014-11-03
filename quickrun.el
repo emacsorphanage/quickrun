@@ -708,6 +708,7 @@ if you set your own language configuration.
     (browser  . quickrun/outputter-browser)
     (null     . quickrun/outputter-null)
     (replace  . quickrun/outputter-replace-region)
+    (eval-print . quickrun/outputter-eval-print)
     ))
 
 (defvar quickrun/defined-outputter-symbol-with-arg
@@ -753,6 +754,15 @@ if you set your own language configuration.
       (delete-region (region-beginning) (region-end))
       (insert output)
       (setq quickrun-option-outputter quickrun/original-outputter))))
+
+(defun quickrun/outputter-eval-print ()
+  (let ((output (buffer-substring-no-properties (point-min) (point-max))))
+    (with-current-buffer quickrun/original-buffer
+      (forward-line 1)
+      (let ((start (point)))
+        (insert output)
+        (comment-region start (point))
+        (setq quickrun-option-outputter quickrun/original-outputter)))))
 
 (defun quickrun/outputter-buffer (bufname)
   (let ((str (buffer-substring (point-min) (point-max))))
@@ -817,12 +827,15 @@ if you set your own language configuration.
     (when (memq (process-status process) '(exit signal))
       (and quickrun/timeout-timer (cancel-timer quickrun/timeout-timer))
       (delete-process process)
-      (let ((is-success (zerop (process-exit-status process))))
+      (let* ((exit-status (process-exit-status process))
+             (is-success (zerop exit-status)))
         (cond ((and is-success rest-commands)
                (quickrun/exec rest-commands input orig-mode))
               (t
                (if (not is-success)
-                   (quickrun/apply-colorizing input orig-mode)
+                   (if (eq quickrun-option-outputter 'default)
+                       (quickrun/apply-colorizing input orig-mode)
+                     (message "Failed: Exit Status=%d" exit-status))
                  (quickrun/apply-outputter outputter-func)
                  (run-hooks 'quickrun-after-run-hook))
                (when (> scroll-conservatively 0)
@@ -1098,21 +1111,31 @@ by quickrun.el. But you can register your own command for some languages")
                                               ""))))
     (completing-read prompt quickrun/language-alist nil nil nil nil default)))
 
+(defun quickrun--region-command-common (start end)
+  (deactivate-mark)
+  (quickrun :start start :end end))
+
 ;;;###autoload
 (defun quickrun-region (start end)
   "Run commands with specified region"
   (interactive "r")
-  (deactivate-mark)
-  (quickrun :start start :end end))
+  (quickrun--region-command-common start end))
 
 ;;;###autoload
 (defun quickrun-replace-region (start end)
   "Run commands with specified region and replace"
   (interactive "r")
-  (deactivate-mark)
   (setq quickrun/original-outputter quickrun-option-outputter)
   (let ((quickrun-option-outputter 'replace))
-    (quickrun :start start :end end)))
+    (quickrun--region-command-common start end)))
+
+;;;###autoload
+(defun quickrun-eval-print (start end)
+  "Run commands with specified region and replace"
+  (interactive "r")
+  (setq quickrun/original-outputter quickrun-option-outputter)
+  (let ((quickrun-option-outputter 'eval-print))
+    (quickrun--region-command-common start end)))
 
 ;;;###autoload
 (defun quickrun-compile-only ()
@@ -1218,30 +1241,30 @@ by quickrun.el. But you can register your own command for some languages")
 ;; helm/anything interface
 ;;
 
+(defconst helm-quickrun--actions
+  '(("Run this cmd-key" . quickrun/helm-action-default)
+    ("Compile only" . quickrun/helm-compile-only)
+    ("Run with shell" . quickrun/helm-action-shell)
+    ("Run with argument" . quickrun/helm-run-with-arg)
+    ("Replace region" . quickrun/helm-action-replace-region)
+    ("Eval and insert as comment" . quickrun/helm-action-eval-print)))
+
 (defvar helm-quickrun-source
-  '((name . "Choose Command-Key")
+  `((name . "Choose Command-Key")
     (volatile)
     (candidates . (lambda ()
                     (cl-loop for (cmd-key . cmd-info) in quickrun/language-alist
                              collect (quickrun/helm-candidate cmd-key cmd-info))))
-    (action . (("Run this cmd-key" . quickrun/helm-action-default)
-               ("Compile only" . quickrun/helm-compile-only)
-               ("Run with shell" . quickrun/helm-action-shell)
-               ("Run with argument" . quickrun/helm-run-with-arg)
-               ("Replace region" . quickrun/helm-action-replace-region))))
+    (action . ,helm-quickrun--actions))
   "helm/anything source of `quickrun'")
 
 (defvar quickrun--helm-history nil)
 
 (defvar helm-quickrun-history-source
-  '((name . "Helm Quickrun History")
+  `((name . "Helm Quickrun History")
     (volatile)
     (candidates . quickrun--helm-history)
-    (action . (("Run this cmd-key" . quickrun/helm-action-default)
-               ("Compile only" . quickrun/helm-compile-only)
-               ("Run with shell" . quickrun/helm-action-shell)
-               ("Run with argument" . quickrun/helm-run-with-arg)
-               ("Replace region" . quickrun/helm-action-replace-region))))
+    (action . ,helm-quickrun--actions))
   "helm source of `quickrun' history")
 
 (defun quickrun/helm-candidate (cmd-key cmd-info)
@@ -1277,6 +1300,11 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-replace-region (region-beginning) (region-end))))
 
+(defun quickrun/helm-action-eval-print (cmd-key)
+  (add-to-list 'quickrun--helm-history cmd-key)
+  (let ((quickrun-option-cmdkey cmd-key))
+    (quickrun-eval-print (region-beginning) (region-end))))
+
 ;;;###autoload
 (defun anything-quickrun ()
   (interactive)
@@ -1289,11 +1317,10 @@ by quickrun.el. But you can register your own command for some languages")
   (interactive)
   (unless (featurep 'helm)
     (error "helm is not installed."))
-  (let ((buf (get-buffer-create "*helm quickrun*"))
-        (sources (if quickrun--helm-history
+  (let ((sources (if quickrun--helm-history
                      '(helm-quickrun-history-source helm-quickrun-source)
                    '(helm-quickrun-source))))
-    (helm :sources sources :buffer buf)))
+    (helm :sources sources :buffer "*helm quickrun*")))
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
