@@ -719,7 +719,8 @@ if you set your own language configuration.
     ))
 
 (defun quickrun/default-outputter ()
-  (ansi-color-apply-on-region (point-min) (point-max)))
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (recenter -1))
 
 (defun quickrun/outputter-multi-p (outputter)
   (and (not (functionp outputter)) (listp outputter)
