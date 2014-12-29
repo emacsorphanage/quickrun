@@ -1,5 +1,9 @@
 Revision history for quickrun.el
 
+Version 2.2.1 2014/10/16 tmalsburg
+  - Fix #41
+    Improve for users which set scroll-step other than 0.
+
 Version 2.2.0 2014/10/16 tmalsburg
   - Drop Emacs 23 support
 
