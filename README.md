@@ -111,7 +111,7 @@ as default. But you can register your own command and apply other languages.
 * Erlang(escript)
 * OCaml(ocamlc)
 * F#(fsharpc)
-* ShellScript(sheban's shell)
+* ShellScript(shebang's shell)
 * AWK(awk)
 * Rust(rustc)
 * Dart(dart)
