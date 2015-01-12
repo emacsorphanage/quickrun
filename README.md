@@ -24,7 +24,7 @@ Or install directly:
 
 ```
 $ cd load-path-dir
-$ wget https://raw.github.com/syohex/emacs-quickrun/master/quickrun.el
+$ wget https://raw.githubusercontent.com/syohex/emacs-quickrun/master/quickrun.el
 ```
 
 After Installation add following to your configuration file(~/.emacs.d/init.el, ~/.emacs etc)
