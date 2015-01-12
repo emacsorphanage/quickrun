@@ -1,9 +1,8 @@
-;;; test-quickrun.el ---
+;;; test-quickrun.el --- test for quickrun
 
-;; Copyright (C) 2012 by Syohei YOSHIDA
+;; Copyright (C) 2015 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; URL:
 ;; Version: 0.01
 
 ;; This program is free software; you can redistribute it and/or modify
