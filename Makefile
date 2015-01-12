@@ -8,7 +8,7 @@ ELPA_DIR = \
 
 test: elpa
 	$(CASK) exec $(EMACS) -Q -batch $(LOADPATH) \
-		-l test-quickrun.el \
+		-l test/test-quickrun.el \
 		-f ert-run-tests-batch-and-exit
 
 elpa: $(ELPA_DIR)
