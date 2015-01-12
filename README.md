@@ -18,7 +18,7 @@ compiling languages(C, C++, Go, Java etc) and markup language.
 
 ## Installation
 
-You can install `quickrun.el` from [MELPA](http://melpa.milkbox.net/) with package.el.
+You can install `quickrun.el` from [MELPA](http://melpa.org/) with package.el.
 
 Or install directly:
 
