@@ -5,7 +5,7 @@
 /*
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
-                        (:exec    . ("%c -std=c++0x %o -o %n %s"
+                        (:exec    . ("%c -std=c++11 %o -o %n %s"
                                      "%n %a"))
                         (:remove  . ("%n")))
                       :default "c++")

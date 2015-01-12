@@ -141,7 +141,7 @@ You can add your own command or override existsing command  by `quickrun-add-com
 ;; Use this parameter as C++ default
 (quickrun-add-command "c++/c11"
                       '((:command . "g++")
-                        (:exec    . ("%c -std=c++0x %o -o %e %s"
+                        (:exec    . ("%c -std=c++11 %o -o %e %s"
                                      "%e %a"))
                         (:remove  . ("%e")))
                       :default "c++")
@@ -154,7 +154,7 @@ You can add your own command or override existsing command  by `quickrun-add-com
 
 ;; You can override existing command
 (quickrun-add-command "c/gcc"
-                      '((:exec . ("%c -std=c++0x %o -o %e %s"
+                      '((:exec . ("%c -std=c++11 %o -o %e %s"
                                   "%e %a")))
                        :override t)
 ```

@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
 /*
   Local Variables:
   quickrun-option-cmd-alist: ((:command . "g++")
-                              (:exec    . ("%c -std=c++0x -o %n %s"
+                              (:exec    . ("%c -std=c++11 -o %n %s"
                                            "%n apple orange melon"))
                               (:outputter .
                                 (lambda ()
