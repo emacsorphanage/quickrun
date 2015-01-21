@@ -215,6 +215,11 @@ Please see Outputter section.
 
 Directory where commands are executed.
 
+#### `:tempfile`
+
+Use temporary file or not. `quickrun.el` uses temporary file
+if you omit this parameter.
+
 #### `:description`
 
 Description of this command. This parameter is used in
