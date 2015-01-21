@@ -841,8 +841,8 @@ if you set your own language configuration.
                      (message "Failed: Exit Status=%d" exit-status))
                  (quickrun/apply-outputter outputter-func)
                  (run-hooks 'quickrun-after-run-hook))
-               (when (> scroll-conservatively 0)
-                 (recenter))
+               (cond ((> scroll-conservatively 0) (recenter))
+                     ((/= scroll-step 0) (recenter -1)))
                (quickrun/remove-temp-files)))))))
 
 ;;
