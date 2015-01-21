@@ -58,4 +58,19 @@
          (command (assoc-default :command params)))
     (should (string= command "clang"))))
 
+(ert-deftest quickrun:use-tempfile-p ()
+  "Whether use temporary file or not."
+  (quickrun-add-command "tempfile0" '((:command . "tempfile0") (:tempfile . t)))
+  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile0")))
+    (should use-tempfile))
+
+  (quickrun-add-command "tempfile1" '((:command . "tempfile1") (:tempfile . nil)))
+  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile1")))
+    (should-not use-tempfile))
+
+  ;; use temporary file if :tempfile paramter is not specified
+  (quickrun-add-command "tempfile2" '((:command . "tempfile2")))
+  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile2")))
+    (should use-tempfile)))
+
 ;;; test-quickrun.el ends here

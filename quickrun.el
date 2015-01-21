@@ -221,6 +221,7 @@
                (:compile-only . "javac -Werror %o %s")
                (:exec    . ("javac %o %s" "%c %N %a"))
                (:remove  . ("%n.class"))
+               (:tempfile . nil)
                (:description . "Compile Java file and execute")))
 
     ("perl" . ((:command . "perl") (:compile-only . "%c -wc %s")
@@ -311,6 +312,7 @@
                                      "%c test %o"
                                    "%c run %o %s %a"))))
                   (:compile-only . "%c build -o /dev/null %s %o %a")
+                  (:tempfile . nil)
                   (:description . "Compile go file and execute with 'go'")))
     ("go/gccgo"  .  ((:command . "gccgo")
                      (:exec    . ("%c -static-libgcc %o -o %e %s"
@@ -1199,11 +1201,15 @@ by quickrun.el. But you can register your own command for some languages")
     (with-current-buffer (get-buffer-create quickrun/buffer-name)
       (setq quickrun-option-default-directory default-dir))))
 
-(defsubst quickrun/use-tempfile-p (cmd-key)
+(defun quickrun/use-tempfile-p (cmd-key)
   (let ((buffile (buffer-file-name)))
-    (not (or (member cmd-key '("java" "go/go"))
-             quickrun/compile-only-flag
-             (and buffile (file-remote-p buffile))))))
+    (if (or quickrun/compile-only-flag (and buffile (file-remote-p buffile)))
+        t
+      (let* ((cmdinfo (quickrun/command-info cmd-key))
+             (tempfile-param (assoc :tempfile cmdinfo)))
+        (if tempfile-param
+            (cdr tempfile-param)
+          t)))))
 
 (defun quickrun/common (start end)
   (let* ((orig-src quickrun/executed-file)
