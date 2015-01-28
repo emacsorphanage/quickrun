@@ -1203,8 +1203,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun/use-tempfile-p (cmd-key)
   (let ((buffile (buffer-file-name)))
-    (if (or quickrun/compile-only-flag (and buffile (file-remote-p buffile)))
-        t
+    (unless (or quickrun/compile-only-flag (and buffile (file-remote-p buffile)))
       (let* ((cmdinfo (quickrun/command-info cmd-key))
              (tempfile-param (assoc :tempfile cmdinfo)))
         (if tempfile-param
