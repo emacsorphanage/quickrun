@@ -28,13 +28,14 @@
 (ert-deftest quickrun:exec-quickrun ()
   "Exec `quickrun'"
   (let ((buf (find-file-noselect "sample/sample.py")))
-   (with-current-buffer buf
-     (quickrun))
-   ;; quickrun is async function
-   (sleep-for 1)
-   (with-current-buffer "*quickrun*"
-     (let ((str (buffer-substring-no-properties (point-min) (point-max))))
-       (should (string= "Hello Python quickrun.el\n" str))))))
+    (with-current-buffer buf
+      (quickrun))
+    ;; quickrun is async function
+    (sleep-for 1)
+    (with-current-buffer "*quickrun*"
+      (let ((str (buffer-substring-no-properties (point-min) (point-max))))
+        (should (string= "Hello Python quickrun.el\n" str))))
+    (sleep-for 1)))
 
 (ert-deftest quickrun:add-command ()
   "Add new command"
