@@ -1,10 +1,14 @@
 Revision history for quickrun.el
 
-Version 2.2.1 2014/10/16 tmalsburg
+Version 2.2.2 2015/01/29 syohex
+  - Add parameter for whether using temporary file
+  - Fix scrolling issue
+
+Version 2.2.1 2014/10/16 syohex
   - Fix #41
     Improve for users which set scroll-step other than 0.
 
-Version 2.2.0 2014/10/16 tmalsburg
+Version 2.2.0 2014/10/16 syohex
   - Drop Emacs 23 support
 
 Version 2.1.1 2014/10/16 tmalsburg
