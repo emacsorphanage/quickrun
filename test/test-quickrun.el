@@ -71,6 +71,10 @@
   ;; use temporary file if :tempfile paramter is not specified
   (quickrun-add-command "tempfile2" '((:command . "tempfile2")))
   (let ((use-tempfile (quickrun/use-tempfile-p "tempfile2")))
-    (should use-tempfile)))
+    (should use-tempfile))
+
+  (let* ((quickrun/compile-only-flag t)
+         (use-tempfile (quickrun/use-tempfile-p "hoge")))
+    (should-not use-tempfile)))
 
 ;;; test-quickrun.el ends here
