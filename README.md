@@ -220,6 +220,8 @@ Directory where commands are executed.
 Use temporary file or not. `quickrun.el` uses temporary file
 if you omit this parameter.
 
+NOTE: If you set this parameter, you cannot use `quickrun-region`.
+
 #### `:description`
 
 Description of this command. This parameter is used in
