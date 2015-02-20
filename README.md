@@ -410,7 +410,7 @@ Sample is following:
                         (:exec . ("%c -bv --color %s"))))))
 ```
 
-[travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.png
+[travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.svg
 [travis-link]: https://travis-ci.org/syohex/emacs-quickrun
 [melpa-link]: http://melpa.org/#/quickrun
 [melpa-stable-link]: http://stable.melpa.org/#/quickrun
