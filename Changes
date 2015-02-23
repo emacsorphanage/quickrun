@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.2.3 2015/01/29 syohex
+  - Support nim programming language
+
 Version 2.2.2 2015/01/29 syohex
   - Add parameter for whether using temporary file
   - Fix scrolling issue
