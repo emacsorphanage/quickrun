@@ -857,12 +857,13 @@ if you set your own language configuration.
 ;; Composing command
 ;;
 (defconst quickrun/template-place-holders
-  '("%c" "%o" "%s" "%a" "%d" "%n" "%N" "%e" "%E")
+  '("%c" "%o" "%s" "%S" "%a" "%d" "%n" "%N" "%e" "%E")
   "A list of place holders of each language parameter.
 Place holders are beginning with '%' and replaced by:
 %c: :command parameter
 %o: command options
 %s: source code
+%S: source code without extension
 %a: program argument
 %d: directory name
 %n: absolute path of source code without extension
@@ -892,6 +893,7 @@ Place holders are beginning with '%' and replaced by:
     `(("%c" . ,cmd)
       ("%o" . ,cmdopt)
       ("%s" . ,(file-name-nondirectory src))
+      ("%S" . ,(file-name-nondirectory without-extension))
       ("%n" . ,(expand-file-name without-extension))
       ("%N" . ,without-extension)
       ("%d" . ,directory)
