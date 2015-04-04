@@ -862,12 +862,12 @@ if you set your own language configuration.
 Place holders are beginning with '%' and replaced by:
 %c: :command parameter
 %o: command options
-%s: source code
-%S: source code without extension
+%s: source code name
+%S: source code name without extension
 %a: program argument
 %d: directory name
 %n: absolute path of source code without extension
-%N: source code name without extension
+%N: source code path without extension
 %e: absolute path of source code with executable extension(.exe, .out, .class)
 %E: source code name with executable extension
 ")
