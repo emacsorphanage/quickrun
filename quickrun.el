@@ -391,7 +391,7 @@
 
     ("nim" . ((:command . "nim")
               (:exec . "%c compile --run --verbosity:0 %s")
-              (:remove . ("nimcache" "%n"))
+              (:remove . ("%n" "nimcache/%S.c" "nimcache/%S.o"))
               (:description . "Run nim script"))))
 
   "List of each programming languages information.
