@@ -57,6 +57,11 @@
   :type 'integer
   :group 'quickrun)
 
+(defcustom quickrun-pop-to-buffer-p t
+  "Whether to pop to a quickrun buffer."
+  :type 'boolean
+  :group 'quickrun)
+
 (defcustom quickrun-input-file-extension ".qrinput"
   "Extension of input file name"
   :type '(choice (string :tag "Extension of quickrun input file")
@@ -545,7 +550,7 @@ if you set your own language configuration.
              (goto-char (point-min))
              (quickrun/awhen (assoc-default :mode compile-conf)
                (funcall it)
-               (pop-to-buffer (current-buffer))
+               (display-buffer (current-buffer))
                (setq buffer-read-only t)))
            (quickrun/remove-temp-files)))))
 
@@ -671,10 +676,10 @@ if you set your own language configuration.
     (with-current-buffer buf
       (insert (format "\nTime out %s(running over %d second)"
                       (process-name process)
-                      quickrun-timeout-seconds)))
-    (quickrun/remove-temp-files)
-    (pop-to-buffer buf)
-    (setq buffer-read-only t)))
+                      quickrun-timeout-seconds))
+      (display-buffer buf)
+      (setq buffer-read-only t))
+    (quickrun/remove-temp-files)))
 
 (defun quickrun/remove-temp-files ()
   (quickrun/log "Quickrun remove %s" quickrun/remove-files)
@@ -686,8 +691,11 @@ if you set your own language configuration.
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name)))
-    (pop-to-buffer buf)
-    (quickrun/mode)))
+    (with-current-buffer buf
+      (quickrun/mode)
+      (if quickrun-pop-to-buffer-p
+          (pop-to-buffer (current-buffer))
+        (display-buffer (current-buffer))))))
 
 (defun quickrun/kill-running-process ()
   (interactive)
