@@ -57,8 +57,8 @@
   :type 'integer
   :group 'quickrun)
 
-(defcustom quickrun-pop-to-buffer-p t
-  "Whether to pop to a quickrun buffer."
+(defcustom quickrun-focus-p t
+  "If this value is `nil`, quickrun.el does not move focus to output buffer."
   :type 'boolean
   :group 'quickrun)
 
@@ -538,7 +538,7 @@ if you set your own language configuration.
         (cdr compilation-mode)))))
 
 (defun quickrun/pop-to-buffer (buf cb)
-  (if quickrun-pop-to-buffer-p
+  (if quickrun-focus-p
       (progn
         (pop-to-buffer buf)
         (funcall cb))
