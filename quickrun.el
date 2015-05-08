@@ -57,6 +57,11 @@
   :type 'integer
   :group 'quickrun)
 
+(defcustom quickrun-pop-to-buffer-p t
+  "Whether to pop to a quickrun buffer."
+  :type 'boolean
+  :group 'quickrun)
+
 (defcustom quickrun-input-file-extension ".qrinput"
   "Extension of input file name"
   :type '(choice (string :tag "Extension of quickrun input file")
@@ -532,6 +537,15 @@ if you set your own language configuration.
           t
         (cdr compilation-mode)))))
 
+(defun quickrun/pop-to-buffer (buf cb)
+  (if quickrun-pop-to-buffer-p
+      (progn
+        (pop-to-buffer buf)
+        (funcall cb))
+    (save-selected-window
+      (pop-to-buffer buf)
+      (funcall cb))))
+
 (defun quickrun/compilation-start (cmd compile-conf)
   (let ((use-compile (quickrun/check-using-compilation-mode compile-conf)))
     (cond (use-compile
@@ -545,7 +559,8 @@ if you set your own language configuration.
              (goto-char (point-min))
              (quickrun/awhen (assoc-default :mode compile-conf)
                (funcall it)
-               (pop-to-buffer (current-buffer))
+               (quickrun/pop-to-buffer
+                (current-buffer) (lambda () (setq buffer-read-only t)))
                (setq buffer-read-only t)))
            (quickrun/remove-temp-files)))))
 
@@ -673,8 +688,7 @@ if you set your own language configuration.
                       (process-name process)
                       quickrun-timeout-seconds)))
     (quickrun/remove-temp-files)
-    (pop-to-buffer buf)
-    (setq buffer-read-only t)))
+    (quickrun/pop-to-buffer buf (lambda () (setq buffer-read-only t)))))
 
 (defun quickrun/remove-temp-files ()
   (quickrun/log "Quickrun remove %s" quickrun/remove-files)
@@ -686,8 +700,7 @@ if you set your own language configuration.
 
 (defun quickrun/popup-output-buffer ()
   (let ((buf (get-buffer quickrun/buffer-name)))
-    (pop-to-buffer buf)
-    (quickrun/mode)))
+    (quickrun/pop-to-buffer buf 'quickrun/mode)))
 
 (defun quickrun/kill-running-process ()
   (interactive)
@@ -728,9 +741,13 @@ if you set your own language configuration.
     ("^variable:" . quickrun/outputter-variable)
     ))
 
+(defun quickrun/recenter (arg)
+  (with-selected-window (get-buffer-window quickrun/buffer-name)
+    (recenter arg)))
+
 (defun quickrun/default-outputter ()
   (ansi-color-apply-on-region (point-min) (point-max))
-  (recenter -1))
+  (quickrun/recenter -1))
 
 (defun quickrun/outputter-multi-p (outputter)
   (and (not (functionp outputter)) (listp outputter)
@@ -824,12 +841,13 @@ if you set your own language configuration.
   (compilation-mode mode))
 
 (defun quickrun/apply-colorizing (input-file mode)
-  (setq buffer-read-only nil)
-  (when (and quickrun/executed-file input-file)
-    (quickrun/apply-compilation-mode input-file mode))
-  (quickrun/default-outputter)
-  (goto-char (point-min))
-  (setq buffer-read-only t))
+  (with-current-buffer (get-buffer quickrun/buffer-name)
+    (setq buffer-read-only nil)
+    (when (and quickrun/executed-file input-file)
+      (quickrun/apply-compilation-mode input-file mode))
+    (quickrun/default-outputter)
+    (goto-char (point-min))
+    (setq buffer-read-only t)))
 
 (defun quickrun/make-sentinel (rest-commands outputter-func input orig-mode)
   (lambda (process _event)
@@ -849,8 +867,8 @@ if you set your own language configuration.
                      (message "Failed: Exit Status=%d" exit-status))
                  (quickrun/apply-outputter outputter-func)
                  (run-hooks 'quickrun-after-run-hook))
-               (cond ((> scroll-conservatively 0) (recenter))
-                     ((/= scroll-step 0) (recenter -1)))
+               (cond ((> scroll-conservatively 0) (quickrun/recenter nil))
+                     ((/= scroll-step 0) (quickrun/recenter -1)))
                (quickrun/remove-temp-files)))))))
 
 ;;
