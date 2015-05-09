@@ -33,47 +33,6 @@ After Installation add following to your configuration file(~/.emacs.d/init.el, 
 (require 'quickrun)
 ```
 
-
-## Basic Usage
-
-#### `quickrun`
-
-Execute current buffer. If `quickrun.el` does not find command-key,
-then `quickrun.el` asks you command-key(You always input command
-if you use `C-u` prefix key)
-
-#### `quickrun-region`
-
-Execute region. (Java is not supported)
-
-#### `quickrun-with-arg`
-
-Execute current buffer with arguments.
-`quickrun.el` asks you command line argument
-
-#### `quickrun-shell`
-
-Execute current buffer in eshell for interactive command such as program
-which reads input from STDIN.
-
-#### `quickrun-compile-only`
-
-Compile current buffer with compile.el framework, not execute.
-quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
-
-#### `quickrun-replace-region`
-
-Replace region of code with its output.
-
-#### `helm-quickrun`
-
-`M-x quickrun` with helm interface
-
-#### `anything-quickrun`
-
-`M-x quickrun` with anything interface
-
-
 ## Support Programming Languages
 
 `quickrun.el` supports following programming languages and markup languages
@@ -126,11 +85,57 @@ as default. But you can register your own command and apply other languages.
 See also `quickrun/support-languages` global variable.
 
 
+## Basic Usage
+
+#### `quickrun`
+
+Execute current buffer. If `quickrun.el` does not find command-key,
+then `quickrun.el` asks you command-key(You always input command
+if you use `C-u` prefix key)
+
+#### `quickrun-region`
+
+Execute region. (Java is not supported)
+
+#### `quickrun-with-arg`
+
+Execute current buffer with arguments.
+`quickrun.el` asks you command line argument
+
+#### `quickrun-shell`
+
+Execute current buffer in eshell for interactive command such as program
+which reads input from STDIN.
+
+#### `quickrun-compile-only`
+
+Compile current buffer with compile.el framework, not execute.
+quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
+
+#### `quickrun-replace-region`
+
+Replace region of code with its output.
+
+#### `helm-quickrun`
+
+`M-x quickrun` with helm interface
+
+#### `anything-quickrun`
+
+`M-x quickrun` with anything interface
+
+
 ## Send File to STDIN
 
 If `executed_file.qrinput`(like `foo.c.qrinput`) is existed in directory same as executed
 buffer file, `quickrun.el` sends its content to stdin of executed program. Please set
 `quickrun-input-file-extension` to `nil` If you want to disable this feature.
+
+## Customize
+
+### `quickrun-focus-p`(Default: `t`)
+
+If this value is `nil`, quickrun.el does not move focus to output buffer.
 
 
 ## User Defined Command
