@@ -1305,8 +1305,13 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((description (or (assoc-default :description cmd-info) "")))
     (cons (format "%-25s %s" cmd-key description) cmd-key)))
 
+(defun quickrun/helm-update-history (cmd-key)
+  (setq quickrun--helm-history
+        (cons cmd-key
+              (delete cmd-key quickrun--helm-history))))
+
 (defun quickrun/helm-action-default (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key)
         start end)
     (if (use-region-p)
@@ -1315,27 +1320,27 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun-region start end)))
 
 (defun quickrun/helm-run-with-arg (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (call-interactively 'quickrun-with-arg)))
 
 (defun quickrun/helm-action-shell (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-shell)))
 
 (defun quickrun/helm-compile-only (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-compile-only)))
 
 (defun quickrun/helm-action-replace-region (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-replace-region (region-beginning) (region-end))))
 
 (defun quickrun/helm-action-eval-print (cmd-key)
-  (add-to-list 'quickrun--helm-history cmd-key)
+  (quickrun/helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-eval-print (region-beginning) (region-end))))
 
