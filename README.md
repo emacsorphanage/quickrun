@@ -116,6 +116,10 @@ quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
 
 Replace region of code with its output.
 
+### `quickrun-autorun-mode`
+
+Minor mode which executes `quickrun` after saving buffer.
+
 #### `helm-quickrun`
 
 `M-x quickrun` with helm interface
