@@ -1271,6 +1271,21 @@ by quickrun.el. But you can register your own command for some languages")
                (unless (quickrun/defined-outputter-p quickrun-option-outputter)
                  (quickrun/popup-output-buffer))))))))
 
+(defun quickrun--without-focus ()
+  (let ((quickrun-focus-p nil))
+    (quickrun)))
+
+;;;###autoload
+(define-minor-mode quickrun-autorun-mode
+  "`quickrun' after saving buffer"
+  :group 'quickrun
+  :init-value nil
+  :global nil
+  :lighter " QAR"
+  (if quickrun-autorun-mode
+      (add-hook 'after-save-hook 'quickrun--without-focus nil t)
+    (remove-hook 'after-save-hook 'quickrun--without-focus t)))
+
 ;;
 ;; helm/anything interface
 ;;
