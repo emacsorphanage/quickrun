@@ -1,5 +1,12 @@
 Revision history for quickrun.el
 
+Version 2.2.4 2015/07/10 syohex
+  - Fix quickrun shell behavior
+  - Implement autorun mode(#54)
+  - Improve helm-quickrun history
+  - Add option for focusing popup buffer
+  - Add format place folder '%S'
+
 Version 2.2.3 2015/01/29 syohex
   - Support nim programming language
 
