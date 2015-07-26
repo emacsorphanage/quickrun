@@ -867,8 +867,9 @@ if you set your own language configuration.
                      (message "Failed: Exit Status=%d" exit-status))
                  (quickrun/apply-outputter outputter-func)
                  (run-hooks 'quickrun-after-run-hook))
-               (cond ((> scroll-conservatively 0) (quickrun/recenter nil))
-                     ((/= scroll-step 0) (quickrun/recenter -1)))
+               (when (eq outputter-func 'quickrun/default-outputter)
+                 (cond ((> scroll-conservatively 0) (quickrun/recenter nil))
+                       ((/= scroll-step 0) (quickrun/recenter -1))))
                (quickrun/remove-temp-files)))))))
 
 ;;
