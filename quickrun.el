@@ -612,12 +612,25 @@ if you set your own language configuration.
 
 (defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
 (defvar quickrun/shell-last-command)
+(defvar quickrun/eshell-killed-p nil)
+
+(defadvice eshell-kill-process-function (before set-state activate)
+  (unless (string-match-p "finished" (ad-get-arg 1))
+    (set (make-local-variable 'quickrun/eshell-killed-p) t)))
+
+(defun quickrun/eshell-restore ()
+  (kill-buffer (get-buffer quickrun/eshell-buffer-name))
+  (jump-to-register :quickrun-shell))
+
+(defun quickrun/eshell-kill-hook (_proc _status)
+  (quickrun/eshell-restore))
 
 (defun quickrun/eshell-finish ()
   (quickrun/remove-temp-files)
   (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-  (kill-buffer (get-buffer quickrun/eshell-buffer-name))
-  (jump-to-register :quickrun-shell))
+  (if quickrun/eshell-killed-p
+      (add-hook 'eshell-kill-hook 'quickrun/eshell-kill-hook t t)
+    (quickrun/eshell-restore)))
 
 (defun quickrun/eshell-post-hook ()
   (let ((rerun-p nil)
@@ -629,7 +642,8 @@ if you set your own language configuration.
               (quickrun/insert-command quickrun/shell-last-command)
               (setq rerun-p t))))
       (unless rerun-p
-        (quickrun/eshell-finish)))))
+        (quickrun/eshell-finish))
+      (setq quickrun/eshell-killed-p nil))))
 
 (defun quickrun/insert-command (cmd-str)
   (goto-char (point-max))
