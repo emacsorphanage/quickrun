@@ -612,25 +612,10 @@ if you set your own language configuration.
 
 (defvar quickrun/eshell-buffer-name "*eshell-quickrun*")
 (defvar quickrun/shell-last-command)
-(defvar quickrun/eshell-killed-p nil)
-
-(defadvice eshell-kill-process-function (before set-state activate)
-  (unless (string-match-p "finished" (ad-get-arg 1))
-    (set (make-local-variable 'quickrun/eshell-killed-p) t)))
-
-(defun quickrun/eshell-restore ()
-  (kill-buffer (get-buffer quickrun/eshell-buffer-name))
-  (jump-to-register :quickrun-shell))
-
-(defun quickrun/eshell-kill-hook (_proc _status)
-  (quickrun/eshell-restore))
 
 (defun quickrun/eshell-finish ()
   (quickrun/remove-temp-files)
-  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-  (if quickrun/eshell-killed-p
-      (add-hook 'eshell-kill-hook 'quickrun/eshell-kill-hook t t)
-    (quickrun/eshell-restore)))
+  (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
 
 (defun quickrun/eshell-post-hook ()
   (let ((rerun-p nil)
@@ -642,8 +627,7 @@ if you set your own language configuration.
               (quickrun/insert-command quickrun/shell-last-command)
               (setq rerun-p t))))
       (unless rerun-p
-        (quickrun/eshell-finish))
-      (setq quickrun/eshell-killed-p nil))))
+        (quickrun/eshell-finish)))))
 
 (defun quickrun/insert-command (cmd-str)
   (goto-char (point-max))
@@ -652,12 +636,14 @@ if you set your own language configuration.
   (eshell-send-input))
 
 (defun quickrun/send-to-shell (cmd-lst)
-  (window-configuration-to-register :quickrun-shell)
   (let ((buf (get-buffer quickrun/buffer-name)))
     (pop-to-buffer buf)
     (let ((cmd-str (quickrun/concat-commands cmd-lst))
+          (eshell-buf (get-buffer quickrun/eshell-buffer-name))
           (eshell-buffer-name quickrun/eshell-buffer-name)
           (eshell-banner-message ""))
+      (when eshell-buf
+        (kill-buffer eshell-buf))
       (eshell)
       (kill-buffer quickrun/buffer-name)
       (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
