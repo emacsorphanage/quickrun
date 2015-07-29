@@ -617,6 +617,10 @@ if you set your own language configuration.
   (quickrun/remove-temp-files)
   (remove-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook))
 
+(defun quickrun/eshell-window-restore ()
+  (interactive)
+  (jump-to-register :quickrun-shell))
+
 (defun quickrun/eshell-post-hook ()
   (let ((rerun-p nil)
         (prompt "Press 'r' to run again, any other key to finish"))
@@ -627,7 +631,9 @@ if you set your own language configuration.
               (quickrun/insert-command quickrun/shell-last-command)
               (setq rerun-p t))))
       (unless rerun-p
-        (quickrun/eshell-finish)))))
+        (quickrun/eshell-finish)
+        (setq buffer-read-only t)
+        (local-set-key (kbd "q") 'quickrun/eshell-window-restore)))))
 
 (defun quickrun/insert-command (cmd-str)
   (goto-char (point-max))
@@ -636,6 +642,7 @@ if you set your own language configuration.
   (eshell-send-input))
 
 (defun quickrun/send-to-shell (cmd-lst)
+  (window-configuration-to-register :quickrun-shell)
   (let ((buf (get-buffer quickrun/buffer-name)))
     (pop-to-buffer buf)
     (let ((cmd-str (quickrun/concat-commands cmd-lst))
