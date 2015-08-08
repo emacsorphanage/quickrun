@@ -1,5 +1,10 @@
 Revision history for quickrun.el
 
+Version 2.2.5 2015/08/08 syohex
+  - Support fish script
+  - Improve quickrun-shell behavior(#62, #63)
+  - Fix recentering issue(#61)
+
 Version 2.2.4 2015/07/10 syohex
   - Fix quickrun shell behavior
   - Implement autorun mode(#54)
