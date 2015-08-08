@@ -397,7 +397,10 @@
     ("nim" . ((:command . "nim")
               (:exec . "%c compile --run --verbosity:0 %s")
               (:remove . ("nimcache" "%n"))
-              (:description . "Run nim script"))))
+              (:description . "Run nim script")))
+
+    ("fish" . ((:command . "fish")
+               (:description . "Run fish script"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -461,7 +464,8 @@ if you set your own language configuration.
     ("\\.swift\\'" . "swift")
     ("\\.dats\\'" . "ats")
     ("\\.\\(r\\|R\\)\\'" . "r")
-    ("\\.nim\\'". "nim"))
+    ("\\.nim\\'". "nim")
+    ("\\.fish\\'" . "fish"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -506,7 +510,8 @@ if you set your own language configuration.
     (swift-mode . "swift")
     (ats-mode . "ats")
     (ess-mode . "r")
-    (nim-mode . "nim"))
+    (nim-mode . "nim")
+    (fish-mode . "fish"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -1006,7 +1011,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim")
+    "swift" "ats" "r" "nim" "fish")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
