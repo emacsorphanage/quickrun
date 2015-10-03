@@ -29,7 +29,7 @@ $ wget https://raw.githubusercontent.com/syohex/emacs-quickrun/master/quickrun.e
 
 After Installation add following to your configuration file(~/.emacs.d/init.el, ~/.emacs etc)
 
-```elisp
+```lisp
 (require 'quickrun)
 ```
 
@@ -421,7 +421,7 @@ Sample is following:
 
 [travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.svg
 [travis-link]: https://travis-ci.org/syohex/emacs-quickrun
-[melpa-link]: http://melpa.org/#/quickrun
-[melpa-stable-link]: http://stable.melpa.org/#/quickrun
-[melpa-badge]: http://melpa.org/packages/quickrun-badge.svg
-[melpa-stable-badge]: http://stable.melpa.org/packages/quickrun-badge.svg
+[melpa-link]: https://melpa.org/#/quickrun
+[melpa-stable-link]: https://stable.melpa.org/#/quickrun
+[melpa-badge]: https://melpa.org/packages/quickrun-badge.svg
+[melpa-stable-badge]: https://stable.melpa.org/packages/quickrun-badge.svg
