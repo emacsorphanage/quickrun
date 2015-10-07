@@ -1,5 +1,8 @@
 Revision history for quickrun.el
 
+Version 2.2.6 2015/08/08 syohex
+  - Support perl6
+
 Version 2.2.5 2015/08/08 syohex
   - Support fish script
   - Improve quickrun-shell behavior(#62, #63)
