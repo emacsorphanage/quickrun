@@ -47,6 +47,7 @@ as default. But you can register your own command and apply other languages.
 * Fortran(gfortran)
 * Java(javac and java)
 * Perl(perl)
+* Perl6(perl6)
 * Ruby(ruby or mruby)
 * Python(python)
 * PHP(php)
