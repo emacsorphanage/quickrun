@@ -149,9 +149,9 @@ You can add your own command or override existsing command  by `quickrun-add-com
 
 ```lisp
 ;; Use this parameter as C++ default
-(quickrun-add-command "c++/c11"
+(quickrun-add-command "c++/c1z"
                       '((:command . "g++")
-                        (:exec    . ("%c -std=c++11 %o -o %e %s"
+                        (:exec    . ("%c -std=c++1z %o -o %e %s"
                                      "%e %a"))
                         (:remove  . ("%e")))
                       :default "c++")
@@ -164,7 +164,7 @@ You can add your own command or override existsing command  by `quickrun-add-com
 
 ;; You can override existing command
 (quickrun-add-command "c/gcc"
-                      '((:exec . ("%c -std=c++11 %o -o %e %s"
+                      '((:exec . ("%c -std=c++1z %o -o %e %s"
                                   "%e %a")))
                        :override t)
 ```
