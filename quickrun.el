@@ -231,6 +231,8 @@
 
     ("perl" . ((:command . "perl") (:compile-only . "%c -wc %s")
                (:description . "Run Perl script")))
+    ("perl6" . ((:command . "perl6") (:compile-only . "%c -c %s")
+                (:description . "Run Perl6 script")))
     ("ruby/ruby" . ((:command . "ruby") (:compile-only . "%c -wc %s")
                     (:description . "Run Ruby script")))
     ("ruby/mruby" . ((:command . "mruby")
@@ -428,6 +430,7 @@ if you set your own language configuration.
     ("\\.m\\'" . "objc")
     ("\\.cs\\'" . "c#")
     ("\\.\\(pl\\|pm\\)\\'" . "perl")
+    ("\\.p[ml]?6\\'" . "perl6")
     ("\\.rb\\'" . "ruby")
     ("\\.py\\'" . "python")
     ("\\.php\\'" . "php")
@@ -474,6 +477,7 @@ if you set your own language configuration.
     (objc-mode . "objc")
     (csharp-mode . "c#")
     ((perl-mode cperl-mode) . "perl")
+    (perl6-mode . "perl6")
     (ruby-mode . "ruby")
     (python-mode . "python")
     (php-mode . "php")
@@ -1007,7 +1011,7 @@ Place holders are beginning with '%' and replaced by:
 ;;
 
 (defconst quickrun/support-languages
-  '("c" "c++" "objc" "c#" "perl" "ruby" "python" "php" "emacs" "lisp" "scheme"
+  '("c" "c++" "objc" "c#" "perl" "perl6" "ruby" "python" "php" "emacs" "lisp" "scheme"
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
