@@ -45,6 +45,7 @@
 ;; for warnings of byte-compile
 (declare-function anything "anything")
 (declare-function helm "helm")
+(declare-function helm-build-sync-source "helm")
 (declare-function tramp-dissect-file-name "tramp")
 
 (defgroup quickrun nil
@@ -1331,13 +1332,6 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defvar quickrun--helm-history nil)
 
-(defvar helm-quickrun-history-source
-  `((name . "Helm Quickrun History")
-    (volatile)
-    (candidates . quickrun--helm-history)
-    (action . ,helm-quickrun--actions))
-  "helm source of `quickrun' history")
-
 (defun quickrun/helm-candidate (cmd-key cmd-info)
   (let ((description (or (assoc-default :description cmd-info) "")))
     (cons (format "%-25s %s" cmd-key description) cmd-key)))
@@ -1381,12 +1375,31 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-eval-print (region-beginning) (region-end))))
 
+(defun quickrun/helm-candidates ()
+  (cl-loop for (cmd-key . cmd-info) in quickrun/language-alist
+           collect (quickrun/helm-candidate cmd-key cmd-info)))
+
+(defvar helm-quickrun-source
+  (helm-build-sync-source "Choose Command-Key"
+    :volatile t
+    :candidates 'quickrun/helm-candidates
+    :action helm-quickrun--actions))
+
 ;;;###autoload
 (defun anything-quickrun ()
   (interactive)
   (unless (featurep 'anything)
     (error "anything is not installed."))
-  (anything helm-quickrun-source))
+  (anything `((name . "Choose Command-Key")
+              (volatile)
+              (candidates . quickrun/helm-candidates)
+              (action . ,helm-quickrun--actions))))
+
+(defvar helm-quickrun-history-source
+  (helm-build-sync-source "Helm Quickrun History"
+    :volatile t
+    :candidates quickrun--helm-history
+    :action helm-quickrun--actions))
 
 ;;;###autoload
 (defun helm-quickrun ()
@@ -1396,7 +1409,8 @@ by quickrun.el. But you can register your own command for some languages")
   (let ((sources (if quickrun--helm-history
                      '(helm-quickrun-history-source helm-quickrun-source)
                    '(helm-quickrun-source))))
-    (helm :sources sources :buffer "*helm quickrun*")))
+    (helm :sources sources
+          :buffer "*helm quickrun*")))
 
 (provide 'quickrun)
 ;;; quickrun.el ends here
