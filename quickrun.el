@@ -54,24 +54,20 @@
 
 (defcustom quickrun-timeout-seconds 10
   "Timeout seconds for running too long process"
-  :type 'integer
-  :group 'quickrun)
+  :type 'integer)
 
 (defcustom quickrun-focus-p t
   "If this value is `nil`, quickrun.el does not move focus to output buffer."
-  :type 'boolean
-  :group 'quickrun)
+  :type 'boolean)
 
 (defcustom quickrun-input-file-extension ".qrinput"
   "Extension of input file name"
   :type '(choice (string :tag "Extension of quickrun input file")
-                 (boolean :tag "Not use input file" nil))
-  :group 'quickrun)
+                 (boolean :tag "Not use input file" nil)))
 
 (defcustom quickrun-debug nil
   "Enable debug message"
-  :type 'boolean
-  :group 'quickrun)
+  :type 'boolean)
 
 (defconst quickrun/buffer-name "*quickrun*")
 (defvar quickrun/executed-file nil)
@@ -1305,7 +1301,6 @@ by quickrun.el. But you can register your own command for some languages")
 ;;;###autoload
 (define-minor-mode quickrun-autorun-mode
   "`quickrun' after saving buffer"
-  :group 'quickrun
   :init-value nil
   :global nil
   :lighter " QAR"
