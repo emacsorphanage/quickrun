@@ -861,7 +861,8 @@ if you set your own language configuration.
   (with-current-buffer (get-buffer quickrun/buffer-name)
     (setq buffer-read-only nil)
     (when (and quickrun/executed-file input-file)
-      (quickrun/apply-compilation-mode input-file mode))
+      (quickrun/apply-compilation-mode input-file mode)
+      (setq buffer-read-only nil))
     (quickrun/default-outputter)
     (goto-char (point-min))
     (setq buffer-read-only t)))
@@ -879,7 +880,7 @@ if you set your own language configuration.
                (quickrun/exec rest-commands input orig-mode))
               (t
                (if (not is-success)
-                   (if (eq quickrun-option-outputter 'default)
+                   (if (eq quickrun-option-outputter #'quickrun/default-outputter)
                        (quickrun/apply-colorizing input orig-mode)
                      (message "Failed: Exit Status=%d" exit-status))
                  (quickrun/apply-outputter outputter-func)
