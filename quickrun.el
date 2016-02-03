@@ -399,6 +399,7 @@
     ("nim" . ((:command . "nim")
               (:exec . "%c compile --run --verbosity:0 %s")
               (:remove . ("nimcache" "%n"))
+              (:tempfile . nil)
               (:description . "Run nim script")))
 
     ("fish" . ((:command . "fish")
