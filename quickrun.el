@@ -402,6 +402,13 @@
               (:tempfile . nil)
               (:description . "Run nim script")))
 
+    ("nimscript" . ((:command . "nim")
+                    (:exec . "%c e --verbosity:0 %s")
+                    (:tempfile . nil)
+                    ;; Note that .nimle file also allows ‘.ini’ format, so
+                    ;; we can’t check by file extension.
+                    (:description . "Run NimScript (.nims or .nimble) file")))
+
     ("fish" . ((:command . "fish")
                (:description . "Run fish script"))))
 
@@ -516,6 +523,7 @@ if you set your own language configuration.
     (ats-mode . "ats")
     (ess-mode . "r")
     (nim-mode . "nim")
+    (nimscript-mode . "nimscript")
     (fish-mode . "fish"))
   "Alist of major-mode and langkey")
 
