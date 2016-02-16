@@ -1,5 +1,11 @@
 Revision history for quickrun.el
 
+Version 2.2.7 2016/02/16 syohex
+  - Support Open source Swift(#68)
+  - Fix nim issue(#71)
+  - Fix ansi color sequence handling issue at error(#72)
+  - Support nimscript(#73)
+
 Version 2.2.6 2015/08/08 syohex
   - Support perl6
 
