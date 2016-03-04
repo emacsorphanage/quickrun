@@ -410,7 +410,10 @@
                     (:description . "Run NimScript (.nims or .nimble) file")))
 
     ("fish" . ((:command . "fish")
-               (:description . "Run fish script"))))
+               (:description . "Run fish script")))
+
+    ("julia" . ((:command . "julia")
+                (:description . "Run julia script"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -476,7 +479,8 @@ if you set your own language configuration.
     ("\\.dats\\'" . "ats")
     ("\\.\\(r\\|R\\)\\'" . "r")
     ("\\.nim\\'". "nim")
-    ("\\.fish\\'" . "fish"))
+    ("\\.fish\\'" . "fish")
+    ("\\.jl\\'" . "julia"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -524,7 +528,8 @@ if you set your own language configuration.
     (ess-mode . "r")
     (nim-mode . "nim")
     (nimscript-mode . "nimscript")
-    (fish-mode . "fish"))
+    (fish-mode . "fish")
+    (julia-mode . "julia"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -1025,7 +1030,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
