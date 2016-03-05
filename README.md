@@ -18,7 +18,7 @@ compiling languages(C, C++, Go, Java etc) and markup language.
 
 ## Installation
 
-You can install `quickrun.el` from [MELPA](http://melpa.org/) with package.el.
+You can install `quickrun.el` from [MELPA](https://melpa.org/) with package.el.
 
 Or install directly:
 
@@ -81,6 +81,8 @@ as default. But you can register your own command and apply other languages.
 * Swift(swift, xcrun)
 * ATS2(patscc)
 * R(Rscript)
+* Nim/NimScript(nim)
+* Julia(julia)
 
 
 See also `quickrun/support-languages` global variable.
