@@ -694,7 +694,7 @@ if you set your own language configuration.
 
 (defsubst quickrun/process-connection-type (cmd)
   ;; for suppressing 'carriage return'(^M)
-  (not (string-match "\\`php" cmd)))
+  (not (string-match-p "\\`php" cmd)))
 
 (defun quickrun/exec-cmd (cmd)
   (let ((program (car (split-string cmd)))
