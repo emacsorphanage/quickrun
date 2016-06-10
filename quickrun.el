@@ -151,6 +151,22 @@
 (defvar quickrun-after-run-hook nil
   "Run hook after execute quickrun")
 
+(defvar quickrun--temporary-file nil)
+
+;; Language specific functions
+
+(defun quickrun/gnuplot-execute ()
+  (setq quickrun--temporary-file (concat (make-temp-name "quickrun-gnuplot") ".png"))
+  (let ((terminal-option "set terminal png")
+        (output-option (format "set output \"%s\"" quickrun--temporary-file)))
+    (push quickrun--temporary-file quickrun/remove-files)
+    (concat "%c -e '" terminal-option "' -e '" output-option "' %s")))
+
+(defun quickrun/gnuplot-outputter ()
+  (clear-image-cache)
+  (insert-file-contents quickrun--temporary-file)
+  (image-mode))
+
 ;;
 ;; language command parameters
 ;;
@@ -413,7 +429,10 @@
                (:description . "Run fish script")))
 
     ("julia" . ((:command . "julia")
-                (:description . "Run julia script"))))
+                (:description . "Run julia script")))
+    ("gnuplot" . ((:command . "gnuplot")
+                  (:exec . (quickrun/gnuplot-execute))
+                  (:outputter . quickrun/gnuplot-outputter))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -480,7 +499,8 @@ if you set your own language configuration.
     ("\\.\\(r\\|R\\)\\'" . "r")
     ("\\.nim\\'". "nim")
     ("\\.fish\\'" . "fish")
-    ("\\.jl\\'" . "julia"))
+    ("\\.jl\\'" . "julia")
+    ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun/major-mode-alist
@@ -529,7 +549,8 @@ if you set your own language configuration.
     (nim-mode . "nim")
     (nimscript-mode . "nimscript")
     (fish-mode . "fish")
-    (julia-mode . "julia"))
+    (julia-mode . "julia")
+    (gnuplot-mode . "gnuplot"))
   "Alist of major-mode and langkey")
 
 (defun quickrun/decide-file-type (filename)
@@ -1030,7 +1051,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
