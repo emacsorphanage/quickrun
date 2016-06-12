@@ -134,8 +134,8 @@ Minor mode which executes `quickrun` after saving buffer.
 
 ## Note
 
-If quickrun returns ```command not found```, please check ```(executable-find "THE_COMMAND_NAME")``` [for example ```(executable-find "gnuplot")```] .
-If this returns ```nil```, I strongly recommend you use https://github.com/purcell/exec-path-from-shell
+If quickrun returns `command not found`, please check `(executable-find "THE_COMMAND_NAME")` [for example `(executable-find "gnuplot")`] .
+If this returns `nil`, I strongly recommend you use https://github.com/purcell/exec-path-from-shell
 
 ## Send File to STDIN
 
