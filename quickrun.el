@@ -270,6 +270,9 @@
                    (:description . "Run Lisp file with ccl")))
     ("scheme/gosh" . ((:command . "gosh")
                       (:description . "Run Scheme file with gosh(Gauche)")))
+    ("racket" . ((:command . "racket")
+                 (:exec . "%c --require-script %s")
+                 (:description . "Run racket script")))
 
     ("clojure/jark"        . ((:command . "jark")
                               (:description . "Run Clojure file with jark")))
@@ -467,6 +470,7 @@ if you set your own language configuration.
     ("\\.\\(el\\|elisp\\)\\'" . "emacs")
     ("\\.\\(lisp\\|lsp\\)\\'" . "lisp")
     ("\\.\\(scm\\|scheme\\)\\'" . "scheme")
+    ("\\.rkt\\'" . "racket")
     ("\\.js\\'" . "javascript")
     ("\\.clj\\'" . "clojure")
     ("\\.erl\\'" . "erlang")
@@ -516,6 +520,7 @@ if you set your own language configuration.
     (emacs-lisp-mode . "emacs")
     (lisp-mode . "lisp")
     (scheme-mode . "scheme")
+    (racket-mode . "racket")
     ((javascript-mode js-mode js2-mode) . "javascript")
     (clojure-mode . "clojure")
     (erlang-mode . "erlang")
@@ -1047,7 +1052,7 @@ Place holders are beginning with '%' and replaced by:
 ;;
 
 (defconst quickrun/support-languages
-  '("c" "c++" "objc" "c#" "perl" "perl6" "ruby" "python" "php" "emacs" "lisp" "scheme"
+  '("c" "c++" "objc" "c#" "perl" "perl6" "ruby" "python" "php" "emacs" "lisp" "scheme" "racket"
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
