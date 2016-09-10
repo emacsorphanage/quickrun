@@ -53,6 +53,7 @@ as default. But you can register your own command and apply other languages.
 * PHP(php)
 * Emacs Lisp(emacs)
 * Scheme(gosh)
+* Racket(racket)
 * Common Lisp(clisp or sbcl or ccl)
 * Clojure(jark or clj-env-dir)
 * Javascript(node or v8 or js or jrunscript or cscript)
