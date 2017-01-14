@@ -1,5 +1,12 @@
 Revision history for quickrun.el
 
+Version 2.2.8 2017/01/14 syohex
+  - Support julia(#77)
+  - Support gnuplot(#78)
+  - Support racket(#81)
+  - Fix not focus window case(#85)
+  - Drop older Emacs support for maintenance
+
 Version 2.2.7 2016/02/16 syohex
   - Support Open source Swift(#68)
   - Fix nim issue(#71)
