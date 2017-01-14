@@ -587,13 +587,11 @@ if you set your own language configuration.
         (cdr compilation-mode)))))
 
 (defun quickrun/pop-to-buffer (buf cb)
-  (if quickrun-focus-p
-      (progn
-        (pop-to-buffer buf)
-        (funcall cb))
-    (save-selected-window
-      (pop-to-buffer buf)
-      (funcall cb))))
+  (let ((win (selected-window)))
+    (pop-to-buffer buf)
+    (funcall cb)
+    (unless quickrun-focus-p
+      (select-window win))))
 
 (defun quickrun/compilation-start (cmd compile-conf)
   (let ((use-compile (quickrun/check-using-compilation-mode compile-conf)))
