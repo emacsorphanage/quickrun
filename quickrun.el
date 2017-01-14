@@ -5,7 +5,7 @@
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-quickrun
 ;; Version: 2.2.7
-;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -700,7 +700,7 @@ if you set your own language configuration.
         (kill-buffer eshell-buf))
       (eshell)
       (kill-buffer quickrun/buffer-name)
-      (set (make-local-variable 'quickrun/shell-last-command) cmd-str)
+      (setq-local quickrun/shell-last-command cmd-str)
       (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
       (quickrun/insert-command cmd-str))))
 
