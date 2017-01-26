@@ -382,7 +382,7 @@
 
     ("rust" . ((:command . "rustc")
                (:exec . ("%c %o -o %e %s" "%e %a"))
-               (:compile-only . "%c --no-trans --warn-unused-imports %o -o %e %s")
+               (:compile-only . "%c %o -o %e %s")
                (:remove . ("%e"))
                (:description . "Compile rust and execute")))
 
