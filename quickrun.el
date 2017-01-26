@@ -642,6 +642,14 @@ if you set your own language configuration.
         (process-send-region process (point-min) (point-max))
         (process-send-eof process)))))
 
+(defun quickrun--default-filter (proc output)
+  (with-current-buffer (process-buffer proc)
+    (read-only-mode -1)
+    (goto-char (point-max))
+    (let ((start (point)))
+      (insert output)
+      (ansi-color-apply-on-region start (point)))))
+
 (defun quickrun/exec (cmd-lst src mode)
   (if quickrun/run-in-shell
       (quickrun/send-to-shell cmd-lst)
@@ -654,6 +662,8 @@ if you set your own language configuration.
         (when (and (null rest-cmds) quickrun-input-file-extension)
           (let ((file (quickrun/stdin-file-name)))
             (quickrun/send-file-as-stdin process file)))
+        (when (eq outputter 'quickrun/default-outputter)
+          (set-process-filter process #'quickrun--default-filter))
         (set-process-sentinel process
                               (quickrun/make-sentinel rest-cmds outputter src mode))))))
 
@@ -800,7 +810,6 @@ if you set your own language configuration.
     (recenter arg)))
 
 (defun quickrun/default-outputter ()
-  (ansi-color-apply-on-region (point-min) (point-max))
   (quickrun/recenter -1))
 
 (defun quickrun/outputter-multi-p (outputter)
