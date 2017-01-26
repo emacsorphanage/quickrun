@@ -700,7 +700,8 @@ if you set your own language configuration.
 
 (defun quickrun/send-to-shell (cmd-lst)
   (window-configuration-to-register :quickrun-shell)
-  (let ((buf (get-buffer quickrun/buffer-name)))
+  (let ((buf (get-buffer quickrun/buffer-name))
+        (win (selected-window)))
     (pop-to-buffer buf)
     (let ((cmd-str (quickrun/concat-commands cmd-lst))
           (eshell-buf (get-buffer quickrun/eshell-buffer-name))
@@ -712,7 +713,9 @@ if you set your own language configuration.
       (kill-buffer quickrun/buffer-name)
       (setq-local quickrun/shell-last-command cmd-str)
       (add-hook 'eshell-post-command-hook 'quickrun/eshell-post-hook)
-      (quickrun/insert-command cmd-str))))
+      (quickrun/insert-command cmd-str)
+      (unless quickrun-focus-p
+        (select-window win)))))
 
 (defsubst quickrun/default-directory ()
   (or quickrun-option-default-directory default-directory))
