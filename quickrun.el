@@ -600,15 +600,15 @@ if you set your own language configuration.
            (compilation-start cmd t (lambda (_x) quickrun--buffer-name)))
           (t
            (with-current-buffer (get-buffer-create quickrun--buffer-name)
-             (setq buffer-read-only nil)
+             (read-only-mode -1)
              (erase-buffer)
              (process-file-shell-command cmd nil t)
              (goto-char (point-min))
              (quickrun--awhen (assoc-default :mode compile-conf)
-                              (funcall it)
-                              (quickrun--pop-to-buffer
-                               (current-buffer) (lambda () (setq buffer-read-only t)))
-                              (setq buffer-read-only t)))
+               (funcall it)
+               (quickrun--pop-to-buffer
+                (current-buffer) (lambda () (read-only-mode +1)))
+               (read-only-mode +1)))
            (quickrun--remove-temp-files)))))
 
 (defun quickrun--compilation-finish-func (_buffer _str)
@@ -689,7 +689,7 @@ if you set your own language configuration.
               (setq rerun-p t))))
       (unless rerun-p
         (quickrun--eshell-finish)
-        (setq buffer-read-only t)
+        (read-only-mode +1)
         (local-set-key (kbd "q") 'quickrun--eshell-window-restore)))))
 
 (defun quickrun--insert-command (cmd-str)
@@ -723,11 +723,11 @@ if you set your own language configuration.
 (defun quickrun--set-default-directory (cmd-key)
   (let ((cmd-info (quickrun--command-info cmd-key)))
     (quickrun--awhen (assoc-default :default-directory cmd-info)
-                     (let ((formatted (file-name-as-directory it)))
-                       (unless (file-directory-p formatted)
-                         (throw 'quickrun
-                                (format "'%s' is not existed directory" it)))
-                       (setq quickrun-option-default-directory formatted)))))
+      (let ((formatted (file-name-as-directory it)))
+        (unless (file-directory-p formatted)
+          (throw 'quickrun
+                 (format "'%s' is not existed directory" it)))
+        (setq quickrun-option-default-directory formatted)))))
 
 (defsubst quickrun--process-connection-type (cmd)
   ;; for suppressing 'carriage return'(^M)
@@ -737,7 +737,7 @@ if you set your own language configuration.
   (let ((program (car (split-string cmd)))
         (buf (get-buffer quickrun--buffer-name)))
     (with-current-buffer buf
-      (setq buffer-read-only nil)
+      (read-only-mode -1)
       (erase-buffer))
     (let ((proc-name (format "quickrun-process-%s" program))
           (process-connection-type (quickrun--process-connection-type program))
@@ -759,7 +759,7 @@ if you set your own language configuration.
                       (process-name process)
                       quickrun-timeout-seconds)))
     (quickrun--remove-temp-files)
-    (quickrun--pop-to-buffer buf (lambda () (setq buffer-read-only t)))))
+    (quickrun--pop-to-buffer buf (lambda () (read-only-mode +1)))))
 
 (defun quickrun--remove-temp-files ()
   (quickrun--log "Quickrun remove %s" quickrun--remove-files)
@@ -785,7 +785,7 @@ if you set your own language configuration.
 
 (define-derived-mode quickrun--mode nil "Quickrun"
   ""
-  (setq buffer-read-only t)
+  (read-only-mode +1)
   (use-local-map quickrun--mode-map))
 
 ;;
@@ -893,9 +893,9 @@ if you set your own language configuration.
                                     (match-string 1 name)))))))))
       (with-current-buffer buf
         (let ((quickrun--original-buffer origbuf))
-          (setq buffer-read-only nil)
+          (read-only-mode -1)
           (funcall outputter-func)
-          (setq buffer-read-only t))))))
+          (read-only-mode +1))))))
 
 (defun quickrun--apply-compilation-mode (input-file mode)
   (when (not (string= input-file quickrun--executed-file))
@@ -908,13 +908,13 @@ if you set your own language configuration.
 
 (defun quickrun--apply-colorizing (input-file mode)
   (with-current-buffer (get-buffer quickrun--buffer-name)
-    (setq buffer-read-only nil)
+    (read-only-mode -1)
     (when (and quickrun--executed-file input-file)
       (quickrun--apply-compilation-mode input-file mode)
-      (setq buffer-read-only nil))
+      (read-only-mode -1))
     (quickrun--default-outputter)
     (goto-char (point-min))
-    (setq buffer-read-only t)))
+    (read-only-mode +1)))
 
 (defun quickrun--make-sentinel (rest-commands outputter-func input orig-mode)
   (lambda (process _event)
@@ -1113,7 +1113,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun--set-command-key (lang candidates)
   (quickrun--awhen (quickrun--find-executable candidates)
-                   (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
+    (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
 
 (defsubst quickrun--c-compiler ()
   (cond ((quickrun--windows-p) '("gcc" "clang" "cl"))
