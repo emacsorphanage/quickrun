@@ -41,7 +41,7 @@
   (quickrun-add-command "-test"
                         '((:command . "test foo")
                           (:description . "test description")))
-  (let ((params (assoc-default "-test" quickrun/language-alist)))
+  (let ((params (assoc-default "-test" quickrun--language-alist)))
     (should params)
     (let ((command (assoc-default :command params))
           (desc (assoc-default :description params)))
@@ -54,27 +54,27 @@
                         '((:command . "clang")
                           (:description . "Compile clang"))
                         :override t)
-  (let* ((params (assoc-default "c/gcc" quickrun/language-alist))
+  (let* ((params (assoc-default "c/gcc" quickrun--language-alist))
          (command (assoc-default :command params)))
     (should (string= command "clang"))))
 
 (ert-deftest quickrun:use-tempfile-p ()
   "Whether use temporary file or not."
   (quickrun-add-command "tempfile0" '((:command . "tempfile0") (:tempfile . t)))
-  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile0")))
+  (let ((use-tempfile (quickrun--use-tempfile-p "tempfile0")))
     (should use-tempfile))
 
   (quickrun-add-command "tempfile1" '((:command . "tempfile1") (:tempfile . nil)))
-  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile1")))
+  (let ((use-tempfile (quickrun--use-tempfile-p "tempfile1")))
     (should-not use-tempfile))
 
   ;; use temporary file if :tempfile paramter is not specified
   (quickrun-add-command "tempfile2" '((:command . "tempfile2")))
-  (let ((use-tempfile (quickrun/use-tempfile-p "tempfile2")))
+  (let ((use-tempfile (quickrun--use-tempfile-p "tempfile2")))
     (should use-tempfile))
 
-  (let* ((quickrun/compile-only-flag t)
-         (use-tempfile (quickrun/use-tempfile-p "hoge")))
+  (let* ((quickrun--compile-only-flag t)
+         (use-tempfile (quickrun--use-tempfile-p "hoge")))
     (should-not use-tempfile)))
 
 ;;; test-quickrun.el ends here

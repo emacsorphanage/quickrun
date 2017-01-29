@@ -13,7 +13,7 @@ compiling languages(C, C++, Go, Java etc) and markup language.
 
 ## Requirements
 
-* Emacs 24.1 or higher.
+* Emacs 24.3 or higher.
 
 
 ## Installation
@@ -87,7 +87,7 @@ as default. But you can register your own command and apply other languages.
 * Gnuplot(gnuplot)
 
 
-See also `quickrun/support-languages` global variable.
+See also `quickrun--support-languages` global variable.
 
 
 ## Basic Usage
