@@ -158,23 +158,23 @@ You can add your own command or override existsing command  by `quickrun-add-com
 ```lisp
 ;; Use this parameter as C++ default
 (quickrun-add-command "c++/c1z"
-                      '((:command . "g++")
-                        (:exec    . ("%c -std=c++1z %o -o %e %s"
-                                     "%e %a"))
-                        (:remove  . ("%e")))
-                      :default "c++")
+  '((:command . "g++")
+    (:exec    . ("%c -std=c++1z %o -o %e %s"
+		 "%e %a"))
+    (:remove  . ("%e")))
+  :default "c++")
 
 ;; Use this parameter in pod-mode
 (quickrun-add-command "pod"
-                      '((:command . "perldoc")
-                        (:exec    . "%c -T -F %s"))
-                      :mode 'pod-mode)
+  '((:command . "perldoc")
+    (:exec    . "%c -T -F %s"))
+  :mode 'pod-mode)
 
 ;; You can override existing command
 (quickrun-add-command "c/gcc"
-                      '((:exec . ("%c -std=c++1z %o -o %e %s"
-                                  "%e %a")))
-                       :override t)
+  '((:exec . ("%c -std=c++1z %o -o %e %s"
+	      "%e %a")))
+  :override t)
 ```
 
 First argument of `quickrun-add-command` is command key. Second argument of it is
