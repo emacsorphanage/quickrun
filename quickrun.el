@@ -1092,6 +1092,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (cl-defun quickrun-add-command (key alist &key default mode override)
+  (declare (indent defun))
   (cond ((not key) (error "Undefined 1st argument 'key'"))
         ((not alist) (error "Undefined 2nd argument 'command alist'")))
   (if override
