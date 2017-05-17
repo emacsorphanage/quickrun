@@ -1291,11 +1291,12 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun--add-remove-files dst)))
 
 (defun quickrun--kill-quickrun-buffer ()
-  (when (get-buffer quickrun--buffer-name)
-	(let (quickrun--buffer-window (get-buffer-window quickrun--buffer-name))
-	  (when quickrun--buffer-window
-		(delete-window quickrun--buffer-window)))
-    (kill-buffer quickrun--buffer-name)))
+  (let (quickrun--buffer (get-buffer quickrun--buffer-name))
+	(when quickrun--buffer
+	  (let (quickrun--buffer-window (get-buffer-window quickrun--buffer-name))
+		(when quickrun--buffer-window
+		  (delete-window quickrun--buffer-window)))
+	  (kill-buffer quickrun--buffer))))
 
 (defun quickrun--setup-exec-buffer (buf)
   (let ((default-dir (quickrun--default-directory)))
