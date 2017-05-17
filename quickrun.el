@@ -710,7 +710,7 @@ if you set your own language configuration.
       (when eshell-buf
         (kill-buffer eshell-buf))
       (eshell)
-      (kill-buffer quickrun--buffer-name)
+      (quickrun--kill-quickrun-buffer)
       (setq-local quickrun--shell-last-command cmd-str)
       (add-hook 'eshell-post-command-hook 'quickrun--eshell-post-hook)
       (quickrun--insert-command cmd-str)
@@ -840,7 +840,7 @@ if you set your own language configuration.
 
 (defun quickrun--outputter-null ()
   (delete-region (point-min) (point-max))
-  (kill-buffer (get-buffer quickrun--buffer-name)))
+  (quickrun--kill-quickrun-buffer))
 
 (defun quickrun--outputter-replace-region ()
   (let ((output (buffer-substring-no-properties (point-min) (point-max))))
@@ -1292,6 +1292,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 (defun quickrun--kill-quickrun-buffer ()
   (when (get-buffer quickrun--buffer-name)
+    (delete-window (get-buffer-window quickrun--buffer-name))
     (kill-buffer quickrun--buffer-name)))
 
 (defun quickrun--setup-exec-buffer (buf)
