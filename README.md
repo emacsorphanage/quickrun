@@ -200,7 +200,7 @@ Command name. `%c` is expanded into this value.
 
 Command(`:command`) option. `%o` is expanded into this value.
 
-#### `:execute`
+#### `:exec`
 
 Executed commands. You can also set command list parameter.
 If you set list parameter, `quickrun.el` executes command
