@@ -43,6 +43,7 @@ as default. But you can register your own command and apply other languages.
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
 * Objective-C(gcc -objc)
+* C#(mono)
 * D Language(dmd)
 * Fortran(gfortran)
 * Java(javac and java)
