@@ -87,7 +87,7 @@ as default. But you can register your own command and apply other languages.
 * Gnuplot(gnuplot)
 
 
-See also `quickrun--support-languages` global variable.
+See also `quickrun--languages-alist` global variable.
 
 
 ## Basic Usage
