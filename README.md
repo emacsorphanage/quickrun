@@ -42,6 +42,7 @@ as default. But you can register your own command and apply other languages.
 
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
+* C#(dotnet or mono)
 * Objective-C(gcc -objc)
 * D Language(dmd)
 * Fortran(gfortran)
