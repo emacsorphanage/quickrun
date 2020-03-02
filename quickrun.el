@@ -107,24 +107,24 @@
         `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
 
 (quickrun--defvar quickrun-option-cmd-alist
-  nil listp
-  "Specify command alist directly as file local variable")
+                  nil listp
+                  "Specify command alist directly as file local variable")
 
 (quickrun--defvar quickrun-option-command
-  nil stringp
-  "Specify command directly as file local variable")
+                  nil stringp
+                  "Specify command directly as file local variable")
 
 (quickrun--defvar quickrun-option-cmdkey
-  nil stringp
-  "Specify language key directly as file local variable")
+                  nil stringp
+                  "Specify language key directly as file local variable")
 
 (quickrun--defvar quickrun-option-cmdopt
-  nil stringp
-  "Specify command option directly as file local variable")
+                  nil stringp
+                  "Specify command option directly as file local variable")
 
 (quickrun--defvar quickrun-option-args
-  nil stringp
-  "Specify command argument directly as file local variable")
+                  nil stringp
+                  "Specify command argument directly as file local variable")
 
 (defun quickrun--outputter-p (_x)
   (lambda (x)
@@ -132,21 +132,20 @@
         (quickrun--outputter-multi-p x))))
 
 (quickrun--defvar quickrun-option-outputter
-  nil quickrun--outputter-p
-  "Specify format function output buffer as file local variable")
+                  nil quickrun--outputter-p
+                  "Specify format function output buffer as file local variable")
 
 (quickrun--defvar quickrun-option-shebang
-  t booleanp
-  "Select using command from schebang as file local variable")
+                  t booleanp
+                  "Select using command from schebang as file local variable")
 
 (quickrun--defvar quickrun-option-timeout-seconds
-  nil integerp
-  "Timeout seconds as file local variable")
+                  nil integerp
+                  "Timeout seconds as file local variable")
 
 (quickrun--defvar quickrun-option-default-directory
-  nil file-directory-p
-  "Default directory where command is executed")
-
+                  nil file-directory-p
+                  "Default directory where command is executed")
 ;; hooks
 (defvar quickrun-after-run-hook nil
   "Run hook after execute quickrun")
