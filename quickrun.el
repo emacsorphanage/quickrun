@@ -146,6 +146,7 @@
 (quickrun--defvar quickrun-option-default-directory
                   nil file-directory-p
                   "Default directory where command is executed")
+
 ;; hooks
 (defvar quickrun-after-run-hook nil
   "Run hook after execute quickrun")
