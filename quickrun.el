@@ -219,6 +219,11 @@
                (:remove  . ("%e"))
                (:description . "Compile Objective-C file with gcc and execute")))
 
+    ("c#/dotnet" . ((:command . "dotnet run")
+                    (:remove  . ("bin" "obj"))
+                    (:compile-only . "dotnet build")
+                    (:description . "Run .NET project")))
+
     ("c#/mono" . ((:command . "mono")
                   (:exec    . ("mcs %o %s" "%c %n.exe %a"))
                   (:remove  . ("%n.exe"))
@@ -1129,7 +1134,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defconst quicklang/lang-candidates
   `(("c" . ,(quickrun--c-compiler))
     ("c++" . ,(quickrun--c++-compiler))
-    ("c#" . ("mono"))
+    ("c#" . ("dotnet" "mono"))
     ("fortran" . ("gfortran"))
     ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
     ("ruby" . ("ruby" "mruby"))
