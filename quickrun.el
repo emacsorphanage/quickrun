@@ -438,7 +438,10 @@
                   (:outputter . quickrun--gnuplot-outputter)))
     ("kotlin" . ((:command . "kotlin")
                  (:compile-only . "kotlinc -Werror %o %s")
-                 (:exec    . ("kotlinc %o %s" "%c %NKt %a"))
+                 (:exec    . ("kotlinc %o %s"
+                              (lambda ()
+                                (let ((file (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+                                  (format "%%c %sKt %%a" (upcase-initials file))))))
                  (:remove  . ("%nKt.class"))
                  (:tempfile . nil)
                  (:description . "Compile Kotlin file and execute"))))
