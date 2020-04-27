@@ -22,8 +22,8 @@
 
 ;;; Commentary:
 
-;; quickrun.el executes editing buffer. quickrun.el selects commands to execute
-;; buffer automatically. Please see https://github.com/syohex/emacs-quickrun
+;; quickrun.el executes editing buffer.  quickrun.el selects commands to execute
+;; buffer automatically.  Please see https://github.com/syohex/emacs-quickrun
 ;; for more information.
 ;;
 ;; This package respects `quickrun.vim' developed by thinca
@@ -846,20 +846,18 @@ if you set your own language configuration.
 ;;
 
 (defvar quickrun--defined-outputter-symbol
-  '(
-    (message  . quickrun--outputter-message)
+  '((message  . quickrun--outputter-message)
     (browser  . quickrun--outputter-browser)
     (null     . quickrun--outputter-null)
     (replace  . quickrun--outputter-replace-region)
-    (eval-print . quickrun--outputter-eval-print)
-    ))
+    (eval-print . quickrun--outputter-eval-print))
+  "Not documented.")
 
 (defvar quickrun--defined-outputter-symbol-with-arg
-  '(
-    ("^file:"     . quickrun--outputter-file)
+  '(("^file:"     . quickrun--outputter-file)
     ("^buffer:"   . quickrun--outputter-buffer)
-    ("^variable:" . quickrun--outputter-variable)
-    ))
+    ("^variable:" . quickrun--outputter-variable))
+  "Not documented.")
 
 (defun quickrun--recenter (arg)
   "Recenter window with ARG."
