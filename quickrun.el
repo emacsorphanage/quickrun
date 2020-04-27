@@ -22,8 +22,8 @@
 
 ;;; Commentary:
 
-;; quickrun.el executes editing buffer. quickrun.el selects commands to execute
-;; buffer automatically. Please see https://github.com/syohex/emacs-quickrun
+;; quickrun.el executes editing buffer.  quickrun.el selects commands to execute
+;; buffer automatically.  Please see https://github.com/syohex/emacs-quickrun
 ;; for more information.
 ;;
 ;; This package respects `quickrun.vim' developed by thinca
@@ -48,26 +48,30 @@
 (declare-function tramp-dissect-file-name "tramp")
 
 (defgroup quickrun nil
-  "Execute buffer quickly"
+  "Execute buffer quickly."
   :group 'processes
   :prefix 'quickrun)
 
 (defcustom quickrun-timeout-seconds 10
-  "Timeout seconds for running too long process"
-  :type 'integer)
+  "Timeout seconds for running too long process."
+  :type 'integer
+  :group 'quickrun)
 
 (defcustom quickrun-focus-p t
   "If this value is `nil`, quickrun.el does not move focus to output buffer."
-  :type 'boolean)
+  :type 'boolean
+  :group 'quickrun)
 
 (defcustom quickrun-input-file-extension ".qrinput"
-  "Extension of input file name"
+  "Extension of input file name."
   :type '(choice (string :tag "Extension of quickrun input file")
-                 (boolean :tag "Not use input file" nil)))
+                 (boolean :tag "Not use input file" nil))
+  :group 'quickrun)
 
 (defcustom quickrun-debug nil
-  "Enable debug message"
-  :type 'boolean)
+  "Enable debug message."
+  :type 'boolean
+  :group 'quickrun)
 
 (defconst quickrun--buffer-name "*quickrun*")
 (defvar quickrun--executed-file nil)
@@ -77,19 +81,23 @@
 (defvar quickrun--original-outputter nil)
 
 (defmacro quickrun--awhen (test &rest body)
+  "Not documented."
   (declare (indent 1))
   `(let ((it ,test)) (when it ,@body)))
 
 (defun quickrun--mklist (obj)
+  "Not documented."
   (if (listp obj)
       obj
     (list obj)))
 
 (defsubst quickrun--log (fmt &rest args)
+  "Not documented."
   (when quickrun-debug
     (apply 'message fmt args)))
 
 (defsubst quickrun--windows-p ()
+  "Not documented."
   (memq system-type '(ms-dos windows-nt cygwin)))
 
 ;;
@@ -127,6 +135,7 @@
                   "Specify command argument directly as file local variable")
 
 (defun quickrun--outputter-p (_x)
+  "Not documented."
   (lambda (x)
     (or (functionp x) (symbolp x) (stringp x)
         (quickrun--outputter-multi-p x))))
@@ -156,6 +165,7 @@
 ;; Language specific functions
 
 (defun quickrun--gnuplot-execute ()
+  "Not documented."
   (setq quickrun--temporary-file (concat (make-temp-name "quickrun-gnuplot") ".png"))
   (let ((terminal-option "set terminal png")
         (output-option (format "set output \"%s\"" quickrun--temporary-file)))
@@ -163,6 +173,7 @@
     (concat "%c -e '" terminal-option "' -e '" output-option "' %s")))
 
 (defun quickrun--gnuplot-outputter ()
+  "Not documented."
   (clear-image-cache)
   (insert-file-contents quickrun--temporary-file)
   (image-mode))
@@ -218,6 +229,11 @@
                             "%e %a"))
                (:remove  . ("%e"))
                (:description . "Compile Objective-C file with gcc and execute")))
+
+    ("c#/dotnet" . ((:command . "dotnet run")
+                    (:remove  . ("bin" "obj"))
+                    (:compile-only . "dotnet build")
+                    (:description . "Run .NET project")))
 
     ("c#/mono" . ((:command . "mono")
                   (:exec    . ("mcs %o %s" "%c %n.exe %a"))
@@ -435,7 +451,16 @@
                 (:description . "Run julia script")))
     ("gnuplot" . ((:command . "gnuplot")
                   (:exec . (quickrun--gnuplot-execute))
-                  (:outputter . quickrun--gnuplot-outputter))))
+                  (:outputter . quickrun--gnuplot-outputter)))
+    ("kotlin" . ((:command . "kotlin")
+                 (:compile-only . "kotlinc -Werror %o %s")
+                 (:exec    . ("kotlinc %o %s"
+                              (lambda ()
+                                (let ((file (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+                                  (format "%%c %sKt %%a" (upcase-initials file))))))
+                 (:remove  . ("%nKt.class"))
+                 (:tempfile . nil)
+                 (:description . "Compile Kotlin file and execute"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -504,7 +529,8 @@ if you set your own language configuration.
     ("\\.nim\\'". "nim")
     ("\\.fish\\'" . "fish")
     ("\\.jl\\'" . "julia")
-    ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot"))
+    ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot")
+    ("\\.kt\\'" . "kotlin"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun--major-mode-alist
@@ -555,21 +581,25 @@ if you set your own language configuration.
     (nimscript-mode . "nimscript")
     (fish-mode . "fish")
     (julia-mode . "julia")
-    (gnuplot-mode . "gnuplot"))
+    (gnuplot-mode . "gnuplot")
+    (kotlin-mode . "kotlin"))
   "Alist of major-mode and langkey")
 
 (defun quickrun--decide-file-type (filename)
+  "Decide file type by FILENAME."
   ;; First search by file extension, Second search by major-mode
   (or (assoc-default filename quickrun-file-alist 'string-match)
       (quickrun--find-from-major-mode-alist)))
 
 (defun quickrun--find-from-major-mode-alist ()
+  "Not documented."
   (cl-loop for (lang . lang-info) in quickrun--major-mode-alist
            for lang-lst = (quickrun--mklist lang)
            when (memq major-mode lang-lst)
            return lang-info))
 
 (defun quickrun--command-info (lang)
+  "Not documented."
   (or quickrun-option-cmd-alist
       (assoc-default lang quickrun--language-alist)
       (throw 'quickrun
@@ -579,6 +609,7 @@ if you set your own language configuration.
 ;; Compile Only
 ;;
 (defun quickrun--check-using-compilation-mode (compile-conf)
+  "Not documented."
   (if (not compile-conf)
       t
     (let ((compilation-mode (assoc :compilation-mode compile-conf)))
@@ -587,6 +618,7 @@ if you set your own language configuration.
         (cdr compilation-mode)))))
 
 (defun quickrun--pop-to-buffer (buf cb)
+  "Not documented."
   (let ((win (selected-window)))
     (pop-to-buffer buf)
     (funcall cb)
@@ -594,6 +626,7 @@ if you set your own language configuration.
       (select-window win))))
 
 (defun quickrun--compilation-start (cmd compile-conf)
+  "Not documented."
   (let ((use-compile (quickrun--check-using-compilation-mode compile-conf)))
     (cond (use-compile
            (setq compilation-finish-functions 'quickrun--compilation-finish-func)
@@ -612,6 +645,7 @@ if you set your own language configuration.
            (quickrun--remove-temp-files)))))
 
 (defun quickrun--compilation-finish-func (_buffer _str)
+  "Not documented."
   (quickrun--remove-temp-files))
 
 ;;
@@ -621,19 +655,24 @@ if you set your own language configuration.
 (defvar quickrun--run-in-shell nil)
 
 (defsubst quickrun--concat-commands (cmd-lst)
+  "Not documented."
   (mapconcat 'identity cmd-lst " && "))
 
 (defsubst quickrun--stdin-file-name ()
+  "Not documented."
   (concat quickrun--executed-file quickrun-input-file-extension))
 
 (defsubst quickrun--stdin-file-regexp ()
+  "Not documented."
   (concat quickrun-input-file-extension "\\'"))
 
 (defsubst quickrun--use-stdin-file-p ()
+  "Not documented."
   (string-match-p (quickrun--stdin-file-regexp)
                   (or (buffer-file-name) (buffer-name))))
 
 (defun quickrun--send-file-as-stdin (process file)
+  "Not documented."
   (let ((open-buf-func (cond ((file-exists-p file) 'find-file-noselect)
                              ((get-buffer file) 'get-buffer))))
     (when open-buf-func
@@ -643,6 +682,7 @@ if you set your own language configuration.
         (process-send-eof process)))))
 
 (defun quickrun--default-filter (proc output)
+  "Not documented."
   (with-current-buffer (process-buffer proc)
     (read-only-mode -1)
     (goto-char (point-max))
@@ -651,6 +691,7 @@ if you set your own language configuration.
       (ansi-color-apply-on-region start (point)))))
 
 (defun quickrun--exec (cmd-lst src mode)
+  "Not documented."
   (if quickrun--run-in-shell
       (quickrun--send-to-shell cmd-lst)
     (ignore-errors
@@ -671,14 +712,17 @@ if you set your own language configuration.
 (defvar quickrun--shell-last-command)
 
 (defun quickrun--eshell-finish ()
+  "Not documented."
   (quickrun--remove-temp-files)
   (remove-hook 'eshell-post-command-hook 'quickrun--eshell-post-hook))
 
 (defun quickrun--eshell-window-restore ()
+  "Not documented."
   (interactive)
   (jump-to-register :quickrun-shell))
 
 (defun quickrun--eshell-post-hook ()
+  "Not documented."
   (let ((rerun-p nil)
         (prompt "Press 'r' to run again, any other key to finish"))
     (unwind-protect
@@ -693,12 +737,14 @@ if you set your own language configuration.
         (local-set-key (kbd "q") 'quickrun--eshell-window-restore)))))
 
 (defun quickrun--insert-command (cmd-str)
+  "Not documented."
   (goto-char (point-max))
   (eshell-kill-input)
   (insert cmd-str)
   (eshell-send-input))
 
 (defun quickrun--send-to-shell (cmd-lst)
+  "Not documented."
   (window-configuration-to-register :quickrun-shell)
   (let ((buf (get-buffer quickrun--buffer-name))
         (win (selected-window)))
@@ -718,9 +764,11 @@ if you set your own language configuration.
         (select-window win)))))
 
 (defsubst quickrun--default-directory ()
+  "Not documented."
   (or quickrun-option-default-directory default-directory))
 
 (defun quickrun--set-default-directory (cmd-key)
+  "Not documented."
   (let ((cmd-info (quickrun--command-info cmd-key)))
     (quickrun--awhen (assoc-default :default-directory cmd-info)
       (let ((formatted (file-name-as-directory it)))
@@ -730,10 +778,12 @@ if you set your own language configuration.
         (setq quickrun-option-default-directory formatted)))))
 
 (defsubst quickrun--process-connection-type (cmd)
+  "Not documented."
   ;; for suppressing 'carriage return'(^M)
   (not (string-match-p "\\`php" cmd)))
 
 (defun quickrun--exec-cmd (cmd)
+  "Not documented."
   (let ((program (car (split-string cmd)))
         (buf (get-buffer quickrun--buffer-name)))
     (with-current-buffer buf
@@ -751,6 +801,7 @@ if you set your own language configuration.
         process))))
 
 (defun quickrun--kill-process (process)
+  "Not documented."
   (when (eq (process-status process) 'run)
     (kill-process process))
   (let ((buf (get-buffer quickrun--buffer-name)))
@@ -762,6 +813,7 @@ if you set your own language configuration.
     (quickrun--pop-to-buffer buf (lambda () (read-only-mode +1)))))
 
 (defun quickrun--remove-temp-files ()
+  "Removes temporary files."
   (quickrun--log "Quickrun remove %s" quickrun--remove-files)
   (dolist (file quickrun--remove-files)
     (cond
@@ -770,6 +822,7 @@ if you set your own language configuration.
   (setq quickrun--remove-files nil))
 
 (defun quickrun--kill-running-process ()
+  "Kills running process.."
   (interactive)
   (let ((proc (get-buffer-process (current-buffer))))
     (if (not proc)
@@ -784,7 +837,7 @@ if you set your own language configuration.
     map))
 
 (define-derived-mode quickrun--mode nil "Quickrun"
-  ""
+  "Major mode for Quickrun execution process."
   (read-only-mode +1)
   (use-local-map quickrun--mode-map))
 
@@ -793,33 +846,35 @@ if you set your own language configuration.
 ;;
 
 (defvar quickrun--defined-outputter-symbol
-  '(
-    (message  . quickrun--outputter-message)
+  '((message  . quickrun--outputter-message)
     (browser  . quickrun--outputter-browser)
     (null     . quickrun--outputter-null)
     (replace  . quickrun--outputter-replace-region)
-    (eval-print . quickrun--outputter-eval-print)
-    ))
+    (eval-print . quickrun--outputter-eval-print))
+  "Not documented.")
 
 (defvar quickrun--defined-outputter-symbol-with-arg
-  '(
-    ("^file:"     . quickrun--outputter-file)
+  '(("^file:"     . quickrun--outputter-file)
     ("^buffer:"   . quickrun--outputter-buffer)
-    ("^variable:" . quickrun--outputter-variable)
-    ))
+    ("^variable:" . quickrun--outputter-variable))
+  "Not documented.")
 
 (defun quickrun--recenter (arg)
+  "Recenter window with ARG."
   (with-selected-window (get-buffer-window quickrun--buffer-name)
     (recenter arg)))
 
 (defun quickrun--default-outputter ()
+  "Not documented."
   (quickrun--recenter -1))
 
 (defun quickrun--outputter-multi-p (outputter)
+  "Not documented."
   (and (not (functionp outputter)) (listp outputter)
        (eq (car outputter) 'multi)))
 
 (defun quickrun--defined-outputter-p (outputter)
+  "Not documented."
   (cond ((quickrun--outputter-multi-p outputter) t)
         ((or (symbolp outputter) (stringp outputter))
          (let ((name (or (and (symbolp outputter) (symbol-name outputter))
@@ -830,19 +885,24 @@ if you set your own language configuration.
                               'string-match))))))
 
 (defun quickrun--outputter-file (file)
+  "Not documented."
   (write-region (point-min) (point-max) file))
 
 (defun quickrun--outputter-message ()
+  "Not documented."
   (message "%s" (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun quickrun--outputter-browser ()
+  "Not documented."
   (browse-url-of-region (point-min) (point-max)))
 
 (defun quickrun--outputter-null ()
+  "Not documented."
   (delete-region (point-min) (point-max))
   (quickrun--kill-quickrun-buffer))
 
 (defun quickrun--outputter-replace-region ()
+  "Not documented."
   (let ((output (buffer-substring-no-properties (point-min) (point-max))))
     (with-current-buffer quickrun--original-buffer
       (delete-region (region-beginning) (region-end))
@@ -850,6 +910,7 @@ if you set your own language configuration.
       (setq quickrun-option-outputter quickrun--original-outputter))))
 
 (defun quickrun--outputter-eval-print ()
+  "Not documented."
   (let ((output (buffer-substring-no-properties (point-min) (point-max))))
     (with-current-buffer quickrun--original-buffer
       (forward-line 1)
@@ -859,16 +920,19 @@ if you set your own language configuration.
         (setq quickrun-option-outputter quickrun--original-outputter)))))
 
 (defun quickrun--outputter-buffer (bufname)
+  "Not documented."
   (let ((str (buffer-substring (point-min) (point-max))))
     (with-current-buffer (get-buffer-create bufname)
       (erase-buffer)
       (insert str))))
 
 (defun quickrun--outputter-variable (varname)
+  "Not documented."
   (let ((symbol (intern varname)))
     (set symbol (buffer-substring (point-min) (point-max)))))
 
 (defun quickrun--apply-outputter (op)
+  "Not documented."
   (let ((buf (get-buffer quickrun--buffer-name))
         (origbuf (current-buffer))
         (outputters (or (and (quickrun--outputter-multi-p op) (cdr op))
@@ -898,6 +962,7 @@ if you set your own language configuration.
           (read-only-mode +1))))))
 
 (defun quickrun--apply-compilation-mode (input-file mode)
+  "Not documented."
   (when (not (string= input-file quickrun--executed-file))
     (save-excursion
       (goto-char (point-min))
@@ -907,6 +972,7 @@ if you set your own language configuration.
   (compilation-mode mode))
 
 (defun quickrun--apply-colorizing (input-file mode)
+  "Not documented."
   (with-current-buffer (get-buffer quickrun--buffer-name)
     (read-only-mode -1)
     (when (and quickrun--executed-file input-file)
@@ -917,6 +983,7 @@ if you set your own language configuration.
     (read-only-mode +1)))
 
 (defun quickrun--make-sentinel (rest-commands outputter-func input orig-mode)
+  "Not documented."
   (lambda (process _event)
     ;; XXX Why reset `quickrun-option-outputter' ??
     (setq quickrun-option-outputter outputter-func)
@@ -959,17 +1026,20 @@ Place holders are beginning with '%' and replaced by:
 ")
 
 (defun quickrun--executable-suffix (command)
+  "Not documented."
   (cond ((string= command "java") ".class")
         ((quickrun--windows-p) ".exe")
         (t ".out")))
 
 (defun quickrun--real-file-name (src)
+  "Not documented."
   (let ((buffile (buffer-file-name)))
     (if (not (and buffile (file-remote-p buffile)))
         src
       (aref (tramp-dissect-file-name (buffer-file-name)) 3))))
 
 (defun quickrun--place-holder-info (cmd cmdopt source args)
+  "Not documented."
   (let* ((src (quickrun--real-file-name source))
          (without-extension (file-name-sans-extension src))
          (dirname (file-name-directory (expand-file-name src)))
@@ -991,6 +1061,7 @@ Place holders are beginning with '%' and replaced by:
   '((:exec . "%c %o %s %a")))
 
 (defun quickrun--extract-template (key cmd-info &optional take-list)
+  "Not documented."
   (let ((tmpl (or (assoc-default key cmd-info)
                   (assoc-default key quickrun--default-tmpl-alist))))
     (when tmpl
@@ -999,6 +1070,7 @@ Place holders are beginning with '%' and replaced by:
         (quickrun--eval-parameter tmpl)))))
 
 (defun quickrun--eval-parameter (param)
+  "Not documented."
   (cond ((functionp param)
          (let* ((default-directory (quickrun--default-directory))
                 (ret (funcall param)))
@@ -1010,12 +1082,14 @@ Place holders are beginning with '%' and replaced by:
         (t param)))
 
 (defun quickrun--get-shebang ()
+  "Not documented."
   (save-excursion
     (goto-char (point-min))
     (when (looking-at "#![ \t]*\\(.*\\)$")
       (match-string-no-properties 1))))
 
 (defun quickrun--template-argument (cmd-info src)
+  "Not documented."
   (let ((cmd (or quickrun-option-command
                  (and quickrun-option-shebang (quickrun--get-shebang))
                  (quickrun--eval-parameter (assoc-default :command cmd-info))
@@ -1027,6 +1101,7 @@ Place holders are beginning with '%' and replaced by:
     (quickrun--place-holder-info cmd cmd-opt src arg)))
 
 (defun quickrun--fill-templates (cmd-key src)
+  "Not documented."
   (let* ((cmd-info (quickrun--command-info cmd-key))
          (tmpl-arg (quickrun--template-argument cmd-info src))
          (info (make-hash-table)))
@@ -1050,6 +1125,7 @@ Place holders are beginning with '%' and replaced by:
     info))
 
 (defun quickrun--fill-template (tmpl info)
+  "Not documented."
   (let ((place-holders quickrun--template-place-holders)
         (str tmpl)
         (case-fold-search nil))
@@ -1066,7 +1142,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
@@ -1075,12 +1151,13 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun quickrun-set-default (lang key)
-  "Set `key' as default key in programing language `lang'"
+  "Set `key' as default key in programing language `lang'."
   (unless (assoc key quickrun--language-alist)
     (error "%s is not registered." key))
   (puthash lang key quickrun--command-key-table))
 
 (defun quickrun--override-command (cmdkey cmd-alist)
+  "Not documented."
   (let ((registered (assoc-default cmdkey quickrun--language-alist)))
     (unless registered
       (error (format "'%s' is not registered" cmdkey)))
@@ -1092,6 +1169,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (cl-defun quickrun-add-command (key alist &key default mode override)
+  "Not documented."
   (declare (indent defun))
   (cond ((not key) (error "Undefined 1st argument 'key'"))
         ((not alist) (error "Undefined 2nd argument 'command alist'")))
@@ -1108,20 +1186,24 @@ by quickrun.el. But you can register your own command for some languages")
     key))
 
 (defun quickrun--find-executable (candidates)
+  "Not documented."
   (cl-loop for candidate in candidates
            when (executable-find candidate)
            return candidate))
 
 (defun quickrun--set-command-key (lang candidates)
+  "Not documented."
   (quickrun--awhen (quickrun--find-executable candidates)
     (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
 
 (defsubst quickrun--c-compiler ()
+  "Not documented."
   (cond ((quickrun--windows-p) '("gcc" "clang" "cl"))
         ((eq system-type 'darwin) '("clang" "gcc"))
         (t '("gcc" "clang"))))
 
 (defsubst quickrun--c++-compiler ()
+  "Not documented."
   (cond ((quickrun--windows-p) '("g++" "clang++" "cl"))
         ((eq system-type 'darwin) '("clang++" "g++"))
         (t '("g++" "clang++"))))
@@ -1129,7 +1211,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defconst quicklang/lang-candidates
   `(("c" . ,(quickrun--c-compiler))
     ("c++" . ,(quickrun--c++-compiler))
-    ("c#" . ("mono"))
+    ("c#" . ("dotnet" "mono"))
     ("fortran" . ("gfortran"))
     ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
     ("ruby" . ("ruby" "mruby"))
@@ -1142,6 +1224,7 @@ by quickrun.el. But you can register your own command for some languages")
   "Candidates of language which has some compilers or interpreters")
 
 (defun quickrun--init-command-key-table ()
+  "Not documented."
   "Decide command for programing language which has multiple candidates"
   (dolist (lang quickrun--support-languages)
     (puthash lang lang quickrun--command-key-table))
@@ -1152,6 +1235,7 @@ by quickrun.el. But you can register your own command for some languages")
 (quickrun--init-command-key-table)
 
 (defun quickrun--set-executed-file ()
+  "Not documented."
   (let* ((buffer-file (buffer-file-name))
          (name (or buffer-file (buffer-name)))
          (use-stdin-file-p (quickrun--use-stdin-file-p))
@@ -1206,6 +1290,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defvar quickrun--last-cmd-key nil)
 
 (defun quickrun--prompt ()
+  "Not documented."
   (let* ((default (or quickrun-option-cmdkey quickrun--last-cmd-key))
          (prompt (format "QuickRun Lang%s: "(if default
                                                 (format "[Default: %s]" default)
@@ -1213,6 +1298,7 @@ by quickrun.el. But you can register your own command for some languages")
     (completing-read prompt quickrun--language-alist nil nil nil nil default)))
 
 (defun quickrun--region-command-common (start end)
+  "Not documented."
   (deactivate-mark)
   (quickrun :start start :end end))
 
@@ -1254,16 +1340,19 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun)))
 
 (defun quickrun--add-remove-files (removed-files)
+  "Not documented."
   (let ((abs-paths (mapcar 'expand-file-name (quickrun--mklist removed-files))))
     (setq quickrun--remove-files (append abs-paths quickrun--remove-files))))
 
 (defun quickrun--temp-name (src)
+  "Not documented."
   (let* ((extension (file-name-extension src))
          (suffix (or (and extension (concat "." extension)) ""))
          (dir (quickrun--default-directory)))
     (expand-file-name (concat dir (make-temp-name "qr_") suffix))))
 
 (defun quickrun--command-key (src)
+  "Not documented."
   (let ((file-type (and src (quickrun--decide-file-type src)))
         (use-prefix-p (and (consp current-prefix-arg)
                            (= (car current-prefix-arg) 4))))
@@ -1276,12 +1365,14 @@ by quickrun.el. But you can register your own command for some languages")
         (quickrun--prompt))))
 
 (defun quickrun--get-content (start end)
+  "Not documented."
   (if (quickrun--use-stdin-file-p)
       (with-current-buffer (find-file-noselect quickrun--executed-file)
         (buffer-substring-no-properties (point-min) (point-max)))
     (buffer-substring-no-properties start end)))
 
 (defun quickrun--copy-region-to-tempfile (start end dst)
+  "Copy region to temporary file with START, END and destination (DST)."
   ;; Suppress write file message
   (let ((content (quickrun--get-content start end))
         (codec buffer-file-coding-system))
@@ -1299,11 +1390,13 @@ by quickrun.el. But you can register your own command for some languages")
 	  (kill-buffer quickrun--buffer))))
 
 (defun quickrun--setup-exec-buffer (buf)
+  "Not documented."
   (let ((default-dir (quickrun--default-directory)))
     (with-current-buffer buf
       (setq quickrun-option-default-directory default-dir))))
 
 (defun quickrun--use-tempfile-p (cmd-key)
+  "Check if use temporary file with CMD-KEY."
   (let ((buffile (buffer-file-name)))
     (unless (or quickrun--compile-only-flag (and buffile (file-remote-p buffile)))
       (let* ((cmdinfo (quickrun--command-info cmd-key))
@@ -1313,10 +1406,12 @@ by quickrun.el. But you can register your own command for some languages")
           t)))))
 
 (defsubst quickrun--buffer-popup-p ()
+  "Not documented."
   (and (not (quickrun--defined-outputter-p quickrun-option-outputter))
        (not quickrun--run-in-shell)))
 
 (defun quickrun--common (start end)
+  "Not documented."
   (let* ((orig-src quickrun--executed-file)
          (cmd-key (quickrun--command-key orig-src)))
     (quickrun--set-default-directory cmd-key)
@@ -1351,6 +1446,7 @@ by quickrun.el. But you can register your own command for some languages")
                    (quickrun--pop-to-buffer buf 'quickrun--mode)))))))))
 
 (defun quickrun--without-focus ()
+  "Not documented."
   (let ((quickrun-focus-p nil))
     (quickrun)))
 
@@ -1395,15 +1491,18 @@ by quickrun.el. But you can register your own command for some languages")
   "helm source of `quickrun' history")
 
 (defun quickrun--helm-candidate (cmd-key cmd-info)
+  "Not documented."
   (let ((description (or (assoc-default :description cmd-info) "")))
     (cons (format "%-25s %s" cmd-key description) cmd-key)))
 
 (defun quickrun--helm-update-history (cmd-key)
+  "Not documented."
   (setq quickrun--helm-history
         (cons cmd-key
               (delete cmd-key quickrun--helm-history))))
 
 (defun quickrun--helm-action-default (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key)
         start end)
@@ -1413,32 +1512,38 @@ by quickrun.el. But you can register your own command for some languages")
     (quickrun-region start end)))
 
 (defun quickrun--helm-run-with-arg (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (call-interactively 'quickrun-with-arg)))
 
 (defun quickrun--helm-action-shell (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-shell)))
 
 (defun quickrun--helm-compile-only (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-compile-only)))
 
 (defun quickrun--helm-action-replace-region (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-replace-region (region-beginning) (region-end))))
 
 (defun quickrun--helm-action-eval-print (cmd-key)
+  "Not documented."
   (quickrun--helm-update-history cmd-key)
   (let ((quickrun-option-cmdkey cmd-key))
     (quickrun-eval-print (region-beginning) (region-end))))
 
 ;;;###autoload
 (defun anything-quickrun ()
+  "Run quickrun with `anything'."
   (interactive)
   (unless (featurep 'anything)
     (error "anything is not installed."))
@@ -1446,6 +1551,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun helm-quickrun ()
+  "Run quickrun with `helm'."
   (interactive)
   (unless (featurep 'helm)
     (error "helm is not installed."))

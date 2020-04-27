@@ -42,6 +42,7 @@ as default. But you can register your own command and apply other languages.
 
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
+* C#(dotnet or mono)
 * Objective-C(gcc -objc)
 * D Language(dmd)
 * Fortran(gfortran)
@@ -85,6 +86,7 @@ as default. But you can register your own command and apply other languages.
 * Nim/NimScript(nim)
 * Julia(julia)
 * Gnuplot(gnuplot)
+* Kotlin(kotlin)
 
 
 See also `quickrun--support-languages` global variable.
@@ -200,7 +202,7 @@ Command name. `%c` is expanded into this value.
 
 Command(`:command`) option. `%o` is expanded into this value.
 
-#### `:execute`
+#### `:exec`
 
 Executed commands. You can also set command list parameter.
 If you set list parameter, `quickrun.el` executes command
