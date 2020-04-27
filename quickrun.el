@@ -440,7 +440,16 @@
                 (:description . "Run julia script")))
     ("gnuplot" . ((:command . "gnuplot")
                   (:exec . (quickrun--gnuplot-execute))
-                  (:outputter . quickrun--gnuplot-outputter))))
+                  (:outputter . quickrun--gnuplot-outputter)))
+    ("kotlin" . ((:command . "kotlin")
+                 (:compile-only . "kotlinc -Werror %o %s")
+                 (:exec    . ("kotlinc %o %s"
+                              (lambda ()
+                                (let ((file (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+                                  (format "%%c %sKt %%a" (upcase-initials file))))))
+                 (:remove  . ("%nKt.class"))
+                 (:tempfile . nil)
+                 (:description . "Compile Kotlin file and execute"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist). parameter-alist has
@@ -509,7 +518,8 @@ if you set your own language configuration.
     ("\\.nim\\'". "nim")
     ("\\.fish\\'" . "fish")
     ("\\.jl\\'" . "julia")
-    ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot"))
+    ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot")
+    ("\\.kt\\'" . "kotlin"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun--major-mode-alist
@@ -560,7 +570,8 @@ if you set your own language configuration.
     (nimscript-mode . "nimscript")
     (fish-mode . "fish")
     (julia-mode . "julia")
-    (gnuplot-mode . "gnuplot"))
+    (gnuplot-mode . "gnuplot")
+    (kotlin-mode . "kotlin"))
   "Alist of major-mode and langkey")
 
 (defun quickrun--decide-file-type (filename)
@@ -1071,7 +1082,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 

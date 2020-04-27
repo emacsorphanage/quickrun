@@ -86,6 +86,7 @@ as default. But you can register your own command and apply other languages.
 * Nim/NimScript(nim)
 * Julia(julia)
 * Gnuplot(gnuplot)
+* Kotlin(kotlin)
 
 
 See also `quickrun--support-languages` global variable.
