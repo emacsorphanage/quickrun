@@ -48,12 +48,12 @@
 (declare-function tramp-dissect-file-name "tramp")
 
 (defgroup quickrun nil
-  "Execute buffer quickly"
+  "Execute buffer quickly."
   :group 'processes
   :prefix 'quickrun)
 
 (defcustom quickrun-timeout-seconds 10
-  "Timeout seconds for running too long process"
+  "Timeout seconds for running too long process."
   :type 'integer
   :group 'quickrun)
 
@@ -63,13 +63,13 @@
   :group 'quickrun)
 
 (defcustom quickrun-input-file-extension ".qrinput"
-  "Extension of input file name"
+  "Extension of input file name."
   :type '(choice (string :tag "Extension of quickrun input file")
                  (boolean :tag "Not use input file" nil))
   :group 'quickrun)
 
 (defcustom quickrun-debug nil
-  "Enable debug message"
+  "Enable debug message."
   :type 'boolean
   :group 'quickrun)
 
