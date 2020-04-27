@@ -54,20 +54,24 @@
 
 (defcustom quickrun-timeout-seconds 10
   "Timeout seconds for running too long process"
-  :type 'integer)
+  :type 'integer
+  :group 'quickrun)
 
 (defcustom quickrun-focus-p t
   "If this value is `nil`, quickrun.el does not move focus to output buffer."
-  :type 'boolean)
+  :type 'boolean
+  :group 'quickrun)
 
 (defcustom quickrun-input-file-extension ".qrinput"
   "Extension of input file name"
   :type '(choice (string :tag "Extension of quickrun input file")
-                 (boolean :tag "Not use input file" nil)))
+                 (boolean :tag "Not use input file" nil))
+  :group 'quickrun)
 
 (defcustom quickrun-debug nil
   "Enable debug message"
-  :type 'boolean)
+  :type 'boolean
+  :group 'quickrun)
 
 (defconst quickrun--buffer-name "*quickrun*")
 (defvar quickrun--executed-file nil)
