@@ -1108,6 +1108,10 @@ Place holders are beginning with '%' and replaced by:
     (cl-loop for key in '(:compile-only)
              when (quickrun--extract-template key cmd-info)
              do (puthash key (quickrun--fill-template it tmpl-arg) info))
+    ;; numerical value (non template)
+    (cl-loop for key in '(:timeout)
+             when (assoc-default key cmd-info)
+             do (puthash key it info))
     ;; take one or more parameters
     (cl-loop for key in '(:exec :remove)
              when (quickrun--extract-template key cmd-info t)
@@ -1263,8 +1267,6 @@ But you can register your own command for some languages")
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
                                        (plist-get plist :source)))
-        (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
-                                      quickrun-timeout-seconds))
         (quickrun--compile-only-flag (or quickrun--compile-only-flag
                                          (and (consp current-prefix-arg)
                                               (= (car current-prefix-arg) 16)))))
@@ -1420,6 +1422,9 @@ But you can register your own command for some languages")
           (quickrun--copy-region-to-tempfile start end src)
         (setq src orig-src))
       (let ((cmd-info-hash (quickrun--fill-templates cmd-key src)))
+        (setq quickrun-timeout-seconds (or quickrun-option-timeout-seconds
+                                           (gethash :timeout cmd-info-hash)
+                                           quickrun-timeout-seconds))
         (quickrun--add-remove-files (gethash :remove cmd-info-hash))
         (unless quickrun-option-outputter
           (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
