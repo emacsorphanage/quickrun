@@ -638,10 +638,10 @@ if you set your own language configuration.")
              (process-file-shell-command cmd nil t)
              (goto-char (point-min))
              (quickrun--awhen (assoc-default :mode compile-conf)
-               (funcall it)
-               (quickrun--pop-to-buffer
-                (current-buffer) (lambda () (read-only-mode +1)))
-               (read-only-mode +1)))
+                              (funcall it)
+                              (quickrun--pop-to-buffer
+                               (current-buffer) (lambda () (read-only-mode +1)))
+                              (read-only-mode +1)))
            (quickrun--remove-temp-files)))))
 
 (defun quickrun--compilation-finish-func (_buffer _str)
@@ -771,16 +771,15 @@ if you set your own language configuration.")
   "Not documented."
   (let ((cmd-info (quickrun--command-info cmd-key)))
     (quickrun--awhen (assoc-default :default-directory cmd-info)
-      (let ((formatted (file-name-as-directory it)))
-        (unless (file-directory-p formatted)
-          (throw 'quickrun
-                 (format "'%s' is not existed directory" it)))
-        (let* ((has-space (string-match-p "[ \t]" formatted))
-               (quoted-name (shell-quote-argument
-                              (if has-space
-                                (concat "\"" formatted "\"")
-                               formatted)))))
-        (setq quickrun-option-default-directory quoted-name)))))
+                     (let ((formatted (file-name-as-directory it)))
+                       (unless (file-directory-p formatted)
+                         (throw 'quickrun (format "'%s' is not existed directory" it)))
+                       (let* ((has-space (string-match-p "[ \t]" formatted))
+                              (quoted-name (shell-quote-argument
+                                            (if has-space
+                                                (concat "\"" formatted "\"")
+                                              formatted))))
+                         (setq quickrun-option-default-directory quoted-name))))))
 
 (defsubst quickrun--process-connection-type (cmd)
   "Not documented."
@@ -1202,7 +1201,7 @@ But you can register your own command for some languages")
 (defun quickrun--set-command-key (lang candidates)
   "Not documented."
   (quickrun--awhen (quickrun--find-executable candidates)
-    (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
+                   (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
 
 (defsubst quickrun--c-compiler ()
   "Not documented."
