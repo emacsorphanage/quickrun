@@ -775,7 +775,7 @@ if you set your own language configuration.")
         (unless (file-directory-p formatted)
           (throw 'quickrun
                  (format "'%s' is not existed directory" it)))
-        (let* ((has-space (string-match " " formatted))
+        (let* ((has-space (string-match-p "[ \t]" formatted))
                (quoted-name (shell-quote-argument
                               (if has-space
                                 (concat "'" formatted "'")
