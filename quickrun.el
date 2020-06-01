@@ -778,7 +778,7 @@ if you set your own language configuration.")
         (let* ((has-space (string-match-p "[ \t]" formatted))
                (quoted-name (shell-quote-argument
                               (if has-space
-                                (concat "'" formatted "'")
+                                (concat "\"" formatted "\"")
                                formatted)))))
         (setq quickrun-option-default-directory quoted-name)))))
 
