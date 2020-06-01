@@ -775,7 +775,12 @@ if you set your own language configuration.")
         (unless (file-directory-p formatted)
           (throw 'quickrun
                  (format "'%s' is not existed directory" it)))
-        (setq quickrun-option-default-directory formatted)))))
+        (let* ((has-space (string-match-p "[ \t]" formatted))
+               (quoted-name (shell-quote-argument
+                              (if has-space
+                                (concat "\"" formatted "\"")
+                               formatted)))))
+        (setq quickrun-option-default-directory quoted-name)))))
 
 (defsubst quickrun--process-connection-type (cmd)
   "Not documented."
