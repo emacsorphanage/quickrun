@@ -211,6 +211,10 @@ list in order.
 If this parameter is omitted, `quickrun.el` use default execute
 command template "%c %o %s %a".
 
+#### `:timeout`(optional)
+
+Timeout in seconds for the process spawn by the command. This value
+takes precedence over the `quickrun-timeout-seconds` custom variable.
 
 #### `:compile-only`
 
@@ -286,7 +290,8 @@ This means that quickrun uses "c/clang" for C files.
 `quickrun.el` kills process if program run over 10 seconds as default.
 This avoids infinite loop program or endless program by some mistakes.
 You control timeout second to set `quickrun-timeout-seconds`.
-This feature is disabled if `quickrun-timeout-seconds` is `nil`.
+This feature is disabled if `quickrun-timeout-seconds` is `nil`. The
+timeout can also be set per command with the `:timeout` parameter.
 (You can also kill process by `C-c C-c` in quickrun buffer)
 
 

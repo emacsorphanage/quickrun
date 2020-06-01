@@ -81,23 +81,24 @@
 (defvar quickrun--original-outputter nil)
 
 (defmacro quickrun--awhen (test &rest body)
-  "Not documented."
+  "Anaphoric when.  If TEST is non-nil, do BODY (include `it')."
   (declare (indent 1))
   `(let ((it ,test)) (when it ,@body)))
 
 (defun quickrun--mklist (obj)
-  "Not documented."
+  "Ensure OBJ is a list."
   (if (listp obj)
       obj
     (list obj)))
 
 (defsubst quickrun--log (fmt &rest args)
-  "Not documented."
+  "Log if `quickrun-debug' is non-nil.
+FMT and ARGS passed `message'."
   (when quickrun-debug
     (apply 'message fmt args)))
 
 (defsubst quickrun--windows-p ()
-  "Not documented."
+  "Return non-nil if windows."
   (memq system-type '(ms-dos windows-nt cygwin)))
 
 ;;
@@ -158,7 +159,7 @@
 
 ;; hooks
 (defvar quickrun-after-run-hook nil
-  "Run hook after execute quickrun")
+  "Run hook after execute quickrun.")
 
 (defvar quickrun--temporary-file nil)
 
@@ -466,14 +467,14 @@
 		  (:description . "Run Crystal program"))))
 
   "List of each programming languages information.
-Parameter form is (\"language\" . parameter-alist). parameter-alist has
+Parameter form is (\"language\" . parameter-alist).  parameter-alist has
 5 keys and those values , :command, :exec, :remove.
-:command pair is mandatory, other pairs are optional. Associated value
+:command pair is mandatory, other pairs are optional.  Associated value
 should be string or a function which returns a string object.
 
 Assosiated values are
 :command = Program name which is used compiled or executed source code.
-:exec    = Exec command template. If you omit this parameter, quickrun
+:exec    = Exec command template.  If you omit this parameter, quickrun
            use default parameter \"%c %o %s %a\".
 :remove  = Remove files or directories templates.
            Compiler or executor generates temporary files,
@@ -482,8 +483,7 @@ Assosiated values are
 Every pair should be dot-pair.
 
 See explanation of quickrun--template-place-holders
-if you set your own language configuration.
-")
+if you set your own language configuration.")
 
 (defvar quickrun-file-alist
   '(("\\.c\\'" . "c")
@@ -818,7 +818,7 @@ if you set your own language configuration.
     (quickrun--pop-to-buffer buf (lambda () (read-only-mode +1)))))
 
 (defun quickrun--remove-temp-files ()
-  "Removes temporary files."
+  "Remove temporary files."
   (quickrun--log "Quickrun remove %s" quickrun--remove-files)
   (dolist (file quickrun--remove-files)
     (cond
@@ -827,7 +827,7 @@ if you set your own language configuration.
   (setq quickrun--remove-files nil))
 
 (defun quickrun--kill-running-process ()
-  "Kills running process.."
+  "Kill running process."
   (interactive)
   (let ((proc (get-buffer-process (current-buffer))))
     (if (not proc)
@@ -1027,8 +1027,7 @@ Place holders are beginning with '%' and replaced by:
 %n: absolute path of source code without extension
 %N: source code path without extension
 %e: absolute path of source code with executable extension(.exe, .out, .class)
-%E: source code name with executable extension
-")
+%E: source code name with executable extension")
 
 (defun quickrun--executable-suffix (command)
   "Not documented."
@@ -1114,6 +1113,10 @@ Place holders are beginning with '%' and replaced by:
     (cl-loop for key in '(:compile-only)
              when (quickrun--extract-template key cmd-info)
              do (puthash key (quickrun--fill-template it tmpl-arg) info))
+    ;; numerical value (non template)
+    (cl-loop for key in '(:timeout)
+             when (assoc-default key cmd-info)
+             do (puthash key it info))
     ;; take one or more parameters
     (cl-loop for key in '(:exec :remove)
              when (quickrun--extract-template key cmd-info t)
@@ -1158,7 +1161,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun-set-default (lang key)
   "Set `key' as default key in programing language `lang'."
   (unless (assoc key quickrun--language-alist)
-    (error "%s is not registered." key))
+    (error "%s is not registered" key))
   (puthash lang key quickrun--command-key-table))
 
 (defun quickrun--override-command (cmdkey cmd-alist)
@@ -1181,7 +1184,7 @@ by quickrun.el. But you can register your own command for some languages")
   (if override
       (quickrun--override-command key (copy-alist alist))
     (if (not (assoc :command alist))
-        (error "not found :command parameter in language alist")
+        (error "Not found :command parameter in language alist")
       (push (cons key (copy-alist alist)) quickrun--language-alist)))
   (let ((cmd-key (or default key)))
     (when default
@@ -1226,11 +1229,10 @@ by quickrun.el. But you can register your own command for some languages")
     ("markdown" . ("Markdown.pl" "kramdown" "bluecloth" "redcarpet" "pandoc"))
     ("clojure" . ("jark" "clj-env-dir"))
     ("go" . ("go" "gccgo")))
-  "Candidates of language which has some compilers or interpreters")
+  "Candidates of language which has some compilers or interpreters.")
 
 (defun quickrun--init-command-key-table ()
-  "Not documented."
-  "Decide command for programing language which has multiple candidates"
+  "Decide command for programing language which has multiple candidates."
   (dolist (lang quickrun--support-languages)
     (puthash lang lang quickrun--command-key-table))
   (cl-loop for (lang . candidates) in quicklang/lang-candidates
@@ -1263,15 +1265,13 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun (&rest plist)
   "Run commands quickly for current buffer
    With universal prefix argument(C-u), select command-key,
-   With double prefix argument(C-u C-u), run in compile-only-mode"
+   With double prefix argument(C-u C-u), run in compile-only-mode."
   (interactive)
   (quickrun--set-executed-file)
   (let ((beg (or (plist-get plist :start) (point-min)))
         (end (or (plist-get plist :end) (point-max)))
         (quickrun-option-cmd-alist (or quickrun-option-cmd-alist
                                        (plist-get plist :source)))
-        (quickrun-timeout-seconds (or quickrun-option-timeout-seconds
-                                      quickrun-timeout-seconds))
         (quickrun--compile-only-flag (or quickrun--compile-only-flag
                                          (and (consp current-prefix-arg)
                                               (= (car current-prefix-arg) 16)))))
@@ -1286,7 +1286,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun quickrun-with-arg (arg)
-  "Run commands quickly for current buffer with arguments"
+  "Run commands quickly for current buffer with arguments."
   (interactive
    (list (read-string "QuickRun Arg: " nil 'quickrun--with-arg--history)))
   (let ((quickrun-option-args arg))
@@ -1309,13 +1309,13 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun quickrun-region (start end)
-  "Run commands with specified region"
+  "Run commands with specified region."
   (interactive "r")
   (quickrun--region-command-common start end))
 
 ;;;###autoload
 (defun quickrun-replace-region (start end)
-  "Run commands with specified region and replace"
+  "Run commands with specified region and replace."
   (interactive "r")
   (setq quickrun--original-outputter quickrun-option-outputter)
   (let ((quickrun-option-outputter 'replace))
@@ -1323,7 +1323,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun quickrun-eval-print (start end)
-  "Run commands with specified region and replace"
+  "Run commands with specified region and replace."
   (interactive "r")
   (setq quickrun--original-outputter quickrun-option-outputter)
   (let ((quickrun-option-outputter 'eval-print))
@@ -1331,14 +1331,14 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (defun quickrun-compile-only ()
-  "Exec only compilation"
+  "Exec only compilation."
   (interactive)
   (let ((quickrun--compile-only-flag t))
     (quickrun)))
 
 ;;;###autoload
 (defun quickrun-shell ()
-  "Run commands in shell for interactive programs"
+  "Run commands in shell for interactive programs."
   (interactive)
   (let ((quickrun--run-in-shell t)
         (quickrun-timeout-seconds nil))
@@ -1427,6 +1427,9 @@ by quickrun.el. But you can register your own command for some languages")
           (quickrun--copy-region-to-tempfile start end src)
         (setq src orig-src))
       (let ((cmd-info-hash (quickrun--fill-templates cmd-key src)))
+        (setq quickrun-timeout-seconds (or quickrun-option-timeout-seconds
+                                           (gethash :timeout cmd-info-hash)
+                                           quickrun-timeout-seconds))
         (quickrun--add-remove-files (gethash :remove cmd-info-hash))
         (unless quickrun-option-outputter
           (setq quickrun-option-outputter (gethash :outputter cmd-info-hash)))
@@ -1454,7 +1457,7 @@ by quickrun.el. But you can register your own command for some languages")
 
 ;;;###autoload
 (define-minor-mode quickrun-autorun-mode
-  "`quickrun' after saving buffer"
+  "`quickrun' after saving buffer."
   :init-value nil
   :global nil
   :lighter " QAR"
@@ -1472,7 +1475,8 @@ by quickrun.el. But you can register your own command for some languages")
     ("Run with shell" . quickrun--helm-action-shell)
     ("Run with argument" . quickrun--helm-run-with-arg)
     ("Replace region" . quickrun--helm-action-replace-region)
-    ("Eval and insert as comment" . quickrun--helm-action-eval-print)))
+    ("Eval and insert as comment" . quickrun--helm-action-eval-print))
+  "Not documented.")
 
 (defvar helm-quickrun-source
   `((name . "Choose Command-Key")
@@ -1481,7 +1485,7 @@ by quickrun.el. But you can register your own command for some languages")
                     (cl-loop for (cmd-key . cmd-info) in quickrun--language-alist
                              collect (quickrun--helm-candidate cmd-key cmd-info))))
     (action . ,helm-quickrun--actions))
-  "helm/anything source of `quickrun'")
+  "The helm/anything source of `quickrun'.")
 
 (defvar quickrun--helm-history nil)
 
@@ -1490,7 +1494,7 @@ by quickrun.el. But you can register your own command for some languages")
     (volatile)
     (candidates . quickrun--helm-history)
     (action . ,helm-quickrun--actions))
-  "helm source of `quickrun' history")
+  "The helm source of `quickrun' history.")
 
 (defun quickrun--helm-candidate (cmd-key cmd-info)
   "Not documented."
@@ -1548,7 +1552,7 @@ by quickrun.el. But you can register your own command for some languages")
   "Run quickrun with `anything'."
   (interactive)
   (unless (featurep 'anything)
-    (error "anything is not installed."))
+    (error "Anything is not installed"))
   (anything helm-quickrun-source))
 
 ;;;###autoload
@@ -1556,7 +1560,7 @@ by quickrun.el. But you can register your own command for some languages")
   "Run quickrun with `helm'."
   (interactive)
   (unless (featurep 'helm)
-    (error "helm is not installed."))
+    (error "Helm is not installed"))
   (let ((sources (if quickrun--helm-history
                      '(helm-quickrun-history-source helm-quickrun-source)
                    '(helm-quickrun-source))))
