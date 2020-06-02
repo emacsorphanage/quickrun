@@ -463,8 +463,8 @@ FMT and ARGS passed `message'."
                  (:tempfile . nil)
                  (:description . "Compile Kotlin file and execute")))
     ("crystal" . ((:command . "crystal")
-		  (:compile-only . "%c build %s")
-		  (:description . "Run Crystal program"))))
+                  (:compile-only . "%c build %s")
+                  (:description . "Run Crystal program"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
