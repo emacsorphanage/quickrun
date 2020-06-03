@@ -87,6 +87,7 @@ as default. But you can register your own command and apply other languages.
 * Julia(julia)
 * Gnuplot(gnuplot)
 * Kotlin(kotlin)
+* Crystal (crystal)
 
 
 See also `quickrun--support-languages` global variable.
