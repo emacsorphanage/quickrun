@@ -471,7 +471,7 @@ FMT and ARGS passed `message'."
 	    (:exec . "%c run %o %s %a")
 	    (:tempfile . nil)
 	    (:remove "%n")
-	    (:description . "Compile and run V/vlang program"))))
+	    (:description . "Compile and run V programs"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
