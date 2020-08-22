@@ -470,6 +470,7 @@ FMT and ARGS passed `message'."
     ("v" . ((:command . "v")
 	    (:exec . "%c run %o %s %a")
 	    (:tempfile . nil)
+	    (:remove "%n")
 	    (:description . "Compile and run V/vlang program"))))
 
   "List of each programming languages information.
