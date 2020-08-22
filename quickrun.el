@@ -468,8 +468,9 @@ FMT and ARGS passed `message'."
                   (:description . "Run Crystal program")))
 
     ("v" . ((:command . "v")
-		(:exec . "%c run %s")
-		(:description . "Compile and run V/vlang program"))))
+	    (:exec . "%c run %o %s %a")
+	    (:tempfile . nil)
+	    (:description . "Compile and run V/vlang program"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
