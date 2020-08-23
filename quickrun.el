@@ -466,7 +466,6 @@ FMT and ARGS passed `message'."
     ("crystal" . ((:command . "crystal")
                   (:compile-only . "%c build %s")
                   (:description . "Run Crystal program")))
-
     ("v" . ((:command . "v")
 	    (:exec . "%c run %o %s %a")
 	    (:tempfile . nil)
