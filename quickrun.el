@@ -465,7 +465,12 @@ FMT and ARGS passed `message'."
                  (:description . "Compile Kotlin file and execute")))
     ("crystal" . ((:command . "crystal")
                   (:compile-only . "%c build %s")
-                  (:description . "Run Crystal program"))))
+                  (:description . "Run Crystal program")))
+    ("v" . ((:command . "v")
+	    (:exec . "%c run %o %s %a")
+	    (:tempfile . nil)
+	    (:remove "%n")
+	    (:description . "Compile and run V programs"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
@@ -535,7 +540,8 @@ if you set your own language configuration.")
     ("\\.jl\\'" . "julia")
     ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot")
     ("\\.kt\\'" . "kotlin")
-    ("\\.cr\\'" . "crystal"))
+    ("\\.cr\\'" . "crystal")
+    ("\\.v\\'" . "v"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun--major-mode-alist
@@ -588,7 +594,8 @@ if you set your own language configuration.")
     (julia-mode . "julia")
     (gnuplot-mode . "gnuplot")
     (kotlin-mode . "kotlin")
-    (crystal-mode . "crystal"))
+    (crystal-mode . "crystal")
+    (v-mode . "v"))
   "Alist of major-mode and langkey")
 
 (defun quickrun--decide-file-type (filename)
@@ -1155,7 +1162,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal", "v")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
