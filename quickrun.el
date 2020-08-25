@@ -87,9 +87,7 @@
 
 (defun quickrun--mklist (obj)
   "Ensure OBJ is a list."
-  (if (listp obj)
-      obj
-    (list obj)))
+  (if (listp obj) obj (list obj)))
 
 (defsubst quickrun--log (fmt &rest args)
   "Log if `quickrun-debug' is non-nil.
@@ -467,10 +465,10 @@ FMT and ARGS passed `message'."
                   (:compile-only . "%c build %s")
                   (:description . "Run Crystal program")))
     ("v" . ((:command . "v")
-	    (:exec . "%c run %o %s %a")
-	    (:tempfile . nil)
-	    (:remove "%n")
-	    (:description . "Compile and run V programs"))))
+            (:exec . "%c run %o %s %a")
+            (:tempfile . nil)
+            (:remove "%n")
+            (:description . "Compile and run V programs"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
