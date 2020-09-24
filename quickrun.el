@@ -732,6 +732,12 @@ if you set your own language configuration.")
   (interactive)
   (jump-to-register :quickrun-shell))
 
+(defvar quickrun--eshell-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map eshell-mode-map)
+    (define-key map (kbd "q") 'quickrun--eshell-window-restore)
+    map))
+
 (defun quickrun--eshell-post-hook ()
   "Not documented."
   (let ((rerun-p nil)
@@ -745,7 +751,7 @@ if you set your own language configuration.")
       (unless rerun-p
         (quickrun--eshell-finish)
         (read-only-mode +1)
-        (local-set-key (kbd "q") 'quickrun--eshell-window-restore)))))
+        (use-local-map quickrun--eshell-map)))))
 
 (defun quickrun--insert-command (cmd-str)
   "Not documented."
