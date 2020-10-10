@@ -403,10 +403,10 @@ FMT and ARGS passed `message'."
                (:description . "Compile rust and execute")))
 
     ("dart/checked" . ((:command . "dart")
-                       (:cmdopt  . "--enable-type-checks")
-                       (:description . "Run dart with '--enable-type-checks' option")))
+                       (:cmdopt  . "--enable-asserts")
+                       (:description . "Run Dart with '--enable-asserts' option")))
     ("dart/production" . ((:command . "dart")
-                          (:description . "Run dart as without '--enable-type-checks' option")))
+                          (:description . "Run Dart WITHOUT '--enable-asserts' option")))
 
     ("elixir" . ((:command . "elixir")
                  (:description . "Run Elixir script")))
