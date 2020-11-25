@@ -42,6 +42,7 @@ as default. But you can register your own command and apply other languages.
 
 * C(gcc or clang or Visual C++)
 * C++(g++ or clang++ or Visual C++)
+* C#(dotnet or mono)
 * Objective-C(gcc -objc)
 * D Language(dmd)
 * Fortran(gfortran)
@@ -85,6 +86,8 @@ as default. But you can register your own command and apply other languages.
 * Nim/NimScript(nim)
 * Julia(julia)
 * Gnuplot(gnuplot)
+* Kotlin(kotlin)
+* Crystal (crystal)
 
 
 See also `quickrun--support-languages` global variable.
@@ -200,7 +203,7 @@ Command name. `%c` is expanded into this value.
 
 Command(`:command`) option. `%o` is expanded into this value.
 
-#### `:execute`
+#### `:exec`
 
 Executed commands. You can also set command list parameter.
 If you set list parameter, `quickrun.el` executes command
@@ -209,6 +212,10 @@ list in order.
 If this parameter is omitted, `quickrun.el` use default execute
 command template "%c %o %s %a".
 
+#### `:timeout`(optional)
+
+Timeout in seconds for the process spawn by the command. This value
+takes precedence over the `quickrun-timeout-seconds` custom variable.
 
 #### `:compile-only`
 
@@ -284,7 +291,8 @@ This means that quickrun uses "c/clang" for C files.
 `quickrun.el` kills process if program run over 10 seconds as default.
 This avoids infinite loop program or endless program by some mistakes.
 You control timeout second to set `quickrun-timeout-seconds`.
-This feature is disabled if `quickrun-timeout-seconds` is `nil`.
+This feature is disabled if `quickrun-timeout-seconds` is `nil`. The
+timeout can also be set per command with the `:timeout` parameter.
 (You can also kill process by `C-c C-c` in quickrun buffer)
 
 
