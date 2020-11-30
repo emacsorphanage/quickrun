@@ -599,7 +599,8 @@ if you set your own language configuration.")
 (defun quickrun--decide-file-type (filename)
   "Decide file type by FILENAME."
   ;; First search by file extension, Second search by major-mode
-  (or (assoc-default filename quickrun-file-alist 'string-match)
+  (or (let (case-fold-search) (assoc-default filename quickrun-file-alist 'string-match))
+      (let ((case-fold-search t)) (assoc-default filename quickrun-file-alist 'string-match))
       (quickrun--find-from-major-mode-alist)))
 
 (defun quickrun--find-from-major-mode-alist ()
