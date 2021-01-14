@@ -182,7 +182,11 @@ FMT and ARGS passed `message'."
 ;;
 
 (defvar quickrun--language-alist
-  '(("c/gcc" . ((:command . "gcc")
+  '(("asm" . ((:command . "nasm")
+              (:exec . ("%c -f elf64 %o %s -o %e.o" "ld -o %e %e.o" "%e %a"))
+              (:remove . ("%e" "%e.o"))
+              (:description . "Compile Assembly file with nasm and execute")))
+    ("c/gcc" . ((:command . "gcc")
                 (:exec    . ("%c -x c %o -o %e %s" "%e %a"))
                 (:compile-only . "%c -Wall -Werror %o -o %e %s")
                 (:remove . ("%e"))
@@ -584,6 +588,7 @@ if you set your own language configuration.")
     (elixir-mode . "elixir")
     (tcl-mode . "tcl")
     (swift-mode . "swift")
+    (asm-mode . "asm")
     (ats-mode . "ats")
     (ess-mode . "r")
     (nim-mode . "nim")
@@ -1167,7 +1172,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal", "v")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal", "v" "asm")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
