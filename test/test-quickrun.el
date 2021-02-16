@@ -77,4 +77,19 @@
          (use-tempfile (quickrun--use-tempfile-p "hoge")))
     (should-not use-tempfile)))
 
+(ert-deftest quickrun:user-manually-terminates-program ()
+  "Users are able to manually terminate the program with no errors."
+  (with-current-buffer (find-file-noselect "sample/sample_endless_loop.bash")
+    (quickrun))
+  (sleep-for 1)
+  (condition-case err
+      (let ((buf (get-buffer "*quickrun*"))
+            (inhibit-message t))
+        (set-process-query-on-exit-flag (get-buffer-process buf) nil)
+        (kill-buffer buf)
+	    (sleep-for 1)) ; Wait for the sentinel.
+    (wrong-type-argument
+     (quickrun--remove-temp-files)
+     (signal 'error "Cannot access a deleted buffer"))))
+
 ;;; test-quickrun.el ends here
