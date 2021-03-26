@@ -1167,7 +1167,7 @@ Place holders are beginning with '%' and replaced by:
     "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal", "v")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal" "v")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
