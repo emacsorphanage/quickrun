@@ -54,6 +54,7 @@ as default. But you can register your own command and apply other languages.
 * PHP(php)
 * Emacs Lisp(emacs)
 * Scheme(gosh)
+* Smalltalk (gst)
 * Racket(racket)
 * Common Lisp(clisp or sbcl or ccl)
 * Clojure(jark or clj-env-dir)
