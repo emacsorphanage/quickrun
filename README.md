@@ -437,8 +437,8 @@ Sample is following:
                         (:exec . ("%c -bv --color %s"))))))
 ```
 
-[travis-badge]: https://travis-ci.org/syohex/emacs-quickrun.svg
-[travis-link]: https://travis-ci.org/syohex/emacs-quickrun
+[travis-badge]: https://travis-ci.org/emacsorphanage/quickrun.svg
+[travis-link]: https://travis-ci.org/github/emacsorphanage/quickrun/builds/
 [melpa-link]: https://melpa.org/#/quickrun
 [melpa-stable-link]: https://stable.melpa.org/#/quickrun
 [melpa-badge]: https://melpa.org/packages/quickrun-badge.svg
