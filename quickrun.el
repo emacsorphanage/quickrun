@@ -1063,7 +1063,7 @@ Place holders are beginning with '%' and replaced by:
   (let ((buffile (buffer-file-name)))
     (if (not (and buffile (file-remote-p buffile)))
         src
-      (aref (tramp-dissect-file-name (buffer-file-name)) 3))))
+      (tramp-file-name-localname (tramp-dissect-file-name (buffer-file-name))))))
 
 (defun quickrun--place-holder-info (cmd cmdopt source args)
   "Not documented."
