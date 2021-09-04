@@ -89,6 +89,7 @@ as default. But you can register your own command and apply other languages.
 * Gnuplot(gnuplot)
 * Kotlin(kotlin)
 * Crystal (crystal)
+* Applescript(osascript)
 
 
 See also `quickrun--support-languages` global variable.
