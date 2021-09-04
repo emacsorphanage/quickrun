@@ -89,6 +89,7 @@ as default. But you can register your own command and apply other languages.
 * Gnuplot(gnuplot)
 * Kotlin(kotlin)
 * Crystal (crystal)
+* V(v)
 * Applescript(osascript)
 
 
