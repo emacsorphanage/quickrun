@@ -471,7 +471,9 @@ FMT and ARGS passed `message'."
             (:exec . "%c run %o %s %a")
             (:tempfile . nil)
             (:remove "%n")
-            (:description . "Compile and run V programs"))))
+            (:description . "Compile and run V programs")))
+    ("applescript" . ((:command . "osascript")
+                      (:description . "Run apple script"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
@@ -543,7 +545,8 @@ if you set your own language configuration.")
     ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot")
     ("\\.kt\\'" . "kotlin")
     ("\\.cr\\'" . "crystal")
-    ("\\.v\\'" . "v"))
+    ("\\.v\\'" . "v")
+    ("\\.\\(scpt\\|applescript\\)\\'" . "applescript"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun--major-mode-alist
@@ -598,7 +601,8 @@ if you set your own language configuration.")
     (gnuplot-mode . "gnuplot")
     (kotlin-mode . "kotlin")
     (crystal-mode . "crystal")
-    (v-mode . "v"))
+    (v-mode . "v")
+    (applescript-mode . "applescript"))
   "Alist of major-mode and langkey")
 
 (defun quickrun--decide-file-type (filename)
@@ -1173,7 +1177,8 @@ Place holders are beginning with '%' and replaced by:
     "racket" "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal" "v")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal" "v"
+    "applescript")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
