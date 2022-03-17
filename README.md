@@ -1,20 +1,22 @@
-# quickrun.el [![travis badge][travis-badge]][travis-link] [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+
+# quickrun.el
 
 ## Introduction
 
 **quickrun.el** is Emacs port of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
+[![CI](https://github.com/emacsorphanage/quickrun/actions/workflows/test.yml/badge.svg)](https://github.com/emacsorphanage/quickrun/actions/workflows/test.yml)
+[![travis badge][travis-badge]][travis-link]
 
 `quickrun.el` is a extension to execute editing buffer.
 `quickrun.el` is similar to executable-interpret, but `quickrun.el` provides more convenient
 commands. `quickrun.el` execute not only script languages(Perl, Ruby, Python etc), but also
 compiling languages(C, C++, Go, Java etc) and markup language.
 
-
 ## Requirements
 
 * Emacs 24.3 or higher.
-
 
 ## Installation
 
@@ -92,9 +94,7 @@ as default. But you can register your own command and apply other languages.
 * V(v)
 * Applescript(osascript)
 
-
 See also `quickrun--support-languages` global variable.
-
 
 ## Basic Usage
 
@@ -156,7 +156,6 @@ buffer file, `quickrun.el` sends its content to stdin of executed program. Pleas
 
 If this value is `nil`, quickrun.el does not move focus to output buffer.
 
-
 ## User Defined Command
 
 You can add your own command or override existsing command  by `quickrun-add-command` as below.
@@ -192,7 +191,6 @@ key parameters, `:default`, `:mode`, `:override`.
 | `:default` lang  | Use this command parameter as default in specified language |
 | `:mode` mode     | this command parameter in specified mode                    |
 | `:override` bool | Override existing parameter with specified parameter        |
-
 
 ### Command Parameter
 
@@ -255,7 +253,6 @@ NOTE: If you set this parameter, you cannot use `quickrun-region`.
 Description of this command. This parameter is used in
 `helm-quickrun` or `anything-quickrun`
 
-
 ### Placeholders
 
 You can use following placeholders in command parameter
@@ -276,7 +273,6 @@ Source file name(`%s`, `%n` etc) is not original file name except
 Java language. Because `quickrun.el` copys source file to temporary
 file firstly.
 
-
 ## Change Default Command
 
 `quickrun-set-default` changes default command in language that is registerd
@@ -288,7 +284,6 @@ multiple command parameters(like c, c++,Javascript).
 
 This means that quickrun uses "c/clang" for C files.
 
-
 ## Timeout Seconds
 
 `quickrun.el` kills process if program run over 10 seconds as default.
@@ -298,14 +293,12 @@ This feature is disabled if `quickrun-timeout-seconds` is `nil`. The
 timeout can also be set per command with the `:timeout` parameter.
 (You can also kill process by `C-c C-c` in quickrun buffer)
 
-
 ## Key bindings in quickrun buffer
 
 | Key       | Command                |
 |:---------:|:-----------------------|
 | `q`       | Close quickrun window  |
 | `C-c C-c` | Kill quickrun process  |
-
 
 ## Buffer Local Variables
 
@@ -339,7 +332,6 @@ the following string is treated as ":command".
 #### `quickrun-option-outputter`
 
 Outputter function. See *Outputter* section
-
 
 ### Example of buffer local variable
 
@@ -375,13 +367,11 @@ int main (int argc, char *argv[])
 */
 ```
 
-
 ## Hooks
 
 #### `quickrun-after-run-hook`
 
 Run hooks after execute all commands.
-
 
 ## Outputter
 
@@ -417,7 +407,6 @@ Use multiple outputters. [outputter *multi* sample](sample/sample_outputter_mult
 #### `null`
 
 No output. [outputter *null* sample](sample/sample_outputter_null.pl)
-
 
 ## Using quickrun as function from other functions
 
