@@ -51,6 +51,7 @@
 (declare-function anything "anything")
 (declare-function helm "helm")
 (declare-function tramp-dissect-file-name "tramp")
+(defvar tramp-file-name-localname)
 
 (defgroup quickrun nil
   "Execute buffer quickly."
