@@ -1,29 +1,32 @@
 Revision history for quickrun.el
 
+Version 2.3.1 N/A jcs090218
+  - Support Deno (b8a9b716a8414c98d3a1ce9267c47c5dbbc7f67b)
+
 Version 2.2.8 2017/01/14 syohex
-  - Support julia(#77)
-  - Support gnuplot(#78)
-  - Support racket(#81)
-  - Fix not focus window case(#85)
+  - Support julia (#77)
+  - Support gnuplot (#78)
+  - Support racket (#81)
+  - Fix not focus window case (#85)
   - Drop older Emacs support for maintenance
 
 Version 2.2.7 2016/02/16 syohex
-  - Support Open source Swift(#68)
-  - Fix nim issue(#71)
-  - Fix ansi color sequence handling issue at error(#72)
-  - Support nimscript(#73)
+  - Support Open source Swift (#68)
+  - Fix nim issue (#71)
+  - Fix ansi color sequence handling issue at error (#72)
+  - Support nimscript (#73)
 
 Version 2.2.6 2015/08/08 syohex
   - Support perl6
 
 Version 2.2.5 2015/08/08 syohex
   - Support fish script
-  - Improve quickrun-shell behavior(#62, #63)
-  - Fix recentering issue(#61)
+  - Improve quickrun-shell behavior (#62, #63)
+  - Fix recentering issue (#61)
 
 Version 2.2.4 2015/07/10 syohex
   - Fix quickrun shell behavior
-  - Implement autorun mode(#54)
+  - Implement autorun mode (#54)
   - Improve helm-quickrun history
   - Add option for focusing popup buffer
   - Add format place folder '%S'
