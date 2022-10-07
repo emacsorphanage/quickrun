@@ -1416,7 +1416,7 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
   "Run commands after selecting the backend."
   (interactive)
   (let ((quickrun--compile-only-flag t))
-    (when (quickrun-select-default) (quickrun))))
+    (quickrun-select)))
 
 ;;;###autoload
 (defun quickrun-shell ()
