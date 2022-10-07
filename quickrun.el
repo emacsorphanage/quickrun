@@ -51,7 +51,8 @@
 (declare-function anything "anything")
 (declare-function helm "helm")
 (declare-function tramp-dissect-file-name "tramp")
-(defvar tramp-file-name-localname)
+(declare-function tramp-file-name-localname "tramp")
+(declare-function clear-image-cache "image")
 
 (defgroup quickrun nil
   "Execute buffer quickly."
@@ -120,24 +121,24 @@ FMT and ARGS passed `message'."
         `(put (quote ,name) 'safe-local-variable (quote ,safep)))))
 
 (quickrun--defvar quickrun-option-cmd-alist
-  nil listp
-  "Specify command alist directly as file local variable")
+                  nil listp
+                  "Specify command alist directly as file local variable")
 
 (quickrun--defvar quickrun-option-command
-  nil stringp
-  "Specify command directly as file local variable")
+                  nil stringp
+                  "Specify command directly as file local variable")
 
 (quickrun--defvar quickrun-option-cmdkey
-  nil stringp
-  "Specify language key directly as file local variable")
+                  nil stringp
+                  "Specify language key directly as file local variable")
 
 (quickrun--defvar quickrun-option-cmdopt
-  nil stringp
-  "Specify command option directly as file local variable")
+                  nil stringp
+                  "Specify command option directly as file local variable")
 
 (quickrun--defvar quickrun-option-args
-  nil stringp
-  "Specify command argument directly as file local variable")
+                  nil stringp
+                  "Specify command argument directly as file local variable")
 
 (defun quickrun--outputter-p (_x)
   "Not documented."
@@ -146,20 +147,20 @@ FMT and ARGS passed `message'."
         (quickrun--outputter-multi-p x))))
 
 (quickrun--defvar quickrun-option-outputter
-  nil quickrun--outputter-p
-  "Specify format function output buffer as file local variable")
+                  nil quickrun--outputter-p
+                  "Specify format function output buffer as file local variable")
 
 (quickrun--defvar quickrun-option-shebang
-  t booleanp
-  "Select using command from schebang as file local variable")
+                  t booleanp
+                  "Select using command from schebang as file local variable")
 
 (quickrun--defvar quickrun-option-timeout-seconds
-  nil integerp
-  "Timeout seconds as file local variable")
+                  nil integerp
+                  "Timeout seconds as file local variable")
 
 (quickrun--defvar quickrun-option-default-directory
-  nil file-directory-p
-  "Default directory where command is executed")
+                  nil file-directory-p
+                  "Default directory where command is executed")
 
 ;; hooks
 (defvar quickrun-after-run-hook nil
@@ -680,10 +681,10 @@ if you set your own language configuration.")
              (process-file-shell-command cmd nil t)
              (goto-char (point-min))
              (quickrun--awhen (assoc-default :mode compile-conf)
-               (funcall it)
-               (quickrun--pop-to-buffer
-                (current-buffer) (lambda () (read-only-mode +1)))
-               (read-only-mode +1)))
+                              (funcall it)
+                              (quickrun--pop-to-buffer
+                               (current-buffer) (lambda () (read-only-mode +1)))
+                              (read-only-mode +1)))
            (quickrun--remove-temp-files)))))
 
 (defun quickrun--compilation-finish-func (_buffer _str)
@@ -819,15 +820,15 @@ if you set your own language configuration.")
   "Not documented."
   (let ((cmd-info (quickrun--command-info cmd-key)))
     (quickrun--awhen (assoc-default :default-directory cmd-info)
-      (let ((formatted (file-name-as-directory it)))
-        (unless (file-directory-p formatted)
-          (throw 'quickrun (format "'%s' is not existed directory" it)))
-        (let* ((has-space (string-match-p "[ \t]" formatted))
-               (quoted-name (shell-quote-argument
-                             (if has-space
-                                 (concat "\"" formatted "\"")
-                               formatted))))
-          (setq quickrun-option-default-directory quoted-name))))))
+                     (let ((formatted (file-name-as-directory it)))
+                       (unless (file-directory-p formatted)
+                         (throw 'quickrun (format "'%s' is not existed directory" it)))
+                       (let* ((has-space (string-match-p "[ \t]" formatted))
+                              (quoted-name (shell-quote-argument
+                                            (if has-space
+                                                (concat "\"" formatted "\"")
+                                              formatted))))
+                         (setq quickrun-option-default-directory quoted-name))))))
 
 (defsubst quickrun--process-connection-type (cmd)
   "Not documented."
@@ -1269,7 +1270,7 @@ by quickrun.el. But you can register your own command for some languages")
 (defun quickrun--set-command-key (lang candidates)
   "Not documented."
   (quickrun--awhen (quickrun--find-executable candidates)
-    (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
+                   (puthash lang (format "%s/%s" lang it) quickrun--command-key-table)))
 
 (defsubst quickrun--c-compiler ()
   "Not documented."
