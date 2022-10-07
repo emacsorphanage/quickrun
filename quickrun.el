@@ -573,7 +573,7 @@ if you set your own language configuration.")
     (scheme-mode . "scheme")
     (smalltalk-mode . "st/gst")
     (racket-mode . "racket")
-    ((javascript-mode js-mode js2-mode) . "javascript")
+    ((javascript-mode js-mode js2-mode js3-mode) . "javascript")
     (clojure-mode . "clojure")
     (erlang-mode . "erlang")
     ((ocaml-mode tuareg-mode) . "ocaml")
@@ -1277,7 +1277,7 @@ by quickrun.el. But you can register your own command for some languages")
     ("c++" . ,(quickrun--c++-compiler))
     ("c#" . ("dotnet" "mono"))
     ("fortran" . ("gfortran"))
-    ("javascript" . ("node" "v8" "js" "jrunscript" "cscript"))
+    ("javascript" . ("node" "v8" "js" "jrunscript" "cscript" "deno"))
     ("ruby" . ("ruby" "mruby"))
     ("lisp" . ("clisp" "sbcl" "ccl"))
     ("scheme" . ("gosh"))
@@ -1398,6 +1398,13 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
   (interactive)
   (let ((quickrun--compile-only-flag t))
     (quickrun)))
+
+;;;###autoload
+(defun quickrun-compile-only-select ()
+  "Run commands after selecting the backend."
+  (interactive)
+  (let ((quickrun--compile-only-flag t))
+    (when (quickrun-select-default) (quickrun))))
 
 ;;;###autoload
 (defun quickrun-shell ()

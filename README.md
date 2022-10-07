@@ -127,6 +127,10 @@ which reads input from STDIN.
 Compile current buffer with compile.el framework, not execute.
 quickrun with `C-u C-u` prefix behaves same as quickrun-compile-only.
 
+#### `quickrun-compile-only-select`
+
+Like `quickrun-compile-only` command but select the backend before the execution.
+
 #### `quickrun-replace-region`
 
 Replace region of code with its output.
