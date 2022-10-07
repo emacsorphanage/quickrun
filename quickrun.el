@@ -1,11 +1,13 @@
 ;;; quickrun.el --- Run commands quickly -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 by Syohei YOSHIDA
+;; Copyright (C) 2020-2022 by Jen-Chieh Shen
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; URL: https://github.com/syohex/emacs-quickrun
+;; Maintainer: Jen-Chieh Shen <jcs090218@gmail.com>
+;; URL: https://github.com/emacsorphanage/quickrun
 ;; Version: 2.3.1
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "26.1") (ht "2.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,7 +25,7 @@
 ;;; Commentary:
 
 ;; quickrun.el executes editing buffer.  quickrun.el selects commands to execute
-;; buffer automatically.  Please see https://github.com/syohex/emacs-quickrun
+;; buffer automatically.  Please see https://github.com/emacsorphanage/quickrun
 ;; for more information.
 ;;
 ;; This package respects `quickrun.vim' developed by thinca
@@ -41,6 +43,8 @@
 (require 'ansi-color)
 (require 'em-banner)
 (require 'eshell)
+
+(require 'ht)
 
 ;; for warnings of byte-compile
 (declare-function anything "anything")
@@ -1197,6 +1201,30 @@ by quickrun.el. But you can register your own command for some languages")
     (error "%s is not registered" key))
   (puthash lang key quickrun--command-key-table))
 
+;;;###autoload
+(defun quickrun-select-default ()
+  "Update the default."
+  (interactive)
+  (when-let*
+      ((src (buffer-name))
+       (lang (or (and src (quickrun--decide-file-type src))
+                 (quickrun--find-from-major-mode-alist)))
+       (default (ht-get quickrun--command-key-table lang))
+       (candidates (cl-remove-if-not (lambda (item)
+                                       (string= lang (nth 0 (split-string (car item) "/"))))
+                                     quickrun--language-alist))
+       (prompt (format "QuickRun Lang%s: "(if default
+                                              (format " [Default: %s]" default)
+                                            "")))
+       (key (completing-read prompt candidates nil nil nil nil default)))
+    (quickrun-set-default lang key)))
+
+;;;###autoload
+(defun quickrun-select ()
+  "Execute the current command."
+  (interactive)
+  (when (quickrun-select-default) (quickrun)))
+
 (defun quickrun--override-command (cmdkey cmd-alist)
   "Not documented."
   (let ((registered (assoc-default cmdkey quickrun--language-alist)))
@@ -1296,9 +1324,10 @@ by quickrun.el. But you can register your own command for some languages")
 ;;
 ;;;###autoload
 (defun quickrun (&rest plist)
-  "Run commands quickly for current buffer
-   With universal prefix argument(C-u), select command-key,
-   With double prefix argument(C-u C-u), run in compile-only-mode."
+  "Run commands quickly for current buffer.
+
+With universal prefix argument(C-u), select command-key,
+With double prefix argument(C-u C-u), run in compile-only-mode."
   (interactive)
   (quickrun--set-executed-file)
   (let ((beg (or (plist-get plist :start) (point-min)))
@@ -1331,7 +1360,7 @@ by quickrun.el. But you can register your own command for some languages")
   "Not documented."
   (let* ((default (or quickrun-option-cmdkey quickrun--last-cmd-key))
          (prompt (format "QuickRun Lang%s: "(if default
-                                                (format "[Default: %s]" default)
+                                                (format " [Default: %s]" default)
                                               ""))))
     (completing-read prompt quickrun--language-alist nil nil nil nil default)))
 
