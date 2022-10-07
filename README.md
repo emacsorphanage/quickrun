@@ -104,6 +104,10 @@ Execute current buffer. If `quickrun.el` does not find command-key,
 then `quickrun.el` asks you command-key(You always input command
 if you use `C-u` prefix key)
 
+#### `quickrun-select`
+
+Like `quickrun` command but select the backend before the execution.
+
 #### `quickrun-region`
 
 Execute region. (Java is not supported)

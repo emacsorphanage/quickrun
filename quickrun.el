@@ -1219,12 +1219,6 @@ by quickrun.el. But you can register your own command for some languages")
        (key (completing-read prompt candidates nil nil nil nil default)))
     (quickrun-set-default lang key)))
 
-;;;###autoload
-(defun quickrun-select ()
-  "Execute the current command."
-  (interactive)
-  (when (quickrun-select-default) (quickrun)))
-
 (defun quickrun--override-command (cmdkey cmd-alist)
   "Not documented."
   (let ((registered (assoc-default cmdkey quickrun--language-alist)))
@@ -1345,6 +1339,12 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
         (quickrun--remove-temp-files)))))
 
 (defvar quickrun--with-arg--history nil)
+
+;;;###autoload
+(defun quickrun-select ()
+  "Run commands after selecting the backend."
+  (interactive)
+  (when (quickrun-select-default) (quickrun)))
 
 ;;;###autoload
 (defun quickrun-with-arg (arg)
