@@ -7,7 +7,6 @@
 **quickrun.el** is Emacs port of [quickrun.vim](https://github.com/thinca/vim-quickrun).
 
 [![CI](https://github.com/emacsorphanage/quickrun/actions/workflows/test.yml/badge.svg)](https://github.com/emacsorphanage/quickrun/actions/workflows/test.yml)
-[![travis badge][travis-badge]][travis-link]
 
 `quickrun.el` is a extension to execute editing buffer.
 `quickrun.el` is similar to executable-interpret, but `quickrun.el` provides more convenient
@@ -436,8 +435,6 @@ Sample is following:
                         (:exec . ("%c -bv --color %s"))))))
 ```
 
-[travis-badge]: https://travis-ci.org/emacsorphanage/quickrun.svg
-[travis-link]: https://travis-ci.org/github/emacsorphanage/quickrun/builds/
 [melpa-link]: https://melpa.org/#/quickrun
 [melpa-stable-link]: https://stable.melpa.org/#/quickrun
 [melpa-badge]: https://melpa.org/packages/quickrun-badge.svg
