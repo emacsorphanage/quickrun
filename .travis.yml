@@ -1,13 +1,15 @@
 language: generic
 sudo: false
 before_install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
-  - evm install $EVM_EMACS --use --skip
-  - cask
+  - git clone https://github.com/rejeep/evm.git /home/travis/.evm
+  - evm config path /tmp
+  - evm install emacs-24.3-travis --use --skip
+  - git clone https://github.com/cask/cask ~/.cask
+  - cask update
 env:
-  - EVM_EMACS=emacs-24.4-travis
-  - EVM_EMACS=emacs-24.5-travis
-  - EVM_EMACS=emacs-25.1-travis
+  - EVM_EMACS=emacs-24.4-travis PATH=$HOME/.cask/bin:$HOME/.evm/bin:$PATH
+  - EVM_EMACS=emacs-24.5-travis PATH=$HOME/.cask/bin:$HOME/.evm/bin:$PATH
+  - EVM_EMACS=emacs-25.1-travis PATH=$HOME/.cask/bin:$HOME/.evm/bin:$PATH
 script:
   - emacs --version
   - make test

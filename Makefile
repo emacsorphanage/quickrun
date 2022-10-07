@@ -1,16 +1,33 @@
 EMACS ?= emacs
-CASK ?= cask
+EASK ?= eask
 
-LOADPATH = -L .
+.PHONY: clean checkdoc lint package install compile test
 
-ELPA_DIR = $(shell EMACS=$(EMACS) $(CASK) package-directory)
+ci: clean package install compile
 
-test: elpa
-	$(CASK) exec $(EMACS) -Q -batch $(LOADPATH) \
-		-l test/test-quickrun.el \
-		-f ert-run-tests-batch-and-exit
+package:
+	@echo "Packaging..."
+	$(EASK) package
 
-elpa: $(ELPA_DIR)
-$(ELPA_DIR): Cask
-	$(CASK) install
-	touch $@
+install:
+	@echo "Installing..."
+	$(EASK) install
+
+compile:
+	@echo "Compiling..."
+	$(EASK) compile
+
+test:
+	@echo "Testing..."
+	$(EASK) test ert ./test/*.el
+
+checkdoc:
+	@echo "Run checkdoc..."
+	$(EASK) lint checkdoc
+
+lint:
+	@echo "Run package-lint..."
+	$(EASK) lint package
+
+clean:
+	$(EASK) clean-all

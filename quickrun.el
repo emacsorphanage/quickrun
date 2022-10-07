@@ -289,6 +289,9 @@ FMT and ARGS passed `message'."
                    (:description . "Run Lisp file with ccl")))
     ("scheme/gosh" . ((:command . "gosh")
                       (:description . "Run Scheme file with gosh(Gauche)")))
+    ("st/gst" . ((:command . "gst")
+                 (:exec . "%c -f %s %a")
+                 (:description . "Run Smalltalk file with GNU Smalltalk")))
     ("racket" . ((:command . "racket")
                  (:exec . "%c --require-script %s")
                  (:description . "Run racket script")))
@@ -472,7 +475,9 @@ FMT and ARGS passed `message'."
             (:exec . "%c run %o %s %a")
             (:tempfile . nil)
             (:remove "%n")
-            (:description . "Compile and run V programs"))))
+            (:description . "Compile and run V programs")))
+    ("applescript" . ((:command . "osascript")
+                      (:description . "Run apple script"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
@@ -506,6 +511,7 @@ if you set your own language configuration.")
     ("\\.\\(el\\|elisp\\)\\'" . "emacs")
     ("\\.\\(lisp\\|lsp\\)\\'" . "lisp")
     ("\\.\\(scm\\|scheme\\)\\'" . "scheme")
+    ("\\.st\\'" . "st/gst")
     ("\\.rkt\\'" . "racket")
     ("\\.js\\'" . "javascript")
     ("\\.clj\\'" . "clojure")
@@ -543,7 +549,8 @@ if you set your own language configuration.")
     ("\\.\\(gpi\\|plt\\)\\'" . "gnuplot")
     ("\\.kt\\'" . "kotlin")
     ("\\.cr\\'" . "crystal")
-    ("\\.v\\'" . "v"))
+    ("\\.v\\'" . "v")
+    ("\\.\\(scpt\\|applescript\\)\\'" . "applescript"))
   "Alist of (file-regexp . key)")
 
 (defvar quickrun--major-mode-alist
@@ -559,6 +566,7 @@ if you set your own language configuration.")
     (emacs-lisp-mode . "emacs")
     (lisp-mode . "lisp")
     (scheme-mode . "scheme")
+    (smalltalk-mode . "st/gst")
     (racket-mode . "racket")
     ((javascript-mode js-mode js2-mode) . "javascript")
     (clojure-mode . "clojure")
@@ -598,7 +606,8 @@ if you set your own language configuration.")
     (gnuplot-mode . "gnuplot")
     (kotlin-mode . "kotlin")
     (crystal-mode . "crystal")
-    (v-mode . "v"))
+    (v-mode . "v")
+    (applescript-mode . "applescript"))
   "Alist of major-mode and langkey")
 
 (defun quickrun--decide-file-type (filename)
@@ -1023,7 +1032,8 @@ if you set your own language configuration.")
                (quickrun--exec rest-commands input orig-mode))
               (t
                (if (not is-success)
-                   (if (eq quickrun-option-outputter #'quickrun--default-outputter)
+                   (if (and (buffer-live-p quickrun--buffer-name)
+                            (eq quickrun-option-outputter #'quickrun--default-outputter))
                        (quickrun--apply-colorizing input orig-mode)
                      (message "Failed: Exit Status=%d" exit-status))
                  (quickrun--apply-outputter outputter-func)
@@ -1062,7 +1072,7 @@ Place holders are beginning with '%' and replaced by:
   (let ((buffile (buffer-file-name)))
     (if (not (and buffile (file-remote-p buffile)))
         src
-      (aref (tramp-dissect-file-name (buffer-file-name)) 3))))
+      (tramp-file-name-localname (tramp-dissect-file-name (buffer-file-name))))))
 
 (defun quickrun--place-holder-info (cmd cmdopt source args)
   "Not documented."
@@ -1168,11 +1178,12 @@ Place holders are beginning with '%' and replaced by:
 ;;
 
 (defconst quickrun--support-languages
-  '("c" "c++" "objc" "c#" "perl" "perl6" "ruby" "python" "php" "emacs" "lisp" "scheme" "racket"
-    "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
+  '("c" "c++" "objc" "c#" "perl" "perl6" "ruby" "python" "php" "emacs" "lisp" "scheme" "st"
+    "racket" "javascript" "clojure" "erlang" "ocaml" "fsharp" "go" "io" "haskell" "java"
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
-    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal", "v" "asm")
+    "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal" "v"
+    "applescript" "asm")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
