@@ -1,4 +1,4 @@
-;;; quickrun.el --- Run commands quickly -*- lexical-binding: t; -*-
+;;; quickrun.el --- Run commands quickly  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 by Syohei YOSHIDA
 ;; Copyright (C) 2020-2022 by Jen-Chieh Shen
@@ -8,6 +8,7 @@
 ;; URL: https://github.com/emacsorphanage/quickrun
 ;; Version: 2.3.1
 ;; Package-Requires: ((emacs "26.1") (ht "2.0"))
+;; Keywords: tools
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
