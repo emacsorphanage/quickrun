@@ -92,7 +92,7 @@ as default. But you can register your own command and apply other languages.
 * Crystal (crystal)
 * V (v)
 * Applescript (osascript)
-* Assembly Language (nasm)
+* Assembly Language (nasm, masm)
 
 See also `quickrun--support-languages` global variable.
 
