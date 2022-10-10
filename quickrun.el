@@ -677,7 +677,7 @@ if you set your own language configuration.")
 (defun quickrun--pop-to-buffer (buf cb)
   "Not documented."
   (let ((win (selected-window)))
-    (pop-to-buffer buf)
+    (switch-to-buffer-other-window buf)
     (funcall cb)
     (unless quickrun-focus-p
       (select-window win))))
@@ -819,7 +819,7 @@ if you set your own language configuration.")
       (when eshell-buf
         (kill-buffer eshell-buf))
       (eshell)
-      (kill-buffer quickrun--buffer-name)
+      (quickrun--kill-quickrun-buffer)
       (setq-local quickrun--shell-last-command cmd-str)
       (add-hook 'eshell-post-command-hook 'quickrun--eshell-post-hook)
       (quickrun--insert-command cmd-str)
@@ -966,7 +966,7 @@ if you set your own language configuration.")
 (defun quickrun--outputter-null ()
   "Not documented."
   (delete-region (point-min) (point-max))
-  (kill-buffer (get-buffer quickrun--buffer-name)))
+  (quickrun--kill-quickrun-buffer))
 
 (defun quickrun--outputter-replace-region ()
   "Not documented."
