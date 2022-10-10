@@ -164,6 +164,10 @@ buffer file, `quickrun.el` sends its content to stdin of executed program. Pleas
 
 If this value is `nil`, quickrun.el does not move focus to output buffer.
 
+### `quickrun-truncate-lines`(Default: `t`)
+
+The `truncate-lines' value for `*quickrun*` buffer.
+
 ## User Defined Command
 
 You can add your own command or override existsing command  by `quickrun-add-command` as below.

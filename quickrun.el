@@ -69,6 +69,11 @@
   :type 'boolean
   :group 'quickrun)
 
+(defcustom quickrun-truncate-lines t
+  "The `truncate-lines' value for `*quickrun*` buffer."
+  :type 'boolean
+  :group 'quickrun)
+
 (defcustom quickrun-input-file-extension ".qrinput"
   "Extension of input file name."
   :type '(choice (string :tag "Extension of quickrun input file")
@@ -906,6 +911,7 @@ if you set your own language configuration.")
 (define-derived-mode quickrun--mode nil "Quickrun"
   "Major mode for Quickrun execution process."
   (read-only-mode +1)
+  (setq-local truncate-lines quickrun-truncate-lines)
   (use-local-map quickrun--mode-map))
 
 ;;
