@@ -342,7 +342,7 @@ FMT and ARGS passed `message'."
                              (:cmdopt . "//Nologo")
                              (:description . "Run Javascript file with cscript")))
     ("javascript/deno" . ((:command . "deno")
-                          (:exec . "%c run %s")
+                          (:exec . "%c run -A %s")
                           (:compile-only . "%c compile %s")
                           (:description . "Run Javascript file with deno")))
 
@@ -364,7 +364,7 @@ FMT and ARGS passed `message'."
                          (:remove  . ("%n.js"))
                          (:description . "Run TypeScript script")))
     ("typescript/deno" . ((:command . "deno")
-                          (:exec . "%c run %s")
+                          (:exec . "%c run -A %s")
                           (:compile-only . "%c compile %s")
                           (:compile-conf . ((:compilation-mode . nil) (:mode . js-mode)))
                           (:remove  . ("%n.js"))
