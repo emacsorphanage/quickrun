@@ -842,12 +842,7 @@ if you set your own language configuration.")
       (let ((formatted (file-name-as-directory it)))
         (unless (file-directory-p formatted)
           (throw 'quickrun (format "'%s' is not existed directory" it)))
-        (let* ((has-space (string-match-p "[ \t]" formatted))
-               (quoted-name (shell-quote-argument
-                             (if has-space
-                                 (concat "\"" formatted "\"")
-                               formatted))))
-          (setq quickrun-option-default-directory quoted-name))))))
+          (setq quickrun-option-default-directory formatted)))))
 
 (defsubst quickrun--process-connection-type (cmd)
   "Not documented."
@@ -1119,16 +1114,16 @@ Place holders are beginning with '%' and replaced by:
          (directory (substring dirname 0 (- (length dirname) 1)))
          (executable-suffix (quickrun--executable-suffix cmd))
          (executable-name (concat without-extension executable-suffix)))
-    `(("%c" . ,cmd)
-      ("%o" . ,cmdopt)
-      ("%s" . ,(file-name-nondirectory src))
-      ("%S" . ,(file-name-nondirectory without-extension))
-      ("%n" . ,(expand-file-name without-extension))
-      ("%N" . ,without-extension)
-      ("%d" . ,directory)
-      ("%e" . ,(expand-file-name executable-name))
-      ("%E" . ,executable-name)
-      ("%a" . ,args))))
+    `((?c . ,cmd)
+      (?o . ,cmdopt)
+      (?s . ,(file-name-nondirectory src))
+      (?S . ,(file-name-nondirectory without-extension))
+      (?n . ,(expand-file-name without-extension))
+      (?N . ,without-extension)
+      (?d . ,directory)
+      (?e . ,(expand-file-name executable-name))
+      (?E . ,executable-name)
+      (?a . ,args))))
 
 (defconst quickrun--default-tmpl-alist
   '((:exec . "%c %o %s %a")))
@@ -1187,11 +1182,20 @@ Place holders are beginning with '%' and replaced by:
              when (assoc-default key cmd-info)
              do (puthash key it info))
     ;; take one or more parameters
-    (cl-loop for key in '(:exec :remove)
+    (cl-loop for key in '(:exec)
              when (quickrun--extract-template key cmd-info t)
              do
              (let ((filled-tmpls (mapcar (lambda (x)
                                            (quickrun--fill-template x tmpl-arg))
+                                         it)))
+               (puthash key filled-tmpls info)))
+    (cl-loop for key in '(:remove)
+             when (quickrun--extract-template key cmd-info t)
+             do
+             (let ((filled-tmpls (mapcar (lambda (x)
+                                           ;; "remove" is used internally and is not used by a shell,
+                                           ;; so it does not need to be escaped.
+                                           (quickrun--fill-template x tmpl-arg t))
                                          it)))
                (puthash key filled-tmpls info)))
     ;; function parameter
@@ -1201,14 +1205,22 @@ Place holders are beginning with '%' and replaced by:
           (puthash key func info))))
     info))
 
-(defun quickrun--fill-template (tmpl info)
-  "Not documented."
-  (let ((place-holders quickrun--template-place-holders)
-        (str tmpl)
-        (case-fold-search nil))
-    (dolist (holder place-holders str)
-      (let ((rep (assoc-default holder info)))
-        (setq str (replace-regexp-in-string holder rep str t))))))
+(defun quickrun--fill-template (tmpl info &optional do-not-escape)
+  "Replace elements in a template.
+The function escapes relevant arguments, such as paths.
+TMPL is the template of the form \"%c -x c %o\".
+INFO is an alist containing the data to fill the template,
+such as \"((?c . g++) (?o . /home/user/file.cpp))\".
+"
+  (let ((escaped-list nil)
+        (elements-needing-escape '(?s ?S ?n ?N ?d ?e ?E)))
+    (dolist (element info escaped-list)
+      (if (and (not do-not-escape) (member (car element) elements-needing-escape))
+          (push
+           (cons (car element) (shell-quote-argument (cdr element)))
+           escaped-list)
+        (push element escaped-list)))
+    (format-spec tmpl escaped-list)))
 
 ;;
 ;; initialize
