@@ -1493,6 +1493,9 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
 
 (defun quickrun--kill-quickrun-buffer ()
   "Kill quickrun buffer."
+  (let ((win (get-buffer-window quickrun--buffer-name)))
+      (when win
+        (delete-window win)))
   (when (get-buffer quickrun--buffer-name)
     (kill-buffer quickrun--buffer-name)))
 
