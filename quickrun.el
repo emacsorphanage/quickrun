@@ -682,7 +682,9 @@ if you set your own language configuration.")
 (defun quickrun--pop-to-buffer (buf cb)
   "Not documented."
   (let ((win (selected-window)))
-    (switch-to-buffer-other-window buf)
+    (pop-to-buffer quickrun--buffer-name
+                   `((display-buffer-in-direction)
+                     (dedicated . t)))
     (funcall cb)
     (unless quickrun-focus-p
       (select-window win))))
