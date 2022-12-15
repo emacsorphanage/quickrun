@@ -1524,7 +1524,6 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
   (let* ((orig-src quickrun--executed-file)
          (cmd-key (quickrun--command-key orig-src)))
     (quickrun--set-default-directory cmd-key)
-    (quickrun--kill-quickrun-buffer)
     (unless (local-variable-p 'quickrun--last-cmd-key)
       (make-local-variable 'quickrun--last-cmd-key))
     (setq quickrun--last-cmd-key cmd-key)
