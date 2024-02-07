@@ -91,6 +91,7 @@ as default. But you can register your own command and apply other languages.
 * Kotlin (`kotlin`)
 * Crystal (`crystal`)
 * V (`v`)
+* Zig (`zig`)
 * Applescript (`osascript`)
 * Assembly Language (`nasm`, `masm`)
 

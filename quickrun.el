@@ -513,7 +513,12 @@ FMT and ARGS passed `message'."
             (:remove "%n")
             (:description . "Compile and run V programs")))
     ("applescript" . ((:command . "osascript")
-                      (:description . "Run apple script"))))
+                      (:description . "Run apple script")))
+    ("zig" . ((:command . "zig")
+         (:exec . "%c run %o %s %a")
+         (:tempfile . nil)
+         (:remove "%n")
+         (:description . "Compile and run Zig programs"))))
 
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
@@ -586,6 +591,7 @@ if you set your own language configuration.")
     ("\\.kt\\'" . "kotlin")
     ("\\.cr\\'" . "crystal")
     ("\\.v\\'" . "v")
+    ("\\.zig\\'" . "zig")
     ("\\.\\(scpt\\|applescript\\)\\'" . "applescript"))
   "Alist of (file-regexp . key)")
 
@@ -644,6 +650,7 @@ if you set your own language configuration.")
     (kotlin-mode . "kotlin")
     (crystal-mode . "crystal")
     (v-mode . "v")
+    (zig-mode . "zig")
     (applescript-mode . "applescript"))
   "Alist of major-mode and langkey")
 
@@ -1223,7 +1230,7 @@ Place holders are beginning with '%' and replaced by:
     "d" "markdown" "coffee" "scala" "groovy" "sass" "less" "shellscript" "awk"
     "lua" "rust" "dart" "elixir" "tcl" "jsx" "typescript" "fortran" "haml"
     "swift" "ats" "r" "nim" "nimscript" "fish" "julia" "gnuplot" "kotlin" "crystal" "v"
-    "applescript" "asm")
+    "applescript" "asm" "zig")
   "Programming languages and Markup languages supported as default
 by quickrun.el. But you can register your own command for some languages")
 
