@@ -41,6 +41,8 @@ as default. But you can register your own command and apply other languages.
 
 **Programming Language(commands used)**
 
+* Assembly Language (`nasm`, `masm`)
+* Applescript (`osascript`)
 * C (`gcc` / `clang` / `Visual C++`)
 * C++ (`g++` / `clang++` / `Visual C++`)
 * C# (`dotnet` / `mono`)
@@ -53,7 +55,7 @@ as default. But you can register your own command and apply other languages.
 * Ruby (`ruby` / `mruby`)
 * Python (`python`)
 * PHP (`php`)
-* Emacs Lisp (`emacs`)
+* Emacs Lisp (`elisp`)
 * Scheme (`gosh`)
 * Smalltalk (`gst`)
 * Racket (`racket`)
@@ -91,8 +93,7 @@ as default. But you can register your own command and apply other languages.
 * Kotlin (`kotlin`)
 * Crystal (`crystal`)
 * V (`v`)
-* Applescript (`osascript`)
-* Assembly Language (`nasm`, `masm`)
+* Zig (`zig`)
 
 See also `quickrun--support-languages` global variable.
 
