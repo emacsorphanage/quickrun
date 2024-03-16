@@ -1,4 +1,6 @@
-[![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![melpa badge][melpa-badge]][melpa-link]
+[![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![jcs-elpa badge][jcs-elpa-badge]][jcs-elpa-link]
 
 # quickrun.el
 
@@ -445,3 +447,5 @@ Sample is following:
 [melpa-stable-link]: https://stable.melpa.org/#/quickrun
 [melpa-badge]: https://melpa.org/packages/quickrun-badge.svg
 [melpa-stable-badge]: https://stable.melpa.org/packages/quickrun-badge.svg
+[jcs-elpa-link]: https://jcs-emacs.github.io/jcs-elpa/#/jcs-modeline
+[jcs-elpa-badge]: https://raw.githubusercontent.com/jcs-emacs/badges/master/elpa/v/jcs-modeline.svg
