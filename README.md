@@ -17,7 +17,7 @@ compiling languages(C, C++, Go, Java etc) and markup language.
 
 ## Requirements
 
-* Emacs 24.3 or higher.
+* Emacs `26.1` or higher.
 
 ## Installation
 
@@ -96,6 +96,7 @@ as default. But you can register your own command and apply other languages.
 * Crystal (`crystal`)
 * V (`v`)
 * Zig (`zig`)
+* Nix (`nix`)
 
 See also `quickrun--support-languages` global variable.
 
@@ -180,7 +181,7 @@ You can add your own command or override existsing command  by `quickrun-add-com
 (quickrun-add-command "c++/c1z"
   '((:command . "g++")
     (:exec    . ("%c -std=c++1z %o -o %e %s"
-		 "%e %a"))
+         "%e %a"))
     (:remove  . ("%e")))
   :default "c++")
 
@@ -193,7 +194,7 @@ You can add your own command or override existsing command  by `quickrun-add-com
 ;; You can override existing command
 (quickrun-add-command "c/gcc"
   '((:exec . ("%c -std=c++1z %o -o %e %s"
-	      "%e %a")))
+          "%e %a")))
   :override t)
 ```
 

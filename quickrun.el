@@ -530,7 +530,10 @@ FMT and ARGS passed `message'."
               (:description . "Run zig file with Zig program")))
     ("zig/build" . ((:command     . "zig")
                     (:exec        . "%c build run")
-                    (:description . "Run zig file with built-in package manager"))))
+                    (:description . "Run zig file with built-in package manager")))
+    ("nix" . ((:command . "nix")
+              (:exec    . "%c eval --file %s")
+              (:description . "Evaluate the Nix expression file"))))
   "List of each programming languages information.
 Parameter form is (\"language\" . parameter-alist).  parameter-alist has
 5 keys and those values , :command, :exec, :remove.
