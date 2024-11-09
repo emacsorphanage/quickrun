@@ -141,7 +141,8 @@ Replace region of code with its output.
 
 ### `quickrun-autorun-mode`
 
-Minor mode which executes `quickrun` after saving buffer.
+Minor mode which automatically executes `quickrun` after saving the buffer.
+If you set `quickrun-autorun-idle-delay` to a number, `quickrun` will also run automatically after the buffer has been idle for that many seconds, even without saving.
 
 #### `helm-quickrun`
 
@@ -171,6 +172,11 @@ If this value is `nil`, quickrun.el does not move focus to output buffer.
 ### `quickrun-truncate-lines`(Default: `t`)
 
 The `truncate-lines' value for `*quickrun*` buffer.
+
+### `quickrun-autorun-idle-delay` (Default: `nil`)
+
+Idle time in seconds before automatically running `quickrun` without saving.
+If `nil`, automatic execution without saving is disabled.
 
 ## User Defined Command
 
