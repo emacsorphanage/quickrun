@@ -85,6 +85,13 @@
   :type 'boolean
   :group 'quickrun)
 
+(defcustom quickrun-autorun-idle-delay nil
+  "Idle time in seconds before automatically running `quickrun' without saving.
+If NIL, automatic execution without saving is disabled."
+  :type '(choice (const :tag "Disable automatic run without save" nil)
+                 (number :tag "Idle time in seconds"))
+  :group 'quickrun)
+
 (defconst quickrun--buffer-name "*quickrun*")
 (defvar quickrun--executed-file nil)
 (defvar quickrun--remove-files nil)
@@ -1586,15 +1593,51 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
   (let ((quickrun-focus-p nil))
     (quickrun)))
 
+(defvar-local quickrun-autorun-file nil)
+(defvar-local quickrun-autorun-buffer-hash nil)
+(defvar-local quickrun-autorun-timer nil)
+
+(defun quickrun--autorun-if-buffer-changed ()
+  "Run `quickrun--without-focus' if the buffer has changed since the lastcheck.
+
+This function is intended to be called during idle time when
+`quickrun-autorun-mode' is active with `quickrun-autorun-idle-delay' set.
+It checks if the current buffer's content has changed by comparing its hash
+with the previously stored hash.  If the buffer has changed, it updates the
+stored hash and executes `quickrun--without-focus` without saving the buffer.
+
+This ensures that `quickrun` is automatically executed whenever the buffer
+content changes, without the need to save the file."
+  (when (and quickrun-autorun-file (equal quickrun-autorun-file buffer-file-name))
+    (let ((hash (buffer-hash (current-buffer))))
+      (when (not (equal quickrun-autorun-buffer-hash hash))
+        (setq quickrun-autorun-buffer-hash hash)
+        (quickrun--without-focus)))))
+
 ;;;###autoload
 (define-minor-mode quickrun-autorun-mode
-  "`quickrun' after saving buffer."
+  "Automatically `quickrun` the buffer after saving or after an idle period.
+
+If `quickrun-autorun-no-save-run-idle-time' is non-NIL, will run `quickrun'
+without saving the buffer when it has been idle for that many seconds.
+
+If `quickrun-autorun-no-save-run-idle-time' is NIL, `quickrun' will run after the buffer is saved."
   :init-value nil
   :global nil
   :lighter " QAR"
   (if quickrun-autorun-mode
-      (add-hook 'after-save-hook 'quickrun--without-focus nil t)
-    (remove-hook 'after-save-hook 'quickrun--without-focus t)))
+      (if quickrun-autorun-idle-delay
+          (progn
+            (setq quickrun-autorun-timer
+                  (run-with-idle-timer quickrun-autorun-idle-delay t #'quickrun--autorun-if-buffer-changed))
+            (setq quickrun-autorun-file buffer-file-name))
+        (add-hook 'after-save-hook 'quickrun--without-focus nil t))
+    (setq quickrun-autorun-file nil)
+    (setq quickrun-autorun-buffer-hash nil)
+    (remove-hook 'after-save-hook 'quickrun--without-focus t)
+    (when quickrun-autorun-timer
+      (cancel-timer quickrun-autorun-timer)
+      (setq quickrun-autorun-timer nil))))
 
 ;;
 ;; helm/anything interface
