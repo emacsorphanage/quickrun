@@ -1472,6 +1472,7 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
   "Run commands in shell for interactive programs."
   (interactive)
   (let ((quickrun--run-in-shell t)
+        (quickrun-focus-p t)
         (quickrun-timeout-seconds nil))
     (quickrun)))
 
