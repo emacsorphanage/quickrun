@@ -1,3 +1,7 @@
 /.cask/
 /.eask
+/dist
 *.elc
+
+# OS generated
+.DS_Store
