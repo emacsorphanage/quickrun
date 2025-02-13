@@ -3,6 +3,7 @@ Revision history for quickrun.el
 Version 2.3.1 N/A jcs090218
   - Support Deno (b8a9b716a8414c98d3a1ce9267c47c5dbbc7f67b)
   - Support Nix (#152)
+  - feat: Add header and footer messages with exit code (#157)
 
 Version 2.2.8 2017/01/14 syohex
   - Support julia (#77)
