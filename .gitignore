@@ -3,5 +3,8 @@
 /dist
 *.elc
 
+# local tests
+/_test
+
 # OS generated
 .DS_Store
