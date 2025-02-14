@@ -85,6 +85,11 @@
   :type 'boolean
   :group 'quickrun)
 
+(defcustom quickrun-output-only nil
+  "If non-nil, omit the header and footer from the output."
+  :type 'boolean
+  :group 'quickrun)
+
 (defconst quickrun--buffer-name "*quickrun*")
 (defvar quickrun--executed-file nil)
 (defvar quickrun--remove-files nil)
@@ -785,25 +790,27 @@ if you set your own language configuration.")
 
 (defun quickrun--insert-header (process)
   "Insert header to PROCESS buffer."
-  (with-current-buffer (process-buffer process)
-    (let ((inhibit-read-only t)
-          (time (quickrun--get-timestamp)))
-      (insert "-*- mode: quickrun-; default-directory: \""
-              default-directory
-              "\" -*-\n")
-      (insert "Quickrun started at " time "\n"))))
+  (unless quickrun-output-only
+    (with-current-buffer (process-buffer process)
+      (let ((inhibit-read-only t)
+            (time (quickrun--get-timestamp)))
+        (insert "-*- mode: quickrun-; default-directory: \""
+                default-directory
+                "\" -*-\n")
+        (insert "Quickrun started at " time "\n\n")))))
 
 (defun quickrun--insert-footer (process code)
   "Insert footer to PROCESS buffer with exit CODE."
-  (with-current-buffer (process-buffer process)
-    (let ((inhibit-read-only t)
-          (time (quickrun--get-timestamp)))
-      (insert "\n")
-      (if (zerop code)
-          (insert "Quickrun finished at " time "\n")
-        (insert "Quickrun exited abnormally with code "
-                (quickrun-2str code)
-                " at " time "\n")))))
+  (unless quickrun-output-only
+    (with-current-buffer (process-buffer process)
+      (let ((inhibit-read-only t)
+            (time (quickrun--get-timestamp)))
+        (insert "\n\n")
+        (if (zerop code)
+            (insert "Quickrun finished at " time "\n")
+          (insert "Quickrun exited abnormally with code "
+                  (quickrun-2str code)
+                  " at " time "\n"))))))
 
 (defun quickrun--exec (cmd-lst src mode)
   "Not documented."
