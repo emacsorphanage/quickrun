@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "quickrun"
          "2.3.1"
          "Run commands quickly")
