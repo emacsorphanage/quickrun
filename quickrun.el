@@ -1556,9 +1556,12 @@ With double prefix argument(C-u C-u), run in compile-only-mode."
     (quickrun--add-remove-files dst)))
 
 (defun quickrun--kill-quickrun-buffer ()
-  "Kill quickrun buffer."
-  (when (get-buffer quickrun--buffer-name)
-    (kill-buffer quickrun--buffer-name)))
+  (let (quickrun--buffer (get-buffer quickrun--buffer-name))
+	(when quickrun--buffer
+	  (let (quickrun--buffer-window (get-buffer-window quickrun--buffer-name))
+		(when quickrun--buffer-window
+		  (delete-window quickrun--buffer-window)))
+	  (kill-buffer quickrun--buffer))))
 
 (defun quickrun--setup-exec-buffer (buf)
   "Not documented."
